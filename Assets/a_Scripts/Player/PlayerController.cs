@@ -1,86 +1,55 @@
-using UnityEngine.InputSystem;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class PlayerControllerSimple : MonoBehaviour
 {
-    private GameObject _mainCamera;
     private CharacterController _controller;
+    private CameraController _cameraController;
+
+    [Header("移动设置")]
     public float moveSpeed = 5f;
 
     [Header("旋转设置")]
-    public float rotationSmoothTime = 0.1f; // 旋转平滑时间
-    private float _currentRotationVelocity; // 用于平滑旋转
+    public float rotationSmoothTime = 0.12f;
+    private float _currentRotationVelocity;
 
-    [Header("输入配置")]
-    private InputController inputController;
-    private InputActionMap playerMap;
-    private InputAction moveAction;
-    private Vector2 _input;
+    private Vector2 _moveInput;
 
-    void Awake()
+    void Start()
     {
-        inputController = new InputController();
-        playerMap = inputController.Player;
-        moveAction = playerMap.FindAction("PlayerMove");
-
-        moveAction.performed += OnMovePerformed;
-        moveAction.canceled += OnMoveCanceled;
-
-        playerMap.Enable();
-    }
-
-    private void Start()
-    {
-        _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
         _controller = GetComponent<CharacterController>();
+        _cameraController = FindObjectOfType<CameraController>();
     }
 
-    private void Update()
+    void Update()
     {
-        if (_input != Vector2.zero)
+        if (_cameraController == null) return;
+
+        // 获取键盘WASD输入
+        _moveInput.x = Input.GetAxis("Horizontal");  // A/D: -1/1
+        _moveInput.y = Input.GetAxis("Vertical");    // W/S: -1/1
+
+        // 获取相机的水平旋转角度
+        float cameraYaw = _cameraController.CameraYaw;
+
+        // 计算移动方向
+        Vector3 inputDir = new Vector3(_moveInput.x, 0f, _moveInput.y).normalized;
+        Vector3 moveDir = Quaternion.Euler(0f, cameraYaw, 0f) * inputDir;
+
+        if (_moveInput != Vector2.zero)
         {
-            // 计算移动方向（相对于相机）
-            Vector3 inputDir = new Vector3(_input.x, 0f, _input.y).normalized;
-
-            // 计算目标旋转角度
-            float targetRot = Mathf.Atan2(inputDir.x, inputDir.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
-
-            // 平滑旋转
+            // 角色面向移动方向
+            float targetRot = Mathf.Atan2(moveDir.x, moveDir.z) * Mathf.Rad2Deg;
             float currentRot = transform.eulerAngles.y;
             float newRot = Mathf.SmoothDampAngle(currentRot, targetRot, ref _currentRotationVelocity, rotationSmoothTime);
-            transform.rotation = Quaternion.Euler(0.0f, newRot, 0.0f);
+            transform.rotation = Quaternion.Euler(0f, newRot, 0f);
 
             // 移动
-            Vector3 targetDir = transform.forward;
-            _controller.Move(targetDir * (moveSpeed * Time.deltaTime));
+            _controller.Move(moveDir * (moveSpeed * Time.deltaTime));
         }
-        // 没有输入时：不进行任何旋转，直接重置速度变量
         else
         {
-            // 重置平滑旋转的速度变量，防止惯性
             _currentRotationVelocity = 0f;
-            // 不修改 rotation，保持当前朝向
         }
-    }
-    void OnEnable()
-    {
-        if (playerMap != null)
-            playerMap.Enable();
-    }
-
-    void OnDisable()
-    {
-        if (playerMap != null)
-            playerMap.Disable();
-    }
-
-    private void OnMovePerformed(InputAction.CallbackContext context)
-    {
-        _input = context.ReadValue<Vector2>();
-    }
-
-    private void OnMoveCanceled(InputAction.CallbackContext context)
-    {
-        _input = Vector2.zero;
     }
 }
