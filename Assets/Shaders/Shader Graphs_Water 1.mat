@@ -50,8 +50,8 @@ Material:
     m_Ints: []
     m_Floats:
     - _Deplacemeny: 1
-    - _DepthEdge1: 0
-    - _DepthEdge2: 7.05
+    - _DepthEdge1: -0.73
+    - _DepthEdge2: 3.26
     - _FormScale: -0.97
     - _NormalStrength: 0.462
     - _QueueControl: 0
@@ -61,10 +61,10 @@ Material:
     m_Colors:
     - _DeepColor: {r: 0.027629351, g: 0.7987421, b: 0.7460959, a: 0.2}
     - _FoamColor: {r: 1, g: 1, b: 1, a: 0}
-    - _MainNormalScale: {r: 2, g: 2, b: 0, a: 0}
-    - _SecondNormalScale: {r: 1.61, g: 1, b: 0, a: 0}
+    - _MainNormalScale: {r: 2.58, g: 2, b: 0, a: 0}
+    - _SecondNormalScale: {r: 1.58, g: 1, b: 0, a: 0}
     - _ShallowColor: {r: 0.68867916, g: 1, b: 0.91453934, a: 0.08235294}
-    - _WaveDir: {r: 0.5, g: 0.5, b: 0, a: 0}
+    - _WaveDir: {r: 0.57, g: -0.64, b: 0, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &9212585906857164784
 MonoBehaviour:

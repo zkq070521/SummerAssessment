@@ -8,7 +8,7 @@ public class DialogueController : MonoBehaviour
     public bool canTalk = false;
 
     private GameObject _player;
-    private PlayerControllerSimple _playerController;
+    // private PlayerMovementController _playerController;
 
     void Start()
     {
@@ -16,7 +16,7 @@ public class DialogueController : MonoBehaviour
         _player = GameObject.FindGameObjectWithTag("Player");
         if (_player != null)
         {
-            _playerController = _player.GetComponent<PlayerControllerSimple>();
+            // _playerController = _player.GetComponent<PlayerMovementController>();
         }
         else
         {
@@ -64,11 +64,11 @@ public class DialogueController : MonoBehaviour
     /// <param name="enabled">true=启用控制, false=禁用控制</param>
     private void SetPlayerControl(bool enabled)
     {
-        if (_playerController != null)
-        {
-            _playerController.enabled = enabled;
-            Debug.Log($"玩家控制器已{(enabled ? "启用" : "禁用")}");
-        }
+        // if (_playerController != null)
+        // {
+        //     _playerController.enabled = enabled;
+        //     Debug.Log($"玩家控制器已{(enabled ? "启用" : "禁用")}");
+        // }
 
         // 可选：同时禁用CharacterController的移动
         // 但禁用PlayerControllerSimple就够了，因为移动逻辑在里面
