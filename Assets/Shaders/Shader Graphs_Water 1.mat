@@ -49,14 +49,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Deplacemeny: 1
+    - _Deplacemeny: 0.257
     - _DepthEdge1: -0.73
     - _DepthEdge2: 3.26
     - _FormScale: -0.97
-    - _NormalStrength: 0.462
+    - _NormalStrength: 0.341
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _Smoothness: 0.738
+    - _Smoothness: 0.776
     - _WaveSpeed: 0.5
     m_Colors:
     - _DeepColor: {r: 0.027629351, g: 0.7987421, b: 0.7460959, a: 0.2}
