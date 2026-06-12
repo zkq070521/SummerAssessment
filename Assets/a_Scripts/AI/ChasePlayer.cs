@@ -5,17 +5,30 @@ using BehaviorDesigner.Runtime.Tasks;
 
 public class ChasePlayer : Action
 {
-    public SharedTransform playerTarget;      // 玩家Transform
-    public SharedFloat chaseSpeed = 5f;       // 追击速度
-    public SharedFloat updateRate = 0.1f;     // 路径更新频率
+    public SharedTransform playerTarget;
+    public SharedFloat chaseSpeed = 3f;
+    public SharedFloat updateRate = 0.1f;
 
     private NavMeshAgent agent;
+    private Animator animator;
     private float lastUpdateTime;
     private float originalSpeed;
+
+    // 动画参数哈希值
+    private int speedHash;
+    private int isMovingHash;
+    private int isChasingHash;
 
     public override void OnStart()
     {
         agent = GetComponent<NavMeshAgent>();
+        animator = GetComponent<Animator>();
+
+        // 缓存动画参数
+        speedHash = Animator.StringToHash("Speed");
+        isMovingHash = Animator.StringToHash("IsMoving");
+        isChasingHash = Animator.StringToHash("IsChasing");
+
         if (agent == null)
         {
             Debug.LogError("ChasePlayer任务需要NavMeshAgent组件");
@@ -26,14 +39,28 @@ public class ChasePlayer : Action
         agent.speed = chaseSpeed.Value;
         lastUpdateTime = Time.time;
 
-        // 立即设置目标
         UpdateDestination();
+
+        // 设置追击动画
+        if (animator != null)
+        {
+            animator.SetBool(isMovingHash, true);
+            animator.SetBool(isChasingHash, true);
+            animator.SetFloat(speedHash, 1.0f); // 追击时全速
+        }
     }
 
     public override TaskStatus OnUpdate()
     {
         if (agent == null || playerTarget.Value == null)
             return TaskStatus.Failure;
+
+        // 更新动画（保持移动状态）
+        if (animator != null)
+        {
+            animator.SetBool(isMovingHash, true);
+            animator.SetFloat(speedHash, 1.0f);
+        }
 
         // 定期更新目标位置
         if (Time.time - lastUpdateTime >= updateRate.Value)
@@ -42,18 +69,12 @@ public class ChasePlayer : Action
             lastUpdateTime = Time.time;
         }
 
-        // 检查是否到达玩家附近（可选：距离小于攻击范围时可返回成功）
-        if (agent.remainingDistance <= agent.stoppingDistance)
-        {
-            return TaskStatus.Running;  // 保持追击状态，持续跟随
-        }
-
         return TaskStatus.Running;
     }
 
     private void UpdateDestination()
     {
-        if (playerTarget.Value != null)
+        if (playerTarget.Value != null && agent.isOnNavMesh)
         {
             agent.destination = playerTarget.Value.position;
         }
@@ -61,8 +82,15 @@ public class ChasePlayer : Action
 
     public override void OnEnd()
     {
-        // 恢复巡逻速度
         if (agent != null)
             agent.speed = originalSpeed;
+
+        // 重置动画状态
+        if (animator != null)
+        {
+            animator.SetBool(isMovingHash, false);
+            animator.SetBool(isChasingHash, false);
+            animator.SetFloat(speedHash, 0);
+        }
     }
 }

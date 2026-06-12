@@ -5,68 +5,168 @@ using BehaviorDesigner.Runtime.Tasks;
 
 public class Patrol : Action
 {
-    public SharedTransform[] waypoints;      // 路点数组
-    public SharedFloat stoppingDistance = 0.5f;  // 到达距离阈值
-    public SharedFloat patrolSpeed = 2f;      // 巡逻速度
+    public Transform pointA;
+    public Transform pointB;
+    public float stoppingDistance = 0.5f;
+    public float patrolSpeed = 3.5f;
+    public float waitTime = 3f;
 
     private NavMeshAgent agent;
-    private int currentWaypointIndex;
+    private Animator animator;
+    private Transform currentTarget;
+    private float waitTimer;
+    private bool isWaiting;
     private float originalSpeed;
+
+    private int speedHash;
+    private int isMovingHash;
 
     public override void OnStart()
     {
         agent = GetComponent<NavMeshAgent>();
+        animator = GetComponent<Animator>();
+
+        speedHash = Animator.StringToHash("Speed");
+        isMovingHash = Animator.StringToHash("IsMoving");
+
+        // 1. 检查 NavMeshAgent
         if (agent == null)
         {
-            Debug.LogError("Patrol任务需要NavMeshAgent组件");
+            Debug.LogError("❌ 没有 NavMeshAgent 组件！");
             return;
         }
 
-        originalSpeed = agent.speed;
-        agent.speed = patrolSpeed.Value;
 
-        // 如果没有设置起始索引或已完成所有路点，从第一个开始
-        if (currentWaypointIndex >= waypoints.Length)
+        // 2. 检查路点
+        if (pointA == null || pointB == null)
         {
-            currentWaypointIndex = 0;
+            Debug.LogError($"❌ 路点为空！pointA={pointA?.name}, pointB={pointB?.name}");
+            return;
+        }
+        ;
+
+        // 3. 检查 NavMesh
+        if (!agent.isOnNavMesh)
+        {
+
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(transform.position, out hit, 5f, NavMesh.AllAreas))
+            {
+                transform.position = hit.position;
+
+            }
+            else
+            {
+                Debug.LogError("❌ 找不到附近的 NavMesh！请检查是否烘焙了 NavMesh");
+                return;
+            }
+        }
+        else
+        {
+            Debug.Log($"✅ 敌人在 NavMesh 上，位置: {transform.position}");
         }
 
-        // 设置初始目标
-        SetDestination();
+        originalSpeed = agent.speed;
+        agent.speed = patrolSpeed;
+
+        isWaiting = false;
+        waitTimer = 0f;
+        MoveToPointA();
+
+        if (animator != null)
+        {
+            animator.SetBool(isMovingHash, true);
+        }
+
+
     }
 
     public override TaskStatus OnUpdate()
     {
-        if (agent == null || waypoints.Length == 0)
-            return TaskStatus.Failure;
 
-        // 检查是否到达目标路点
-        if (!agent.pathPending && agent.remainingDistance <= stoppingDistance.Value)
+
+        if (pointA == null || pointB == null)
         {
-            // 移动到下一个路点
-            currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
-            SetDestination();
+            return TaskStatus.Failure;
         }
 
-        // 检查Agent是否还在移动
-        if (agent.remainingDistance > stoppingDistance.Value)
+        if (agent == null)
+            return TaskStatus.Failure;
+
+        if (animator != null)
+        {
+            float normalizedSpeed = agent.velocity.magnitude / agent.speed;
+            animator.SetFloat(speedHash, normalizedSpeed);
+        }
+
+        // 等待状态
+        if (isWaiting)
+        {
+            waitTimer -= Time.deltaTime;
+            if (waitTimer <= 0f)
+            {
+                isWaiting = false;
+                if (currentTarget == pointA)
+                    MoveToPointB();
+                else
+                    MoveToPointA();
+            }
             return TaskStatus.Running;
+        }
+
+        // 移动状态
+        if (!agent.pathPending && agent.remainingDistance <= stoppingDistance)
+        {
+            isWaiting = true;
+            waitTimer = waitTime;
+            if (animator != null)
+            {
+                animator.SetFloat(speedHash, 0f);
+            }
+
+        }
 
         return TaskStatus.Running;
     }
 
-    private void SetDestination()
+    private void MoveToPointA()
     {
-        if (waypoints[currentWaypointIndex].Value != null)
+        currentTarget = pointA;
+        SetDestination(currentTarget.position);
+
+    }
+
+    private void MoveToPointB()
+    {
+        currentTarget = pointB;
+        SetDestination(currentTarget.position);
+
+    }
+
+    private void SetDestination(Vector3 targetPos)
+    {
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(targetPos, out hit, 5f, NavMesh.AllAreas))
         {
-            agent.destination = waypoints[currentWaypointIndex].Value.position;
+            bool success = agent.SetDestination(hit.position);
+
+        }
+        else
+        {
+            Debug.LogError($"❌ 目标点不在 NavMesh 上: {targetPos}");
         }
     }
 
     public override void OnEnd()
     {
-        // 恢复原始速度（用于追击时）
+
         if (agent != null)
             agent.speed = originalSpeed;
+
+        if (animator != null)
+        {
+            animator.SetFloat(speedHash, 0);
+            animator.SetBool(isMovingHash, false);
+        }
     }
 }
