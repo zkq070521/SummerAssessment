@@ -35,6 +35,9 @@ public class PlayerMovementController : MonoBehaviour
     private float _rotationVelocity;
     private float _verticalVelocity;
 
+    // 输入封锁
+    private bool _inputBlocked;
+
     void Awake()
     {
         _controller = GetComponent<CharacterController>();
@@ -49,15 +52,24 @@ public class PlayerMovementController : MonoBehaviour
     void OnEnable()
     {
         _input.Player.Enable();
+        InputService.OnInputEnabledChanged += OnInputEnabledChanged;
     }
 
     void OnDisable()
     {
         _input.Player.Disable();
+        InputService.OnInputEnabledChanged -= OnInputEnabledChanged;
+    }
+
+    private void OnInputEnabledChanged(bool enabled)
+    {
+        _inputBlocked = !enabled;
     }
 
     void Update()
     {
+        if (_inputBlocked) return;
+
         // 读取移动输入
         _moveInput = _input.Player.PlayerMove.ReadValue<Vector2>();
 
