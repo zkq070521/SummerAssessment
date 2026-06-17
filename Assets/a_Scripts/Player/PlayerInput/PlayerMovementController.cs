@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// 第三人称角色移动控制器
@@ -23,6 +24,9 @@ public class PlayerMovementController : MonoBehaviour
     public Transform cameraTransform;
     public Animator animator;
 
+    [Header("攻击")]
+    public GameObject weaponObject;           // 角色手中的武器物体
+
     // 组件
     private CharacterController _controller;
     private Transform _transform;
@@ -38,6 +42,10 @@ public class PlayerMovementController : MonoBehaviour
     // 输入封锁
     private bool _inputBlocked;
 
+    // 攻击
+    private InputAction _attackAction;
+    private static readonly int AttackHash = Animator.StringToHash("Attack");
+
     void Awake()
     {
         _controller = GetComponent<CharacterController>();
@@ -47,18 +55,29 @@ public class PlayerMovementController : MonoBehaviour
             cameraTransform = Camera.main.transform;
         if (animator == null)
             animator = GetComponent<Animator>();
+
+        // 攻击输入：鼠标右键
+        _attackAction = _input.Player.PlayerAttack;
+        _attackAction.performed += OnAttack;
     }
 
     void OnEnable()
     {
         _input.Player.Enable();
+        _attackAction?.Enable();
         InputService.OnInputEnabledChanged += OnInputEnabledChanged;
     }
 
     void OnDisable()
     {
         _input.Player.Disable();
+        _attackAction?.Disable();
         InputService.OnInputEnabledChanged -= OnInputEnabledChanged;
+    }
+
+    void OnDestroy()
+    {
+        _attackAction?.Dispose();
     }
 
     private void OnInputEnabledChanged(bool enabled)
@@ -148,4 +167,22 @@ public class PlayerMovementController : MonoBehaviour
         animator.SetFloat("Speed", speed);
         animator.SetBool("isRunning", _isSprinting);
     }
+
+    #region 攻击
+
+    private void OnAttack(InputAction.CallbackContext context)
+    {
+        if (_inputBlocked) return;
+        if (animator == null) return;
+
+        // 触发攻击动画
+        animator.SetTrigger(AttackHash);
+
+        // 显示武器物体
+        if (weaponObject != null)
+            weaponObject.SetActive(true);
+
+    }
+
+    #endregion
 }
