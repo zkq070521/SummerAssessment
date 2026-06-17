@@ -28,13 +28,13 @@ public class EnterToBattle : MonoBehaviour
             Debug.Log($"切换到场景：{GameManager.Instance.battleSceneName}");
 
             // 检查 SceneTransitionManager
-            if (SceneTransitionManager.Instance == null)
-            {
-                Debug.LogError("SceneTransitionManager.Instance 为空！");
-                return;
-            }
+            // if (SceneTransitionManager.Instance == null)
+            // {
+            //     Debug.LogError("SceneTransitionManager.Instance 为空！");
+            //     return;
+            // }
 
-            SceneTransitionManager.Instance.LoadScene(GameManager.Instance.battleSceneName);
+            // SceneTransitionManager.Instance.LoadScene(GameManager.Instance.battleSceneName);
         }
         else
         {

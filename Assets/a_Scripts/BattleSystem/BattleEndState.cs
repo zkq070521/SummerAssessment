@@ -73,7 +73,7 @@ public class BattleEndState : IBattleState
         OnBattleEnd?.Invoke(result);
 
         // 5. 返回主世界
-        SceneTransitionManager.Instance.LoadScene(_manager.overworldSceneName);
+        //SceneTransitionManager.Instance.LoadScene(_manager.overworldSceneName);
     }
 
     private int CalculateExpReward()

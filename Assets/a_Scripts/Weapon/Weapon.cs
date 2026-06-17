@@ -30,12 +30,10 @@ public class Weapon : MonoBehaviour
         if (other.CompareTag("Enemy"))
         {
             Debug.Log("Hit enemy: ");
-            // 获取敌人的受伤脚本，扣减血量
-            // EnemyHealth enemy = other.GetComponent<EnemyHealth>();
-            // if (enemy != null)
-            // {
-            //     enemy.TakeDamage(damage);
-            // }
+            Vector3 hitPoint = other.ClosestPoint(transform.position);
+
+            // ✅ 发布事件！不关心谁来处理
+            GameEvents.TriggerHitEnemy(other.gameObject, hitPoint);
         }
     }
 }

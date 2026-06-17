@@ -41,12 +41,12 @@ public class BattleBeginState : IBattleState
 
     private IEnumerator BeginBattleRoutine()
     {
-        var transition = SceneTransitionManager.Instance;
+        //var transition = SceneTransitionManager.Instance;
 
         // 1. 过渡进入战斗场景
-        transition.LoadScene(_manager.battleSceneName);
+        //transition.LoadScene(_manager.battleSceneName);
         // 等待过渡完成
-        yield return new WaitUntil(() => !transition.IsTransitioning);
+        //yield return new WaitUntil(() => !transition.IsTransitioning);
 
         // 2. 初始化 UI
         if (_manager.battleUI != null)
