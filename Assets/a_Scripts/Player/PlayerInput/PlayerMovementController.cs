@@ -26,6 +26,9 @@ public class PlayerMovementController : MonoBehaviour
 
     [Header("攻击")]
     public GameObject weaponObject;           // 角色手中的武器物体
+    public float dashSpeed = 8f;             // 攻击前冲速度
+    public float dashDuration = 0.25f;        // 前冲持续时间
+    public float weaponHideDelay = 1.8f;        // 武器显示后隐藏延迟
 
     // 组件
     private CharacterController _controller;
@@ -35,7 +38,7 @@ public class PlayerMovementController : MonoBehaviour
     // 状态
     private Vector2 _moveInput;
     private bool _isSprinting;
-    private Vector3 _smoothVelocity;
+    // private Vector3 _smoothVelocity;
     private float _rotationVelocity;
     private float _verticalVelocity;
 
@@ -45,10 +48,8 @@ public class PlayerMovementController : MonoBehaviour
     // 攻击
     private InputAction _attackAction;
     private static readonly int AttackHash = Animator.StringToHash("Attack");
-    private static readonly int AttackContinueHash = Animator.StringToHash("AttackContinue");
-    private int comboIndex = 1;      // 当前是第几段
-    private bool canCombo = false;   // 是否允许按下一段
-    private float comboWindow = 0.5f; // 窗口时间，在动画的后半段开启
+    private bool _isAttacking;
+    private Coroutine _attackCoroutine;
 
     void Awake()
     {
@@ -91,7 +92,7 @@ public class PlayerMovementController : MonoBehaviour
 
     void Update()
     {
-        if (_inputBlocked) return;
+        if (_inputBlocked || _isAttacking) return;
 
         // 读取移动输入
         _moveInput = _input.Player.PlayerMove.ReadValue<Vector2>();
@@ -176,60 +177,46 @@ public class PlayerMovementController : MonoBehaviour
 
     private void OnAttack(InputAction.CallbackContext context)
     {
-        if (_inputBlocked) return;
+        if (_inputBlocked || _isAttacking) return;
         if (animator == null) return;
-        // 如果当前没有在攻击，则从第一段开始
-        if (!IsAttacking())
-        {
-            StartAttack();
-        }
-        // 如果正在攻击，且处于允许连击的时间窗口内
-        else if (canCombo)
-        {
-            // 立刻增加连击数，并强制触发下一段
-            comboIndex++;
-            if (comboIndex > 2) comboIndex = 1; // 三段循环
 
-            // 设置参数，触发过渡（打断）
-            animator.SetInteger("ComboIndex", comboIndex);
-            animator.SetTrigger(AttackContinueHash);
-            canCombo = false; // 重置窗口，防止一次连按触发多次
+        if (_attackCoroutine != null)
+            StopCoroutine(_attackCoroutine);
+        _attackCoroutine = StartCoroutine(AttackSequence());
+    }
+
+    private System.Collections.IEnumerator AttackSequence()
+    {
+        _isAttacking = true;
+
+
+
+        // 2. 播放攻击动画
+        animator.SetTrigger(AttackHash);
+
+        // 1. 前冲：朝角色面朝方向快速移动
+        Vector3 dashDir = _transform.forward;
+        dashDir.y = 0f;
+        dashDir.Normalize();
+        float timer = 0f;
+        while (timer < dashDuration)
+        {
+            _controller.Move(dashDir * dashSpeed * Time.deltaTime);
+            timer += Time.deltaTime;
+            yield return null;
         }
 
-        // 显示武器物体
+        // 3. 显示武器
         if (weaponObject != null)
             weaponObject.SetActive(true);
 
-    }
+        _isAttacking = false;
 
-    void StartAttack()
-    {
-        comboIndex = 1;
-        animator.SetInteger("ComboIndex", comboIndex);
-        animator.SetTrigger(AttackHash);
-        // 开启接受输入，但在动画的特定帧才允许打断（见下面的事件）
-        canCombo = false;
-    }
+        // 4. 延迟后隐藏武器
+        yield return new WaitForSeconds(weaponHideDelay);
 
-    bool IsAttacking()
-    {
-        // 检查当前状态是否是攻击状态（通过Tag或名称判断）
-        return animator.GetCurrentAnimatorStateInfo(0).IsTag("Attack");
-    }
-
-    // 这个函数由动画事件（Animation Event）调用
-    public void EnableComboWindow()
-    {
-        canCombo = true;
-    }
-
-    // 这个函数由动画事件调用，在动画结束时关闭窗口并重置状态
-    public void DisableComboWindow()
-    {
-        canCombo = false;
-        // 如果不小心没触发连击，把Index重置回1，防止下次卡住
-        comboIndex = 1;
-        animator.SetInteger("ComboIndex", comboIndex);
+        if (weaponObject != null)
+            weaponObject.SetActive(false);
     }
 
     #endregion
