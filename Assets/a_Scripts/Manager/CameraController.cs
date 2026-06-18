@@ -32,16 +32,16 @@ public class CameraController : MonoBehaviour
         // hitCam.LookAt = enemy.transform;
 
         // 切换到特写镜头
-        followCam.Priority = 0;
-        hitCam.Priority = 10;
+        // followCam.Priority = 0;
+        // hitCam.Priority = 10;
 
         // 延迟后切回
-        Invoke(nameof(SwitchToFollowCamera), hitCameraDuration);
+        //Invoke(nameof(SwitchToFollowCamera), hitCameraDuration);
     }
 
-    private void SwitchToFollowCamera()
-    {
-        followCam.Priority = 10;
-        hitCam.Priority = 0;
-    }
+    // private void SwitchToFollowCamera()
+    // {
+    //     followCam.Priority = 10;
+    //     hitCam.Priority = 0;
+    // }
 }
