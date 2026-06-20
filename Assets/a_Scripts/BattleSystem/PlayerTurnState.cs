@@ -24,6 +24,9 @@ public class PlayerTurnState : IBattleState
         _currentActorIndex = 0;
         _actionExecuted = false;
 
+        // 触发回合切换事件
+        BattleEventCenter.TriggerTurnChanged(BattleTeam.Player);
+
         // 筛选出存活角色
         var alivePlayers = _manager.PlayerParty.FindAll(p => p.isAlive);
         if (alivePlayers.Count == 0)
@@ -131,22 +134,8 @@ public class PlayerTurnState : IBattleState
 
     private void ExecuteAttack(BattleEntityData actor, BattleEntityData target)
     {
-        if (!BattleCalculator.IsHit(actor, target))
-        {
-            if (_manager.battleUI != null)
-                _manager.battleUI.AddBattleLog($"{actor.entityName} 攻击 {target.entityName} 未命中！");
-            return;
-        }
-
-        int damage = BattleCalculator.CalculateDamage(actor, target, out bool isCrit);
-        target.TakeDamage(damage);
-
-        string critText = isCrit ? "（暴击！）" : "";
-        if (_manager.battleUI != null)
-        {
-            _manager.battleUI.AddBattleLog($"{actor.entityName} 对 {target.entityName} 造成 {damage} 点伤害{critText}");
-            _manager.battleUI.UpdateEntityUI(_manager.PlayerParty, _manager.EnemyParty);
-        }
+        // 通过状态机的事件触发方法执行（会发布 BattleEventCenter 事件）
+        _manager.ExecuteAttack(actor, target, null, null);
     }
 
     private void ExecuteDefend(BattleEntityData actor)

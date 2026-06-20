@@ -16,6 +16,9 @@ public class GameManager : MonoBehaviour
     [Header("玩家队伍配置")]
     public List<BattleEntityData> playerTeamTemplate = new();
 
+    [Header("当前遭遇的敌人（战斗前设置）")]
+    public List<BattleEntityData> currentEnemyTeam = new();
+
     [Header("场景")]
     public string battleSceneName;
     public string overworldSceneName;
@@ -112,6 +115,32 @@ public class GameManager : MonoBehaviour
             playerTeamTemplate[i].currentHP = battleResult[i].currentHP;
             playerTeamTemplate[i].isAlive = battleResult[i].isAlive;
         }
+    }
+
+    /// <summary>
+    /// 获取当前敌人队伍的克隆（用于战斗）
+    /// </summary>
+    public List<BattleEntityData> GetEnemyTeam()
+    {
+        var team = new List<BattleEntityData>();
+        foreach (var template in currentEnemyTeam)
+            team.Add(template.Clone());
+        return team;
+    }
+
+    /// <summary>
+    /// 设置当前战斗的敌人并加载战斗场景
+    /// </summary>
+    public void BeginBattle(List<BattleEntityData> enemyTeam)
+    {
+        currentEnemyTeam.Clear();
+        foreach (var e in enemyTeam)
+            currentEnemyTeam.Add(e.Clone());
+
+        if (!string.IsNullOrEmpty(battleSceneName))
+            UnityEngine.SceneManagement.SceneManager.LoadScene(battleSceneName);
+        else
+            Debug.LogError("[GameManager] battleSceneName 未设置！");
     }
 
     #endregion

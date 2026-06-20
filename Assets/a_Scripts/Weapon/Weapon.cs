@@ -32,7 +32,7 @@ public class Weapon : MonoBehaviour
             Debug.Log("Hit enemy: ");
             Vector3 hitPoint = other.ClosestPoint(transform.position);
 
-            // ✅ 发布事件！不关心谁来处理
+            //  发布事件！不关心谁来处理
             GameEvents.TriggerHitEnemy(other.gameObject, hitPoint);
         }
     }

@@ -19,6 +19,9 @@ public class EnemyTurnState : IBattleState
         if (_manager.battleUI != null)
             _manager.battleUI.SetStatusText("敌人回合");
 
+        // 触发回合切换事件
+        BattleEventCenter.TriggerTurnChanged(BattleTeam.Enemy);
+
         _routine = _manager.StartCoroutine(ProcessEnemyTurn());
     }
 
@@ -91,18 +94,7 @@ public class EnemyTurnState : IBattleState
 
     private void ExecuteEnemyAttack(BattleEntityData enemy, BattleEntityData target)
     {
-        if (!BattleCalculator.IsHit(enemy, target))
-        {
-            if (_manager.battleUI != null)
-                _manager.battleUI.AddBattleLog($"{enemy.entityName} 攻击 {target.entityName} 未命中！");
-            return;
-        }
-
-        int damage = BattleCalculator.CalculateDamage(enemy, target, out bool isCrit);
-        target.TakeDamage(damage);
-
-        string critText = isCrit ? "（暴击！）" : "";
-        if (_manager.battleUI != null)
-            _manager.battleUI.AddBattleLog($"{enemy.entityName} 对 {target.entityName} 造成 {damage} 点伤害{critText}");
+        // 通过状态机的事件触发方法执行（会发布 BattleEventCenter 事件）
+        _manager.ExecuteAttack(enemy, target, null, null);
     }
 }

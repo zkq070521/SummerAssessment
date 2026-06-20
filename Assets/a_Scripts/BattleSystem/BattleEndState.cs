@@ -66,13 +66,16 @@ public class BattleEndState : IBattleState
                 GameManager.Instance.AddBattleReward(expReward, goldReward);
         }
 
-        // 3. 等待播放时间
+        // 3. 触发战斗结束事件（摄像机响应）
+        BattleEventCenter.TriggerBattleEnd(result);
+
+        // 4. 等待播放时间
         yield return new WaitForSeconds(1.5f);
 
-        // 4. 触发结算回调
+        // 5. 触发结算回调
         OnBattleEnd?.Invoke(result);
 
-        // 5. 返回主世界
+        // 6. 返回主世界
         //SceneTransitionManager.Instance.LoadScene(_manager.overworldSceneName);
     }
 

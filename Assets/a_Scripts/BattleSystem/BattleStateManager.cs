@@ -15,7 +15,7 @@ public class BattleStateManager : MonoBehaviour
     public Transform enemyPartyRoot;    // 敌人队伍父节点
 
     [Header("战斗配置")]
-    public string battleSceneName = "BattleScene";
+    // public string battleSceneName = "BattleScene";
     public string overworldSceneName = "Overworld";
 
     /// <summary>当前状态</summary>
@@ -140,6 +140,40 @@ public class BattleStateManager : MonoBehaviour
         if (allEnemiesDead) return BattleResult.Victory;
         if (allPlayersDead) return BattleResult.Defeat;
         return BattleResult.None;
+    }
+
+    #endregion
+
+    #region 事件触发
+
+    /// <summary>
+    /// 执行攻击并触发事件
+    /// </summary>
+    public void ExecuteAttack(BattleEntityData actor, BattleEntityData target, BattleUnit actorUnit, BattleUnit targetUnit)
+    {
+        if (!BattleCalculator.IsHit(actor, target))
+        {
+            battleUI?.AddBattleLog($"{actor.entityName} 攻击 {target.entityName} 未命中！");
+            return;
+        }
+
+        int damage = BattleCalculator.CalculateDamage(actor, target, out bool isCrit);
+        target.TakeDamage(damage);
+
+        if (actorUnit != null && targetUnit != null)
+        {
+            BattleEventCenter.TriggerUnitAttack(actorUnit, targetUnit);
+            BattleEventCenter.TriggerDamageDealt(actorUnit, targetUnit, damage, isCrit);
+        }
+
+        string critText = isCrit ? "（暴击！）" : "";
+        battleUI?.AddBattleLog($"{actor.entityName} 对 {target.entityName} 造成 {damage} 点伤害{critText}");
+        battleUI?.UpdateEntityUI(PlayerParty, EnemyParty);
+
+        BattleEventCenter.TriggerCameraShake(isCrit ? 2f : 1f, 0.3f);
+
+        if (!target.isAlive && targetUnit != null)
+            BattleEventCenter.TriggerUnitDeath(targetUnit);
     }
 
     #endregion

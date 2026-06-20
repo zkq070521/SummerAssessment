@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Middle
   - Enemy
+  - Player_HH
   layers:
   - Default
   - TransparentFX

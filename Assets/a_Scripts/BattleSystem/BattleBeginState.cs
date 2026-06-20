@@ -41,12 +41,8 @@ public class BattleBeginState : IBattleState
 
     private IEnumerator BeginBattleRoutine()
     {
-        //var transition = SceneTransitionManager.Instance;
-
-        // 1. 过渡进入战斗场景
-        //transition.LoadScene(_manager.battleSceneName);
-        // 等待过渡完成
-        //yield return new WaitUntil(() => !transition.IsTransitioning);
+        // 1. 等待摄像机入场动画完成（由 BattleEventCenter.OnBattleStart 触发）
+        yield return new WaitForSeconds(1.5f);
 
         // 2. 初始化 UI
         if (_manager.battleUI != null)
@@ -56,7 +52,10 @@ public class BattleBeginState : IBattleState
         if (_manager.battleUI != null)
             yield return _manager.StartCoroutine(_manager.battleUI.ShowBattleStartEffect());
 
-        // 4. 切换到玩家回合
+        // 4. 触发战斗正式开始事件
+        BattleEventCenter.TriggerBattleStart();
+
+        // 5. 切换到玩家回合
         _manager.AdvanceTurn();
         _manager.ChangeState<PlayerTurnState>();
     }

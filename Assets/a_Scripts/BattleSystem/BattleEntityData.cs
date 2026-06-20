@@ -8,6 +8,7 @@ public class BattleEntityData
 {
     [Header("基础属性")]
     public string entityName = "未命名";
+    public string prefabId = "";          // 对应预制体的 ID（如 "Knight", "Mage"）
     public int maxHP = 100;
     public int currentHP;
 
@@ -26,6 +27,7 @@ public class BattleEntityData
         return new BattleEntityData
         {
             entityName = entityName,
+            prefabId = prefabId,
             maxHP = maxHP,
             currentHP = currentHP,
             attack = attack,

@@ -31,7 +31,7 @@ public class SceneTransition : MonoBehaviour
         yield return new WaitForSeconds(transitionDuration);
 
         // 使用 Additive 模式，保留当前场景
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Additive);
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneToLoad);
         while (!asyncLoad.isDone)
         {
             yield return null;
