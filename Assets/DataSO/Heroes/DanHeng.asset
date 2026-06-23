@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e11e88b468d6e24abec06d5a4ddf6b8, type: 3}
+  m_Name: DanHeng
+  m_EditorClassIdentifier:
+  heroName: "丹恒"
+  heroID: DanHeng
+  description: "星穹列车的护卫，身世成谜。接受了上一代“饮月君”的力量，擅长使用长枪作为兵器。对自己的过去和未知的力量既警惕又迷茫。"
+  modelPrefab: {fileID: 0}
+  maxHP: 1000
+  currentHP: 1000
+  attack: 120
+  defense: 40
+  speed: 145
+  element: 4
+  path: 0
+  basicAttack: {fileID: 11400000, guid: 3dac6b614b064027a7d39b38fe407ec6, type: 3}
+  skill: {fileID: 11400000, guid: 6780118afe554885b593e54e477bb4b9, type: 3}
+  ultimate: {fileID: 11400000, guid: 7acc37eab79642ccba3c7cdeb8f56e7a, type: 3}
+  talent: {fileID: 11400000, guid: 98ca52a9e228411389500c2e0b15f52c, type: 3}
+  technique: {fileID: 11400000, guid: 1574eec3bcfc4811a58fb7d8203a45b7, type: 3}
+  icon: {fileID: 0}
+  portrait: {fileID: 0}
+  ultimateIcon: {fileID: 0}
+  skillIconBasic: {fileID: 0}
+  skillIconSkill: {fileID: 0}
+  skillIconUltimate: {fileID: 0}
+  elementIcon: {fileID: 0}
+  battleStartVoice: {fileID: 0}
+  skillVoice: {fileID: 0}
+  ultimateVoice: {fileID: 0}
+  hitVoice: {fileID: 0}
+  dieVoice: {fileID: 0}
+  skillEffect: {fileID: 0}
+  ultimateEffect: {fileID: 0}
+  hitEffect: {fileID: 0}

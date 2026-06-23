@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 416fde28486288f4cbc2841a1b18c080, type: 3}
+  m_Name: BaiE_Skill
+  m_EditorClassIdentifier:
+  skillName: "裂地"
+  description: "对单体敌人造成等同于白厄攻击力160%的物理伤害，并有概率造成破甲效果。"
+  skillType: 1
+  targetType: 0
+  damageMultiplier: 1.6
+  energyCost: 30
+  energyGain: 0
+  skillPointCost: 1
+  maxTargets: 1
+  effectPrefab: {fileID: 0}
+  soundEffect: {fileID: 0}
+  icon: {fileID: 0}
+  hasSpecialEffect: 1
+  specialEffectID: ArmorBreak

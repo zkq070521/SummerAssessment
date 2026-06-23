@@ -7,6 +7,15 @@
       "dependencies": {},
       "url": "https://packages.unity.cn"
     },
+    "com.mzbswh.unity-mcp": {
+      "version": "https://github.com/mzbswh/unity-mcp.git?path=unity-mcp",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.nuget.newtonsoft-json": "3.2.1"
+      },
+      "hash": "39fe64d9ca350a05e6bae6296482b327759ef27c"
+    },
     "com.unity.ai.navigation": {
       "version": "1.1.7",
       "depth": 0,
@@ -116,6 +125,13 @@
     },
     "com.unity.mathematics": {
       "version": "1.2.6",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.cn"
+    },
+    "com.unity.nuget.newtonsoft-json": {
+      "version": "3.2.1",
       "depth": 1,
       "source": "registry",
       "dependencies": {},

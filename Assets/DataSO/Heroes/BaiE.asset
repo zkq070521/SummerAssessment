@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e11e88b468d6e24abec06d5a4ddf6b8, type: 3}
+  m_Name: BaiE
+  m_EditorClassIdentifier:
+  heroName: "白厄"
+  heroID: BaiE
+  description: "被咒诅的战士，拥有不屈的战意。曾是帝国的荣誉骑士，因某场叛乱而被流放。擅长重型兵器，在战斗中越战越勇。"
+  modelPrefab: {fileID: 0}
+  maxHP: 1400
+  currentHP: 1400
+  attack: 100
+  defense: 70
+  speed: 100
+  element: 0
+  path: 2
+  basicAttack: {fileID: 11400000, guid: d01990b6b4514f0883d3fb173b7b790f, type: 3}
+  skill: {fileID: 11400000, guid: 012e19a8f1c44e4fb7f1d1b2db7817ee, type: 3}
+  ultimate: {fileID: 11400000, guid: 5dcb7e82e1bb4a17b783853c0a8377f3, type: 3}
+  talent: {fileID: 11400000, guid: 2ac71305ecf84bcb8995fffa37ecc34d, type: 3}
+  technique: {fileID: 11400000, guid: 3518729ad1b74fe1a43c730ad23ecb55, type: 3}
+  icon: {fileID: 0}
+  portrait: {fileID: 0}
+  ultimateIcon: {fileID: 0}
+  skillIconBasic: {fileID: 0}
+  skillIconSkill: {fileID: 0}
+  skillIconUltimate: {fileID: 0}
+  elementIcon: {fileID: 0}
+  battleStartVoice: {fileID: 0}
+  skillVoice: {fileID: 0}
+  ultimateVoice: {fileID: 0}
+  hitVoice: {fileID: 0}
+  dieVoice: {fileID: 0}
+  skillEffect: {fileID: 0}
+  ultimateEffect: {fileID: 0}
+  hitEffect: {fileID: 0}
