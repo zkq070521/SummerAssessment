@@ -136,7 +136,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 57068ef7d9e03a249ba53a3271dc8b7d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3663773024322522920}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 57068ef7d9e03a249ba53a3271dc8b7d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7628922103684570570}
   m_SourcePrefab: {fileID: 100100000, guid: 57068ef7d9e03a249ba53a3271dc8b7d, type: 3}
 --- !u!4 &6061332606928512703 stripped
 Transform:
@@ -148,6 +151,27 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 57068ef7d9e03a249ba53a3271dc8b7d, type: 3}
   m_PrefabInstance: {fileID: 6022601987555197268}
   m_PrefabAsset: {fileID: 0}
+--- !u!65 &7628922103684570570
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6869675296057408517}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.011904535, y: 0.011330716, z: 0.012340242}
+  m_Center: {x: -0.0023774789, y: -0.0005373364, z: 0.0038203013}
 --- !u!1001 &7874574843672066089
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1415,6 +1439,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4994b2315881aa248871730eea3f0a81, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1087683294708291330}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4994b2315881aa248871730eea3f0a81, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7658242411210062719}
   m_SourcePrefab: {fileID: 100100000, guid: 4994b2315881aa248871730eea3f0a81, type: 3}
 --- !u!95 &4333177183201412536 stripped
 Animator:
@@ -1508,6 +1535,19 @@ MonoBehaviour:
   dashSpeed: 8
   dashDuration: 0.25
   weaponHideDelay: 1.8
+--- !u!114 &7658242411210062719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7028278198534260088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0996e4a99e4d2cc4a8d300d16f7ed5ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weaponCollider: {fileID: 7628922103684570570}
 --- !u!4 &7692892963037355970 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4994b2315881aa248871730eea3f0a81, type: 3}

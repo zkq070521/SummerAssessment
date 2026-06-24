@@ -52,16 +52,19 @@ public class HeroData : ScriptableObject
     public GameObject ultimateEffect;   // 终结技特效预制体
     public GameObject hitEffect;        // 受击特效
 
+    [Header("=== 能量系统 ===")]
+    public float maxEnergy = 100f;          // 能量上限
+
     // 运行时数据（不会保存到资产文件）
     [System.NonSerialized] public float currentHPNotSave;  // 当前血量
-    [System.NonSerialized] public float currentEnergy; // 当前能量
+    [System.NonSerialized] public float currentEnergy;     // 当前能量
     [System.NonSerialized] public bool isAlive = true;
 
     // 初始化运行时数据
     public void InitializeRuntimeData()
     {
         currentHP = maxHP;
-        currentEnergy = 0;
+        currentEnergy = maxEnergy;
         isAlive = true;
     }
 }

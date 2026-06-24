@@ -222,6 +222,7 @@ GameObject:
   - component: {fileID: 50964695}
   - component: {fileID: 50964697}
   - component: {fileID: 50964696}
+  - component: {fileID: 50964698}
   m_Layer: 5
   m_Name: TeamPanel
   m_TagString: Untagged
@@ -249,7 +250,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -3, y: 77}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &50964696
@@ -290,6 +291,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 50964694}
   m_CullTransparentMesh: 1
+--- !u!114 &50964698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 50964694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c71426d8c17f814fba7e4fb0c70e71b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _teamData: {fileID: 11400000, guid: 9455b6c5bca86cb42812b5c4992a6d48, type: 2}
 --- !u!1 &60912861
 GameObject:
   m_ObjectHideFlags: 0
@@ -6134,8 +6148,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 238865636}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.053471137, y: -0.58980083, z: 0.03918538, w: 0.8048232}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0.053471126, y: -0.589801, z: 0.039185412, w: 0.80482304}
+  m_LocalPosition: {x: -0.000000093262926, y: 1.3322676e-14, z: 0.00000007424871}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7966,10 +7980,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: DanHeng
+  m_text: "\u4E39\u6052\n"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: b9e80ccf6027dcd4f9d16b4692c5d19f, type: 2}
+  m_sharedMaterial: {fileID: 2138553258729063497, guid: b9e80ccf6027dcd4f9d16b4692c5d19f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -13113,8 +13127,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 633973883}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.0681016, y: -0.58899057, z: 0.049907096, w: 0.80371743}
-  m_LocalPosition: {x: -0.00000018652602, y: 1.4210855e-14, z: 0.00000014849722}
+  m_LocalRotation: {x: 0.06810162, y: -0.58899075, z: 0.049907126, w: 0.80371726}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -13537,8 +13551,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: DanHeng
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: b9e80ccf6027dcd4f9d16b4692c5d19f, type: 2}
+  m_sharedMaterial: {fileID: 2138553258729063497, guid: b9e80ccf6027dcd4f9d16b4692c5d19f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -19372,8 +19386,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1344820011}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.03886166, y: -0.5904147, z: 0.02847909, w: 0.8056607}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0.03886165, y: -0.59041494, z: 0.028479131, w: 0.8056606}
+  m_LocalPosition: {x: -0.000000093262926, y: 1.3322676e-14, z: 0.00000007424871}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -24992,8 +25006,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: DanHeng
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: b9e80ccf6027dcd4f9d16b4692c5d19f, type: 2}
+  m_sharedMaterial: {fileID: 2138553258729063497, guid: b9e80ccf6027dcd4f9d16b4692c5d19f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -25609,8 +25623,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: DanHeng
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: b9e80ccf6027dcd4f9d16b4692c5d19f, type: 2}
+  m_sharedMaterial: {fileID: 2138553258729063497, guid: b9e80ccf6027dcd4f9d16b4692c5d19f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -121624,7 +121638,7 @@ Transform:
   m_GameObject: {fileID: 2112469334}
   serializedVersion: 2
   m_LocalRotation: {x: -0.053471167, y: 0.58980036, z: -0.039185368, w: 0.8048235}
-  m_LocalPosition: {x: -0.0000010612046, y: -0.0000000136929295, z: -0.00000010259487}
+  m_LocalPosition: {x: 0.000000975785, y: -0.000000015754312, z: -0.00000011804002}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

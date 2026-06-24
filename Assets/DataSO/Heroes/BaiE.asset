@@ -28,7 +28,7 @@ MonoBehaviour:
   ultimate: {fileID: 11400000, guid: 5dcb7e82e1bb4a17b783853c0a8377f3, type: 3}
   talent: {fileID: 11400000, guid: 2ac71305ecf84bcb8995fffa37ecc34d, type: 3}
   technique: {fileID: 11400000, guid: 3518729ad1b74fe1a43c730ad23ecb55, type: 3}
-  icon: {fileID: 0}
+  icon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
   portrait: {fileID: 0}
   ultimateIcon: {fileID: 0}
   skillIconBasic: {fileID: 0}
@@ -43,3 +43,4 @@ MonoBehaviour:
   skillEffect: {fileID: 0}
   ultimateEffect: {fileID: 0}
   hitEffect: {fileID: 0}
+  maxEnergy: 100
