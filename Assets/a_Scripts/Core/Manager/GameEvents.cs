@@ -9,12 +9,16 @@ public class OnHitEnemyEvent : UnityEvent<GameObject, Vector3> { }
 
 public static class GameEvents
 {
-    // 静态事件：命中敌人时触发，参数：敌人对象、命中位置
+    /// <summary>命中敌人时触发 — 参数：敌人对象、命中位置</summary>
     public static event System.Action<GameObject, Vector3> OnHitEnemy;
-
-    // 触发方法
     public static void TriggerHitEnemy(GameObject enemy, Vector3 hitPoint)
-    {
-        OnHitEnemy?.Invoke(enemy, hitPoint);
-    }
+        => OnHitEnemy?.Invoke(enemy, hitPoint);
+
+    /// <summary>
+    /// 大世界角色切换时触发 — 参数：新角色的 HeroData、角色序号（0-3 对应按键 1-4）
+    /// UI / 特效 / 音效等系统可通过此事件响应角色切换
+    /// </summary>
+    public static event System.Action<HeroData, int> OnCharacterSwitched;
+    public static void TriggerCharacterSwitched(HeroData hero, int index)
+        => OnCharacterSwitched?.Invoke(hero, index);
 }

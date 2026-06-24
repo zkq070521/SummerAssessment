@@ -13,7 +13,10 @@ public class GameManager : MonoBehaviour
     public int expToNextLevel = 100;
     public int gold = 0;
 
-    [Header("玩家队伍配置")]
+    [Header("队伍数据（ScriptableObject 配置）")]
+    public TeamData_SO teamData;
+
+    [Header("玩家队伍配置（运行时）")]
     public List<BattleEntityData> playerTeamTemplate = new();
 
     [Header("当前遭遇的敌人（战斗前设置）")]
@@ -55,8 +58,30 @@ public class GameManager : MonoBehaviour
 
     #region 队伍管理
 
+    /// <summary>
+    /// 从 TeamData_SO 初始化玩家队伍，SO 为空时使用硬编码默认队伍
+    /// </summary>
     private void InitializeDefaultTeam()
     {
+        if (teamData != null && teamData.teamMembers.Count > 0)
+        {
+            foreach (var hero in teamData.teamMembers)
+            {
+                if (hero == null) continue;
+                playerTeamTemplate.Add(new BattleEntityData
+                {
+                    entityName = hero.heroName,
+                    maxHP = Mathf.RoundToInt(hero.maxHP),
+                    currentHP = Mathf.RoundToInt(hero.maxHP),
+                    attack = Mathf.RoundToInt(hero.attack),
+                    defense = Mathf.RoundToInt(hero.defense),
+                    speed = Mathf.RoundToInt(hero.speed),
+                });
+            }
+            return;
+        }
+
+        // 回退：硬编码默认队伍
         playerTeamTemplate.Add(new BattleEntityData
         {
             entityName = "勇者",
