@@ -82,7 +82,7 @@ public class BattleCameraController : MonoBehaviour
 
     private void OnBattleStartHandler()
     {
-        PlayEntranceAnimation();
+        Debug.Log("[BattleCamera] 战斗开始，播放入场动画");
     }
 
     private void OnTurnChangedHandler(BattleTeam team)
@@ -116,25 +116,6 @@ public class BattleCameraController : MonoBehaviour
 
     // ──────────── 入场动画 ────────────
 
-    /// <summary>
-    /// 播放战斗入场动画 — 平滑拉近到初始位置
-    /// </summary>
-    public void PlayEntranceAnimation()
-    {
-        if (battleCam == null) return;
-
-        // 从较远位置开始，拉近到初始位置
-        float startFov = battleCam.m_Lens.FieldOfView * 1.3f;
-        float targetFov = _currentFov;
-
-        DOTween.To(() => startFov, value =>
-        {
-            startFov = value;
-            battleCam.m_Lens.FieldOfView = value;
-        }, targetFov, entranceDuration)
-        .SetEase(Ease.OutCubic)
-        .SetId(this);
-    }
 
     // ──────────── 回合聚焦 ────────────
 

@@ -81,7 +81,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: bb625263b72d4424bab42c1d2947d884, type: 3}
       propertyPath: m_Name
-      value: "\u767D\u5384 _HH"
+      value: "\u767D\u5384 1"
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: bb625263b72d4424bab42c1d2947d884, type: 3}
       propertyPath: m_TagString
@@ -399,9 +399,6 @@ PrefabInstance:
       addedObject: {fileID: 3459738273373932488}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: bb625263b72d4424bab42c1d2947d884, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7211792629566356147}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: bb625263b72d4424bab42c1d2947d884, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 8939913048759365452}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: bb625263b72d4424bab42c1d2947d884, type: 3}
       insertIndex: -1
@@ -427,9 +424,9 @@ Animator:
   m_GameObject: {fileID: 3322518322771208921}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: bb625263b72d4424bab42c1d2947d884, type: 3}
-  m_Controller: {fileID: 9100000, guid: b83aff77c9e6aa947ab2b9a0da840090, type: 2}
+  m_Controller: {fileID: 9100000, guid: f37ec33b3f5b23f43ad76eecaf836978, type: 2}
   m_CullingMode: 0
-  m_UpdateMode: 0
+  m_UpdateMode: 1
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
@@ -438,19 +435,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &7211792629566356147
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3322518322771208921}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0996e4a99e4d2cc4a8d300d16f7ed5ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  weaponCollider: {fileID: 861035238684130575}
 --- !u!54 &8939913048759365452
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -473,7 +457,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
@@ -575,7 +559,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 6a80a5889f09b1140acbe49c001cad29, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5866666021909216657, guid: 6a80a5889f09b1140acbe49c001cad29, type: 3}

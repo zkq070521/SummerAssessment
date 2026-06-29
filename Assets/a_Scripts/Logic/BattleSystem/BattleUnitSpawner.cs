@@ -7,16 +7,7 @@ using UnityEngine;
 /// </summary>
 public class BattleUnitSpawner : MonoBehaviour
 {
-    [System.Serializable]
-    public class CharacterPrefabEntry
-    {
-        public string prefabId;          // 与 BattleEntityData.prefabId 匹配
-        public GameObject prefab;        // 对应的角色预制体
-    }
-
-    [Header("预制体映射")]
-    public CharacterPrefabEntry[] characterPrefabs;
-
+    public TeamData_SO teamData; // 用于获取玩家队伍数据
     [Header("出生点")]
     public Transform[] playerSpawnPoints;   // 最多 4 个，左侧
     public Transform[] enemySpawnPoints;    // 最多 3 个，右侧
@@ -25,10 +16,10 @@ public class BattleUnitSpawner : MonoBehaviour
     public Transform playerPartyRoot;
     public Transform enemyPartyRoot;
 
-    // ── 生成结果 ──
-    public List<BattleUnit> PlayerUnits { get; private set; } = new();
-    public List<BattleUnit> EnemyUnits { get; private set; } = new();
-
+    public void Start()
+    {
+        SpawnAll();
+    }
     // ──────────── 核心方法 ────────────
 
     /// <summary>
@@ -40,86 +31,49 @@ public class BattleUnitSpawner : MonoBehaviour
 
         var playerTeam = GameManager.Instance.GetPlayerTeam();
         var enemyTeam = GameManager.Instance.GetEnemyTeam();
+        SpawnTeam();
 
-        PlayerUnits = SpawnTeam(playerTeam, playerSpawnPoints, playerPartyRoot, BattleTeam.Player);
-        EnemyUnits = SpawnTeam(enemyTeam, enemySpawnPoints, enemyPartyRoot, BattleTeam.Enemy);
+        //     PlayerUnits = SpawnTeam(playerTeam, playerSpawnPoints, playerPartyRoot, BattleTeam.Player);
+        //     EnemyUnits = SpawnTeam(enemyTeam, enemySpawnPoints, enemyPartyRoot, BattleTeam.Enemy);
     }
 
     /// <summary>
     /// 生成单个队伍
     /// </summary>
-    private List<BattleUnit> SpawnTeam(List<BattleEntityData> team, Transform[] spawnPoints,
-        Transform parent, BattleTeam teamType)
+    private void SpawnTeam()
     {
-        var units = new List<BattleUnit>();
-
-        for (int i = 0; i < spawnPoints.Length; i++)
+        for (int i = 0; i < teamData.teamMembers.Count; i++)
         {
-            // 超出队伍数据或该位置无角色 → 跳过
-            if (i >= team.Count || team[i] == null)
-                continue;
 
-            var data = team[i];
-            GameObject prefab = FindPrefab(data.prefabId);
-            if (prefab == null)
+            HeroData hero = teamData.teamMembers[i];
+            if (hero == null)
             {
-                Debug.LogWarning($"[Spawner] 未找到 prefabId='{data.prefabId}' 的预制体，跳过");
+                Debug.LogWarning($"[Spawner] teamMembers[{i}] 未赋值，跳过");
                 continue;
             }
-
-            // 实例化
-            Transform spawnPoint = spawnPoints[i];
-            GameObject go = Instantiate(prefab, spawnPoint.position, spawnPoint.rotation, parent);
-            go.name = $"{teamType}_{data.entityName}";
-
-            // 添加或获取 BattleUnit
-            BattleUnit unit = go.GetComponent<BattleUnit>();
-            if (unit == null)
-                unit = go.AddComponent<BattleUnit>();
-
-            unit.Setup(data, teamType);
-            units.Add(unit);
-
-            // 通知事件中心
-            BattleEventCenter.TriggerUnitSpawned(unit);
+            GameObject prefab = hero.battlePrefab;
+            if (prefab == null)
+            {
+                Debug.LogWarning($"[Spawner] {hero.heroName} 的 battlePrefab 未赋值，跳过");
+                continue;
+            }
+            GameObject go = Instantiate(prefab, playerSpawnPoints[i].position, playerSpawnPoints[i].rotation, playerPartyRoot);
         }
-
-        return units;
     }
 
-    /// <summary>
-    /// 根据 prefabId 查找对应的预制体
-    /// </summary>
-    private GameObject FindPrefab(string prefabId)
-    {
-        if (string.IsNullOrEmpty(prefabId)) return null;
 
-        foreach (var entry in characterPrefabs)
-        {
-            if (entry.prefabId == prefabId)
-                return entry.prefab;
-        }
-        return null;
-    }
+
 
     /// <summary>
     /// 清除所有已生成的单位
     /// </summary>
     public void ClearAll()
     {
-        ClearUnits(PlayerUnits);
-        ClearUnits(EnemyUnits);
-
-        PlayerUnits.Clear();
-        EnemyUnits.Clear();
+        foreach (Transform child in playerPartyRoot)
+            Destroy(child.gameObject);
+        foreach (Transform child in enemyPartyRoot)
+            Destroy(child.gameObject);
     }
 
-    private void ClearUnits(List<BattleUnit> units)
-    {
-        foreach (var unit in units)
-        {
-            if (unit != null && unit.gameObject != null)
-                Destroy(unit.gameObject);
-        }
-    }
+
 }

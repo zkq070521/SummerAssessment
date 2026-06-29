@@ -9,6 +9,7 @@ public class BattleEntityData
     [Header("基础属性")]
     public string entityName = "未命名";
     public string prefabId = "";          // 对应预制体的 ID（如 "Knight", "Mage"）
+    public GameObject battlePrefab;       // 战斗用预制体（直接引用，供 BattleUnitSpawner 使用）
     public int maxHP = 100;
     public int currentHP;
 
@@ -28,6 +29,7 @@ public class BattleEntityData
         {
             entityName = entityName,
             prefabId = prefabId,
+            battlePrefab = battlePrefab,
             maxHP = maxHP,
             currentHP = currentHP,
             attack = attack,

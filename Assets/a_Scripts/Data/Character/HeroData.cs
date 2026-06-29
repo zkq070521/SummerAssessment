@@ -12,6 +12,7 @@ public class HeroData : ScriptableObject
 
     [Header("=== 模型与表现 ===")]
     public GameObject modelPrefab;      // 角色的3D模型预制体（含Animator）
+    public GameObject battlePrefab;     // 战斗场景中的角色预制体
 
     [Header("=== 属性 ===")]
     public float maxHP = 1000f;

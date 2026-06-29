@@ -71,6 +71,7 @@ public class GameManager : MonoBehaviour
                 playerTeamTemplate.Add(new BattleEntityData
                 {
                     entityName = hero.heroName,
+                    battlePrefab = hero.battlePrefab,
                     maxHP = Mathf.RoundToInt(hero.maxHP),
                     currentHP = Mathf.RoundToInt(hero.maxHP),
                     attack = Mathf.RoundToInt(hero.attack),
