@@ -12,6 +12,7 @@ public class BreakScreen : MonoBehaviour
     public float upwardModifier = 0f;
 
     private Texture2D capturedTexture;
+    private bool isPlaying;
 
     // 保存每个碎片的初始状态
     private List<Vector3> initialPositions = new List<Vector3>();
@@ -40,6 +41,7 @@ public class BreakScreen : MonoBehaviour
 
     private void OnHitEnemyHandler(GameObject enemy, Vector3 hitPoint)
     {
+        if (isPlaying) return;
         StartCoroutine(CaptureAndBreakScreen(hitPoint));
     }
 
@@ -88,6 +90,8 @@ public class BreakScreen : MonoBehaviour
 
     private IEnumerator CaptureAndBreakScreen(Vector3 hitPoint)
     {
+        isPlaying = true;
+
         // 先重置碎片到初始位置
         ResetShardsToInitialState();
 
@@ -109,26 +113,36 @@ public class BreakScreen : MonoBehaviour
         // 5. 爆炸！让碎片飞散
         ExplodeShards(hitPoint);
 
-        // 6. 延迟后隐藏父物体（但碎片会继续飞）
+        // 6. 等待碎片飞远后隐藏
         yield return new WaitForSeconds(1f);
 
         if (screenShardsParent != null)
         {
             screenShardsParent.SetActive(false);
         }
+
+        // 7. 静默复原，为下一次命中做准备
+        yield return new WaitForSeconds(0.5f);
+        ResetShardsToInitialState();
+
+        isPlaying = false;
     }
 
-    // 截屏方法
+    // 截屏方法（URP 兼容）
     private IEnumerator CaptureScreen()
     {
-        yield return new WaitForEndOfFrame();
+        // 销毁上次的截图纹理
+        if (capturedTexture != null)
+            Destroy(capturedTexture);
 
         int width = Screen.width;
         int height = Screen.height;
 
-        RenderTexture rt = new RenderTexture(width, height, 24);
+        // 先挂 RT，让 URP 管线自动渲染，不手动 camera.Render()
+        RenderTexture rt = new RenderTexture(width, height, 24, RenderTextureFormat.ARGB32);
         targetCamera.targetTexture = rt;
-        targetCamera.Render();
+
+        yield return new WaitForEndOfFrame();
 
         RenderTexture.active = rt;
         capturedTexture = new Texture2D(width, height, TextureFormat.RGB24, false);
@@ -149,8 +163,13 @@ public class BreakScreen : MonoBehaviour
 
         foreach (MeshRenderer renderer in renderers)
         {
+            // 销毁上次创建的材质实例，避免泄漏
+            if (renderer.material != renderer.sharedMaterial)
+                Destroy(renderer.material);
+
             Material mat = new Material(renderer.sharedMaterial);
-            mat.mainTexture = capturedTexture;
+            mat.mainTexture = capturedTexture;               // Built-in RP
+            mat.SetTexture("_BaseMap", capturedTexture);     // URP Lit 实际采样名
             renderer.material = mat;
         }
     }
