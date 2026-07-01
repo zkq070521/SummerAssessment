@@ -70,14 +70,14 @@ public class PlayerMovementController : MonoBehaviour
     {
         _input.Player.Enable();
         _attackAction?.Enable();
-        InputService.OnInputEnabledChanged += OnInputEnabledChanged;
+        // InputService.OnInputEnabledChanged += OnInputEnabledChanged;
     }
 
     void OnDisable()
     {
         _input.Player.Disable();
         _attackAction?.Disable();
-        InputService.OnInputEnabledChanged -= OnInputEnabledChanged;
+        // InputService.OnInputEnabledChanged -= OnInputEnabledChanged;
     }
 
     void OnDestroy()

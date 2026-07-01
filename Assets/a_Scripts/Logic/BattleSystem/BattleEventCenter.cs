@@ -42,12 +42,7 @@ public static class BattleEventCenter
     }
 
     /// <summary>战斗结束时触发</summary>
-    public static event Action<BattleResult> OnBattleEnd;
 
-    public static void TriggerBattleEnd(BattleResult result)
-    {
-        OnBattleEnd?.Invoke(result);
-    }
 
     // ──────────── 单位事件 ────────────
 

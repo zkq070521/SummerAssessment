@@ -1505,8 +1505,6 @@ GameObject:
   m_Component:
   - component: {fileID: 554944708}
   - component: {fileID: 554944707}
-  - component: {fileID: 554944706}
-  - component: {fileID: 554944705}
   m_Layer: 0
   m_Name: BattleManager
   m_TagString: Untagged
@@ -1514,48 +1512,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &554944705
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 554944704}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f40efa3a7238e884782a029aa725952a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  battleUI: {fileID: 0}
-  playerPartyRoot: {fileID: 105006372}
-  enemyPartyRoot: {fileID: 929215931}
-  overworldSceneName: Overworld
-  _currentStateName: 
---- !u!114 &554944706
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 554944704}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ff9ae6f744fa954580abc2de29f1172, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  attackButton: {fileID: 0}
-  skillButton: {fileID: 0}
-  defendButton: {fileID: 0}
-  itemButton: {fileID: 0}
-  fleeButton: {fileID: 0}
-  statusText: {fileID: 0}
-  turnText: {fileID: 0}
-  battleLogText: {fileID: 0}
-  hpBarPrefab: {fileID: 0}
-  playerBarsRoot: {fileID: 0}
-  enemyBarsRoot: {fileID: 0}
-  battleStartOverlay: {fileID: 0}
-  fadeInDuration: 1
 --- !u!225 &554944707
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -2202,7 +2158,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 899602201}
-  - component: {fileID: 899602200}
   m_Layer: 0
   m_Name: BattleSceneController
   m_TagString: Untagged
@@ -2210,23 +2165,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &899602200
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 899602199}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76684cfc8bcce0f439c7d355114872ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  unitSpawner: {fileID: 1118118893}
-  cameraController: {fileID: 984589933}
-  stateManager: {fileID: 554944705}
-  spawnToCameraDelay: 0.3
-  entranceToBattleDelay: 0.5
 --- !u!4 &899602201
 Transform:
   m_ObjectHideFlags: 0
@@ -2512,7 +2450,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 984589930}
-  - component: {fileID: 984589933}
   - component: {fileID: 984589929}
   - component: {fileID: 984589928}
   - component: {fileID: 984589931}
@@ -2676,29 +2613,6 @@ MonoBehaviour:
   m_CameraActivatedEvent:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &984589933
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 984589927}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b49b6e2780ccea8479e4cd6c3d36279b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  battleCam: {fileID: 1528947855}
-  entranceDuration: 2
-  entranceZoomFactor: 1.15
-  playerFocusOffset: {x: -2, y: 6, z: -8}
-  enemyFocusOffset: {x: 2, y: 6, z: 8}
-  focusTransitionDuration: 0.8
-  defaultShakeIntensity: 1.5
-  defaultShakeDuration: 0.3
-  shakeFrequency: 2
-  endZoomOutDistance: 5
-  endTransitionDuration: 1.5
 --- !u!1 &1116149595
 GameObject:
   m_ObjectHideFlags: 0
