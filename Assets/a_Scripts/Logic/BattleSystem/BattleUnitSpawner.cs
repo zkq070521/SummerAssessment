@@ -29,8 +29,7 @@ public class BattleUnitSpawner : MonoBehaviour
     {
         ClearAll();
 
-        var playerTeam = GameManager.Instance.GetPlayerTeam();
-        var enemyTeam = GameManager.Instance.GetEnemyTeam();
+
         SpawnTeam();
 
         //     PlayerUnits = SpawnTeam(playerTeam, playerSpawnPoints, playerPartyRoot, BattleTeam.Player);

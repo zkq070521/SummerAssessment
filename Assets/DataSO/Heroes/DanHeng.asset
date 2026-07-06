@@ -29,7 +29,7 @@ MonoBehaviour:
   ultimate: {fileID: 11400000, guid: 7acc37eab79642ccba3c7cdeb8f56e7a, type: 3}
   talent: {fileID: 11400000, guid: 98ca52a9e228411389500c2e0b15f52c, type: 3}
   technique: {fileID: 11400000, guid: 1574eec3bcfc4811a58fb7d8203a45b7, type: 3}
-  icon: {fileID: 10915, guid: 0000000000000000f000000000000000, type: 0}
+  icon: {fileID: 21300000, guid: f3dbf64b530c3ea49baade8626f07566, type: 3}
   portrait: {fileID: 0}
   ultimateIcon: {fileID: 0}
   skillIconBasic: {fileID: 0}
