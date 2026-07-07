@@ -131,13 +131,13 @@ Material:
     - _Parallax: 0.02
     - _QueueOffset: 0
     - _ReceiveShadows: 1
-    - _RimPower: 2
-    - _ShadowThreshold: 0.304
+    - _RimPower: 4.79
+    - _ShadowThreshold: 0.124
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _SpecularSize: 0.3
-    - _SpecularThreshold: 0.5
+    - _SpecularSize: 0.937
+    - _SpecularThreshold: 0.964
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _Surface: 0
