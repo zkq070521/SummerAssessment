@@ -125,6 +125,7 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
+    - _HeightThreshold: 0.083
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
@@ -142,6 +143,10 @@ Material:
     - _Surface: 0
     - _UseNormal: 1
     - _UseRamp: 1
+    - _UseVertexColor: 0
+    - _WindFrequency: 0.88
+    - _WindSpeed: 1.48
+    - _WindStrength: 0.0005
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
