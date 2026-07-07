@@ -5,7 +5,7 @@ public class CameraZoomWithCinemachine : MonoBehaviour
 {
     public CinemachineFreeLook freeLook;
     public float minDistance = 0.5f;
-    public float maxDistance = 2f;
+    public float maxDistance = 4f;
     public float scrollSensitivity = 1f;
 
     private float[] originalRadii;

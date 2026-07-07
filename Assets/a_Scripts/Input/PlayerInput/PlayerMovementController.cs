@@ -66,6 +66,11 @@ public class PlayerMovementController : MonoBehaviour
         _attackAction.performed += OnAttack;
     }
 
+    void Start()
+    {
+        LockMouse();
+    }
+
     void OnEnable()
     {
         _input.Player.Enable();
@@ -92,6 +97,15 @@ public class PlayerMovementController : MonoBehaviour
 
     void Update()
     {
+        // ESC 切换鼠标锁定 / 解锁
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (Cursor.lockState == CursorLockMode.Locked)
+                UnlockMouse();
+            else
+                LockMouse();
+        }
+
         if (_inputBlocked || _isAttacking) return;
 
         // 读取移动输入
@@ -172,6 +186,22 @@ public class PlayerMovementController : MonoBehaviour
         animator.SetFloat("Speed", speed);
         animator.SetBool("isRunning", _isSprinting);
     }
+
+    #region 鼠标锁定
+
+    private void LockMouse()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
+    private void UnlockMouse()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+    #endregion
 
     #region 攻击
 
