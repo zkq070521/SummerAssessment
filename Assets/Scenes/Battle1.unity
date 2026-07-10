@@ -1505,6 +1505,7 @@ GameObject:
   m_Component:
   - component: {fileID: 554944708}
   - component: {fileID: 554944707}
+  - component: {fileID: 554944709}
   m_Layer: 0
   m_Name: BattleManager
   m_TagString: Untagged
@@ -1539,6 +1540,31 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &554944709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 554944704}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f96d9b3dc4fc7846b85c3a50d3867ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerTeamData: {fileID: 11400000, guid: 9455b6c5bca86cb42812b5c4992a6d48, type: 2}
+  _enemyTeamData:
+  - entityName: 
+    prefabId: 
+    maxHP: 0
+    currentHP: 0
+    attack: 0
+    defense: 0
+    speed: 0
+    critRate: 0
+    critDamage: 0
+    isAlive: 0
+    team: 0
 --- !u!1 &577605828
 GameObject:
   m_ObjectHideFlags: 0

@@ -104,8 +104,6 @@ public class TeamUI : MonoBehaviour
         if (slot.nameText != null)
             slot.nameText.text = hero.heroName;
 
-        if (slot.avatarImage != null && hero.icon != null)
-            slot.avatarImage.sprite = hero.icon;
 
         if (slot.hpBar != null)
             slot.hpBar.fillAmount = hero.maxHP > 0f ? hero.currentHP / hero.maxHP : 0f;

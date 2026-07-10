@@ -404,6 +404,9 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: bb625263b72d4424bab42c1d2947d884, type: 3}
       insertIndex: -1
+      addedObject: {fileID: -1361742929859271951}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: bb625263b72d4424bab42c1d2947d884, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 3459738273373932488}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: bb625263b72d4424bab42c1d2947d884, type: 3}
       insertIndex: -1
@@ -422,6 +425,28 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: bb625263b72d4424bab42c1d2947d884, type: 3}
   m_PrefabInstance: {fileID: 2511492495469975432}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &-1361742929859271951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3322518322771208921}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2ab79e1f098cf84e9fde1c09ebcdb90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 3459738273373932488}
+  unitRenderer: {fileID: 0}
+  hitFlashDuration: 0.15
+  hitShakeDuration: 0.2
+  hitShakeStrength: 0.3
+  attackLungeDistance: 1.5
+  attackLungeDuration: 0.2
+  attackReturnDuration: 0.2
+  deathFadeDuration: 0.8
+  deathRiseHeight: 0.5
 --- !u!95 &3459738273373932488
 Animator:
   serializedVersion: 5
