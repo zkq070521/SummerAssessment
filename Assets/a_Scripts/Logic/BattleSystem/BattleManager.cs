@@ -1,5 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace BattleSystem
 {
@@ -33,12 +35,12 @@ namespace BattleSystem
         // ── 公开属性 ──
         public TurnManager TurnManager { get; private set; }
         public BattleEntityData CurrentActor { get; private set; }
-        public IReadOnlyList<BattleEntityData> PlayerTeam => _playerTeam;
+        public IReadOnlyList<BattleEntityData> PlayerTeam => _playerTeam;//提供给外部只读
         public IReadOnlyList<BattleEntityData> EnemyTeam => _enemyTeam;
         public bool IsBattleStarted { get; private set; }
 
         // ── 内部状态 ──
-        private readonly List<BattleEntityData> _playerTeam = new List<BattleEntityData>();
+        private readonly List<BattleEntityData> _playerTeam = new List<BattleEntityData>();//克隆之后装在这里
         private readonly List<BattleEntityData> _enemyTeam = new List<BattleEntityData>();
 
         // ── 生命周期 ──
@@ -55,7 +57,10 @@ namespace BattleSystem
 
         private void Start()
         {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
             SpawnAll();
+            StartBattle();
         }
 
         public void SpawnAll()
@@ -224,6 +229,28 @@ namespace BattleSystem
         }
 
         /// <summary>
+        /// 执行攻击动作 + 等待动画时长后推进回合
+        /// </summary>
+        public void ExecuteActionWithTurn(BattleEntityData source, BattleEntityData target)
+        {
+            ExecuteAction(source, target);
+            StartCoroutine(WaitAndNextTurn());
+        }
+
+        /// <summary>启动等待动画后推进回合的协程（供群攻等外部调用）</summary>
+        public void StartCoroutineWaitAndNextTurn()
+        {
+            StartCoroutine(WaitAndNextTurn());
+        }
+
+        /// <summary>等待模拟动画时长后推进到下一回合</summary>
+        private IEnumerator WaitAndNextTurn()
+        {
+            yield return new WaitForSeconds(1.5f);
+            NextTurn();
+        }
+
+        /// <summary>
         /// 检查战斗结束条件
         /// </summary>
         /// <returns>true = 战斗已结束</returns>
@@ -236,6 +263,7 @@ namespace BattleSystem
                 Debug.Log("[BattleManager] 战斗结束 — 玩家胜利！");
                 BattleEventCenter.TriggerBattleEnd(BattleTeam.Player);
                 IsBattleStarted = false;
+                StartCoroutine(ReturnToOverworld());
                 return true;
             }
 
@@ -244,10 +272,20 @@ namespace BattleSystem
                 Debug.Log("[BattleManager] 战斗结束 — 玩家失败！");
                 BattleEventCenter.TriggerBattleEnd(BattleTeam.Enemy);
                 IsBattleStarted = false;
+                StartCoroutine(ReturnToOverworld());
                 return true;
             }
 
             return false;
+        }
+
+        private const string OVERWORLD_SCENE = "SampleScene";
+
+        /// <summary>等待片刻后卸载 Battle1，回到开放世界</summary>
+        private IEnumerator ReturnToOverworld()
+        {
+            yield return new WaitForSeconds(2f);
+            SceneManager.LoadSceneAsync(OVERWORLD_SCENE);
         }
 
         // ── 内部方法 ──

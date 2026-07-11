@@ -101,8 +101,13 @@ public class CharacterSwapManager : MonoBehaviour
             Debug.LogWarning($"[CharacterSwapManager] 预制体 {prefab.name} 缺少 CharacterController 组件");
 
         CurrentPlayer = Instantiate(prefab, position, rotation);
-        mainCamera.Follow = CurrentPlayer.transform.GetChild(0);
-        mainCamera.LookAt = CurrentPlayer.transform.GetChild(0);
+
+        Transform followTarget = CurrentPlayer.transform.childCount > 0 ? CurrentPlayer.transform.GetChild(0) : CurrentPlayer.transform;
+        if (mainCamera != null)
+        {
+            mainCamera.Follow = followTarget;
+            mainCamera.LookAt = followTarget;
+        }
         CurrentPlayer.tag = "Player";
         CurrentIndex = index;
 

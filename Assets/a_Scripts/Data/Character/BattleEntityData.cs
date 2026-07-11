@@ -1,4 +1,3 @@
-using BattleSystem;
 using UnityEngine;
 
 /// <summary>
@@ -48,14 +47,14 @@ public class BattleEntityData
             team = this.team,
             battlePrefab = this.battlePrefab,
             maxHP = this.maxHP,
-            currentHP = this.currentHP,
+            currentHP = this.maxHP,
             attack = this.attack,
             defense = this.defense,
             speed = this.speed,
             critRate = this.critRate,
             critDamage = this.critDamage,
             maxEnergy = this.maxEnergy,
-            currentEnergy = this.currentEnergy,
+            currentEnergy = this.maxEnergy,
             element = this.element,
             path = this.path,
             isAlive = this.isAlive

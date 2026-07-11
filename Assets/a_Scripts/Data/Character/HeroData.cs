@@ -36,7 +36,14 @@ public class HeroData : ScriptableObject
     public SkillData technique;        // 秘技（大世界使用）
 
     [Header("=== UI资源 ===")]
-    public GameObject heroIconPrefab;      // 英雄图标预制体（用于UI显示）
+    public Sprite icon;                // 角色头像（小队界面）
+    public Sprite portrait;            // 角色立绘（详情界面）
+    public Sprite ultimateIcon;        // 终结技图片立绘
+    public Sprite skillIconBasic;      // 普攻按钮图标
+    public Sprite skillIconSkill;      // 战技按钮图标
+    public Sprite skillIconUltimate;   // 终结技按钮图标
+    public Sprite elementIcon;         // 元素图标（UI上显示）
+    public GameObject heroIconPrefab;  // 英雄图标预制体（用于UI显示）
 
     [Header("=== 声音资源 ===")]
     public AudioClip battleStartVoice;  // 战斗入场语音
