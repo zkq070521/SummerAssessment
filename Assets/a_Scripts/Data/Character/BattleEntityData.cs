@@ -2,46 +2,63 @@ using BattleSystem;
 using UnityEngine;
 
 /// <summary>
-/// 战斗实体数据 — 角色/敌人的纯数据配置（与视觉表现完全解耦）
-/// 由 BattleManager 在 StartBattle 时创建，TurnManager 基于 speed 计算行动顺序
+/// 战斗实体数据 — 运行时战斗单位的纯数据容器（与视觉表现完全解耦）
+///
+/// 职责：存储 HP / 速度 / 攻击等核心战斗属性，供 TurnManager 排序和 BattleManager 伤害计算使用。
+/// 表现层字段（音效、特效、模型、技能引用）不存放于此，需要时直接从 HeroData ScriptableObject 读取。
 /// </summary>
 [System.Serializable]
 public class BattleEntityData
 {
-    [Header("基础信息")]
-    public string entityName = "未命名";
-    public string prefabId = "";          // 对应预制体的 ID（如 "Knight", "Mage"）
+    [Header("=== 身份 ===")]
+    public string heroName;                 // 角色名称（日志 / UI 显示）
+    public string heroID;                   // 唯一 ID（存档 / 查找）
+    public BattleTeam team;                 // 所属队伍（Player / Enemy）
+    public GameObject battlePrefab;         // 战斗用预制体（仅用于敌人 Spawn；玩家从 HeroData 读取）
 
-    [Header("基础属性")]
-    public int maxHP = 100;
-    public int currentHP;
-    public int attack = 10;
-    public int defense = 5;
-    public int speed = 8;                 // 决定行动顺序，值越高速越快
+    [Header("=== 战斗属性 ===")]
+    public float maxHP = 1000f;
+    public float currentHP;
+    public float attack = 100f;
+    public float defense = 50f;
+    public float speed = 110f;              // 决定行动顺序（AV = 10000 / speed）
+    public float critRate = 0.05f;          // 暴击率
+    public float critDamage = 1.5f;         // 暴击倍率
 
-    [Header("战斗属性")]
-    public float critRate = 0.05f;        // 暴击率
-    public float critDamage = 1.5f;       // 暴击倍率
+    [Header("=== 能量 ===")]
+    public float maxEnergy = 100f;
+    public float currentEnergy;
 
-    [Header("状态")]
+    [Header("=== 元素与命途 ===")]
+    public ElementType element;             // 元素类型（预留元素克制系统）
+    public PathType path;                   // 命途类型
+
+    [Header("=== 状态 ===")]
     public bool isAlive = true;
-    public BattleTeam team;               // 所属队伍（玩家 / 敌人）
 
+    /// <summary>
+    /// 深拷贝（用于从敌人模板创建运行时实例）
+    /// </summary>
     public BattleEntityData Clone()
     {
         return new BattleEntityData
         {
-            entityName = entityName,
-            prefabId = prefabId,
-            maxHP = maxHP,
-            currentHP = currentHP,
-            attack = attack,
-            defense = defense,
-            speed = speed,
-            critRate = critRate,
-            critDamage = critDamage,
-            isAlive = isAlive,
-            team = team
+            heroName = this.heroName,
+            heroID = this.heroID,
+            team = this.team,
+            battlePrefab = this.battlePrefab,
+            maxHP = this.maxHP,
+            currentHP = this.currentHP,
+            attack = this.attack,
+            defense = this.defense,
+            speed = this.speed,
+            critRate = this.critRate,
+            critDamage = this.critDamage,
+            maxEnergy = this.maxEnergy,
+            currentEnergy = this.currentEnergy,
+            element = this.element,
+            path = this.path,
+            isAlive = this.isAlive
         };
     }
 

@@ -14,14 +14,18 @@ namespace BattleSystem
     /// </summary>
     public class BattleManager : MonoBehaviour
     {
-        // ── 常量 ──
-        private const float CRIT_RATE = 0.2f;
-        private const float CRIT_DAMAGE_MULTIPLIER = 1.5f;
-
         // ── Inspector ──
         [Header("队伍数据")]
-        [SerializeField] private TeamData_SO _playerTeamData;       // 玩家队伍（HeroData 资产）
+        [SerializeField] public TeamData_SO _playerTeamDataSO;       // 玩家队伍（HeroData 资产）
         [SerializeField] private BattleEntityData[] _enemyTeamData;  // 敌人配置（直接在 Inspector 填）
+
+        [Header("出生点")]
+        public Transform[] playerSpawnPoints;   // 最多 4 个，左侧
+        public Transform[] enemySpawnPoints;    // 最多 3 个，右侧
+
+        [Header("父节点")]
+        public Transform playerPartyRoot;
+        public Transform enemyPartyRoot;
 
         // ── 单例 ──
         public static BattleManager Instance { get; private set; }
@@ -48,6 +52,70 @@ namespace BattleSystem
             }
             Instance = this;
         }
+
+        private void Start()
+        {
+            SpawnAll();
+        }
+
+        public void SpawnAll()
+        {
+            ClearAll();
+            SpawnPlayerTeam();
+            SpawnEnemyTeam();
+        }
+
+        /// <summary>生成玩家队伍模型</summary>
+        private void SpawnPlayerTeam()
+        {
+            if (_playerTeamDataSO == null) return;
+
+            for (int i = 0; i < _playerTeamDataSO.teamMembers.Count; i++)
+            {
+                HeroData hero = _playerTeamDataSO.teamMembers[i];
+                if (hero == null)
+                {
+                    Debug.LogWarning($"[BattleManager] teamMembers[{i}] 未赋值，跳过");
+                    continue;
+                }
+                if (hero.battlePrefab == null)
+                {
+                    Debug.LogWarning($"[BattleManager] {hero.heroName} 的 battlePrefab 未赋值，跳过");
+                    continue;
+                }
+                Instantiate(hero.battlePrefab, playerSpawnPoints[i].position, playerSpawnPoints[i].rotation, playerPartyRoot);
+            }
+        }
+
+        /// <summary>生成敌人队伍模型</summary>
+        private void SpawnEnemyTeam()
+        {
+            if (_enemyTeamData == null) return;
+
+            for (int i = 0; i < _enemyTeamData.Length; i++)
+            {
+                BattleEntityData template = _enemyTeamData[i];
+                if (template == null || template.battlePrefab == null)
+                {
+                    Debug.LogWarning($"[BattleManager] 敌人[{i}] 配置无效，跳过");
+                    continue;
+                }
+                Transform spawnPoint = i < enemySpawnPoints.Length ? enemySpawnPoints[i] : enemySpawnPoints[0];
+                Instantiate(template.battlePrefab, spawnPoint.position, spawnPoint.rotation, enemyPartyRoot);
+            }
+        }
+
+        /// <summary>
+        /// 清除所有已生成的单位
+        /// </summary>
+        public void ClearAll()
+        {
+            foreach (Transform child in playerPartyRoot)
+                Destroy(child.gameObject);
+            foreach (Transform child in enemyPartyRoot)
+                Destroy(child.gameObject);
+        }
+
 
         // ── 公共 API ──
 
@@ -117,19 +185,19 @@ namespace BattleSystem
 
             if (!target.isAlive)
             {
-                Debug.LogWarning($"[BattleManager] 目标 {target.entityName} 已阵亡，无法攻击");
+                Debug.LogWarning($"[BattleManager] 目标 {target.heroName} 已阵亡，无法攻击");
                 return;
             }
 
             // 1. 伤害计算（保底 1 点）
-            int rawDamage = source.attack - target.defense;
+            int rawDamage = Mathf.RoundToInt(source.attack - target.defense);
             int damage = Mathf.Max(1, rawDamage);
 
             // 2. 暴击判定
-            bool isCritical = Random.value < CRIT_RATE;
+            bool isCritical = Random.value < source.critRate;
             if (isCritical)
             {
-                damage = Mathf.RoundToInt(damage * CRIT_DAMAGE_MULTIPLIER);
+                damage = Mathf.RoundToInt(damage * source.critDamage);
             }
 
             // 3. 应用伤害
@@ -139,7 +207,7 @@ namespace BattleSystem
             BattleEventCenter.TriggerUnitAttack(source, target);
             BattleEventCenter.TriggerDamageDealt(source, target, damage, isCritical);
 
-            Debug.Log($"[BattleManager] {source.entityName} → {target.entityName}: " +
+            Debug.Log($"[BattleManager] {source.heroName} → {target.heroName}: " +
                       $"{(isCritical ? "暴击! " : "")}{damage} 点伤害 (剩余 HP: {target.currentHP})");
 
             // 5. 死亡处理
@@ -148,7 +216,7 @@ namespace BattleSystem
                 BattleEventCenter.TriggerUnitDeath(target);
                 TurnManager.RemoveUnit(target);
                 RemoveFromTeam(target);
-                Debug.Log($"[BattleManager] {target.entityName} 阵亡");
+                Debug.Log($"[BattleManager] {target.heroName} 阵亡");
             }
 
             // 6. 检查战斗结束
@@ -192,28 +260,33 @@ namespace BattleSystem
         {
             _playerTeam.Clear();
 
-            if (_playerTeamData == null)
+            if (_playerTeamDataSO == null)
             {
-                Debug.LogWarning("[BattleManager] 未设置玩家队伍数据 _playerTeamData");
+                Debug.LogWarning("[BattleManager] 未设置玩家队伍数据 _playerTeamDataSO");
                 return;
             }
 
-            foreach (HeroData hero in _playerTeamData.teamMembers)
+            foreach (HeroData hero in _playerTeamDataSO.teamMembers)
             {
                 if (hero == null) continue;
 
                 BattleEntityData entity = new BattleEntityData
                 {
-                    entityName = hero.heroName,
-                    maxHP = Mathf.RoundToInt(hero.maxHP),
-                    currentHP = Mathf.RoundToInt(hero.maxHP),
-                    attack = Mathf.RoundToInt(hero.attack),
-                    defense = Mathf.RoundToInt(hero.defense),
-                    speed = Mathf.RoundToInt(hero.speed),
+                    heroName = hero.heroName,
+                    heroID = hero.heroID,
+                    team = BattleTeam.Player,
+                    maxHP = hero.maxHP,
+                    currentHP = hero.maxHP,
+                    attack = hero.attack,
+                    defense = hero.defense,
+                    speed = hero.speed,
                     critRate = 0.05f,
                     critDamage = 1.5f,
-                    isAlive = true,
-                    team = BattleTeam.Player
+                    maxEnergy = hero.maxEnergy,
+                    currentEnergy = hero.maxEnergy,
+                    element = hero.element,
+                    path = hero.path,
+                    isAlive = true
                 };
 
                 _playerTeam.Add(entity);

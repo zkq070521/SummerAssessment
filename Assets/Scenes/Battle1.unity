@@ -1552,10 +1552,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f96d9b3dc4fc7846b85c3a50d3867ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerTeamData: {fileID: 11400000, guid: 9455b6c5bca86cb42812b5c4992a6d48, type: 2}
+  _playerTeamDataSO: {fileID: 11400000, guid: 9455b6c5bca86cb42812b5c4992a6d48, type: 2}
   _enemyTeamData:
-  - entityName: 
-    prefabId: 
+  - heroName: m
+    heroID: 1
+    team: 1
+    battlePrefab: {fileID: 5333991485200506302, guid: 0be3e389aec9eb64f90581de9baf8551, type: 3}
     maxHP: 0
     currentHP: 0
     attack: 0
@@ -1563,8 +1565,54 @@ MonoBehaviour:
     speed: 0
     critRate: 0
     critDamage: 0
+    maxEnergy: 0
+    currentEnergy: 0
+    element: 0
+    path: 0
     isAlive: 0
-    team: 0
+  - heroName: m
+    heroID: 2
+    team: 1
+    battlePrefab: {fileID: 5333991485200506302, guid: 0be3e389aec9eb64f90581de9baf8551, type: 3}
+    maxHP: 0
+    currentHP: 0
+    attack: 0
+    defense: 0
+    speed: 0
+    critRate: 0
+    critDamage: 0
+    maxEnergy: 0
+    currentEnergy: 0
+    element: 0
+    path: 0
+    isAlive: 0
+  - heroName: m
+    heroID: 3
+    team: 1
+    battlePrefab: {fileID: 5333991485200506302, guid: 0be3e389aec9eb64f90581de9baf8551, type: 3}
+    maxHP: 0
+    currentHP: 0
+    attack: 0
+    defense: 0
+    speed: 0
+    critRate: 0
+    critDamage: 0
+    maxEnergy: 0
+    currentEnergy: 0
+    element: 0
+    path: 0
+    isAlive: 0
+  playerSpawnPoints:
+  - {fileID: 1223100236}
+  - {fileID: 1787470022}
+  - {fileID: 751035794}
+  - {fileID: 577605829}
+  enemySpawnPoints:
+  - {fileID: 1555257220}
+  - {fileID: 2054068682}
+  - {fileID: 236155196}
+  playerPartyRoot: {fileID: 105006372}
+  enemyPartyRoot: {fileID: 929215931}
 --- !u!1 &577605828
 GameObject:
   m_ObjectHideFlags: 0
@@ -2175,37 +2223,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 879550041}
   m_CullTransparentMesh: 1
---- !u!1 &899602199
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 899602201}
-  m_Layer: 0
-  m_Name: BattleSceneController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &899602201
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 899602199}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &914713942
 GameObject:
   m_ObjectHideFlags: 0
@@ -2528,7 +2545,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60.000004
+  field of view: 102.0166
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -2554,8 +2571,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 984589927}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.14091258, y: -0.014221639, z: 0.0020180275, w: 0.9899179}
-  m_LocalPosition: {x: 0.28, y: 2.62, z: -8.31}
+  m_LocalRotation: {x: 0.01961323, y: -0.06503272, z: 0.014338693, w: 0.9975873}
+  m_LocalPosition: {x: 2.83, y: 1.2, z: -5.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2766,7 +2783,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1118118894}
-  - component: {fileID: 1118118893}
   m_Layer: 0
   m_Name: UnitSpawner
   m_TagString: Untagged
@@ -2774,30 +2790,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1118118893
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1118118892}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 313b0e9eb2181ec4b841e61e39ad3081, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  teamData: {fileID: 11400000, guid: 9455b6c5bca86cb42812b5c4992a6d48, type: 2}
-  playerSpawnPoints:
-  - {fileID: 1223100236}
-  - {fileID: 1787470022}
-  - {fileID: 751035794}
-  - {fileID: 577605829}
-  enemySpawnPoints:
-  - {fileID: 1555257220}
-  - {fileID: 2054068682}
-  - {fileID: 236155196}
-  playerPartyRoot: {fileID: 105006372}
-  enemyPartyRoot: {fileID: 929215931}
 --- !u!4 &1118118894
 Transform:
   m_ObjectHideFlags: 0
@@ -5741,7 +5733,6 @@ SceneRoots:
   - {fileID: 1528947856}
   - {fileID: 526010499}
   - {fileID: 554944708}
-  - {fileID: 899602201}
   - {fileID: 1118118894}
   - {fileID: 1424904897}
   - {fileID: 333997753}
