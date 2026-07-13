@@ -29,6 +29,7 @@ public class PlayerMovementController : MonoBehaviour
     public float dashSpeed = 8f;             // 攻击前冲速度
     public float dashDuration = 0.25f;        // 前冲持续时间
     public float weaponHideDelay = 1.8f;        // 武器显示后隐藏延迟
+    public ParticleSystem slashParticle;  // 拖入你的WeaponTrail粒子系统
 
     // 组件
     private CharacterController _controller;
@@ -238,8 +239,10 @@ public class PlayerMovementController : MonoBehaviour
 
         // 3. 显示武器
         if (weaponObject != null)
+        {
             weaponObject.SetActive(true);
-
+            PlaySlashEffect();  // 播放刀光效果
+        }
         _isAttacking = false;
 
         // 4. 延迟后隐藏武器
@@ -247,6 +250,19 @@ public class PlayerMovementController : MonoBehaviour
 
         if (weaponObject != null)
             weaponObject.SetActive(false);
+    }
+
+    // 播放刀光
+    public void PlaySlashEffect()
+    {
+        if (slashParticle == null) return;
+
+        slashParticle.Stop();                     // 先停止，重置状态
+        slashParticle.Clear();                    // 清除残留粒子
+        slashParticle.Play();                     // 开始播放
+
+        // 可选：自动停止（防止一直循环）
+        // Invoke(nameof(StopSlashEffect), effectDuration);
     }
 
     #endregion
