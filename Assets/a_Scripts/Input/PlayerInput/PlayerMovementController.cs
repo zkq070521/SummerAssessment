@@ -28,6 +28,7 @@ public class PlayerMovementController : MonoBehaviour
     public GameObject weaponObject;           // 角色手中的武器物体
     public float dashSpeed = 8f;             // 攻击前冲速度
     public float dashDuration = 0.25f;        // 前冲持续时间
+    public float dashRotationAngle = 90f;   // 前冲期间绕 Y 轴旋转角度（逆时针为正）
     public float weaponHideDelay = 1.8f;        // 武器显示后隐藏延迟
     public ParticleSystem slashParticle;  // 拖入你的WeaponTrail粒子系统
 
@@ -225,14 +226,21 @@ public class PlayerMovementController : MonoBehaviour
         // 2. 播放攻击动画
         animator.SetTrigger(AttackHash);
 
-        // 1. 前冲：朝角色面朝方向快速移动
+        // 1. 前冲 + 旋转：朝角色面朝方向快速移动，同时绕 Y 轴旋转
         Vector3 dashDir = _transform.forward;
         dashDir.y = 0f;
         dashDir.Normalize();
+
+        float rotateSpeed = dashRotationAngle / dashDuration; // 每秒旋转角度
         float timer = 0f;
         while (timer < dashDuration)
         {
             _controller.Move(dashDir * dashSpeed * Time.deltaTime);
+
+            // 逆时针绕 Y 轴旋转（正值 = 逆时针，在 Inspector 中可调正负）
+            float rotateAmount = rotateSpeed * Time.deltaTime;
+            _transform.Rotate(Vector3.up, rotateAmount);
+
             timer += Time.deltaTime;
             yield return null;
         }
@@ -241,6 +249,10 @@ public class PlayerMovementController : MonoBehaviour
         if (weaponObject != null)
         {
             weaponObject.SetActive(true);
+
+            // 等待一帧，确保武器和粒子系统 GameObject 完全激活后再播放粒子
+            yield return null;
+
             PlaySlashEffect();  // 播放刀光效果
         }
         _isAttacking = false;
@@ -255,14 +267,35 @@ public class PlayerMovementController : MonoBehaviour
     // 播放刀光
     public void PlaySlashEffect()
     {
-        if (slashParticle == null) return;
+        if (slashParticle == null)
+        {
+            Debug.LogWarning("[PlaySlashEffect] slashParticle 未赋值！请在 Inspector 中拖入粒子系统。");
+            return;
+        }
 
-        slashParticle.Stop();                     // 先停止，重置状态
-        slashParticle.Clear();                    // 清除残留粒子
-        slashParticle.Play();                     // 开始播放
+        // 确保粒子系统所在 GameObject 是激活状态
+        if (!slashParticle.gameObject.activeSelf)
+        {
+            slashParticle.gameObject.SetActive(true);
+            Debug.Log("[PlaySlashEffect] 粒子系统 GameObject 原本未激活，已强制激活。");
+        }
 
-        // 可选：自动停止（防止一直循环）
-        // Invoke(nameof(StopSlashEffect), effectDuration);
+        // 防御：关闭 PlayOnAwake，避免自动播放干扰手动控制
+        if (slashParticle.main.playOnAwake)
+        {
+            var main = slashParticle.main;
+            main.playOnAwake = false;
+            Debug.Log("[PlaySlashEffect] playOnAwake 原本为 true，已强制设为 false。");
+        }
+
+        // 使用 Clear() + time=0 + Play() 替代 Stop() + Play()
+        // 原因：非循环粒子系统在自然停止后，Stop() 可能导致 Play() 无法重新触发 Burst
+        slashParticle.Clear();
+        slashParticle.time = 0;
+        slashParticle.Play();
+
+        // Debug 放在 Play 之后，确认最终状态
+        Debug.Log($"[PlaySlashEffect] 播放完成 → isPlaying={slashParticle.isPlaying}, isStopped={slashParticle.isStopped}, particleCount={slashParticle.particleCount}");
     }
 
     #endregion

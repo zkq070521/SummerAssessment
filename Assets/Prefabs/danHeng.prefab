@@ -1534,7 +1534,9 @@ MonoBehaviour:
   weaponObject: {fileID: 6869675296057408517}
   dashSpeed: 8
   dashDuration: 0.25
+  dashRotationAngle: 0
   weaponHideDelay: 1.8
+  slashParticle: {fileID: 0}
 --- !u!114 &7658242411210062719
 MonoBehaviour:
   m_ObjectHideFlags: 0
