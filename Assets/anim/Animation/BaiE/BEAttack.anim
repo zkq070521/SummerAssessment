@@ -33958,8 +33958,15 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.9
+  - time: 0.8
     functionName: DisableWeapon
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.9
+    functionName: OnAnimationEnd
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

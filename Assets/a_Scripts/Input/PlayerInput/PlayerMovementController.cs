@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 /// <summary>
 /// 第三人称角色移动控制器
@@ -29,8 +30,11 @@ public class PlayerMovementController : MonoBehaviour
     public float dashSpeed = 8f;             // 攻击前冲速度
     public float dashDuration = 0.25f;        // 前冲持续时间
     public float dashRotationAngle = 90f;   // 前冲期间绕 Y 轴旋转角度（逆时针为正）
+    public bool needAttackRotation = true;   // 是否需要攻击旋转（区分角色类型）
+    public float returnRotationDuration = 0.6f; // 转回原方向的耗时（建议比 dashDuration 长，更自然）
     public float weaponHideDelay = 1.8f;        // 武器显示后隐藏延迟
     public ParticleSystem slashParticle;  // 拖入你的WeaponTrail粒子系统
+    public ParticleSystem trailParticle; // 拖入你的刀光粒子系统
 
     // 组件
     private CharacterController _controller;
@@ -221,31 +225,10 @@ public class PlayerMovementController : MonoBehaviour
     {
         _isAttacking = true;
 
-
-
-        // 2. 播放攻击动画
+        // 1. 播放攻击动画
         animator.SetTrigger(AttackHash);
 
-        // 1. 前冲 + 旋转：朝角色面朝方向快速移动，同时绕 Y 轴旋转
-        Vector3 dashDir = _transform.forward;
-        dashDir.y = 0f;
-        dashDir.Normalize();
-
-        float rotateSpeed = dashRotationAngle / dashDuration; // 每秒旋转角度
-        float timer = 0f;
-        while (timer < dashDuration)
-        {
-            _controller.Move(dashDir * dashSpeed * Time.deltaTime);
-
-            // 逆时针绕 Y 轴旋转（正值 = 逆时针，在 Inspector 中可调正负）
-            float rotateAmount = rotateSpeed * Time.deltaTime;
-            _transform.Rotate(Vector3.up, rotateAmount);
-
-            timer += Time.deltaTime;
-            yield return null;
-        }
-
-        // 3. 显示武器
+        // 4. 显示武器
         if (weaponObject != null)
         {
             weaponObject.SetActive(true);
@@ -254,14 +237,62 @@ public class PlayerMovementController : MonoBehaviour
             yield return null;
 
             PlaySlashEffect();  // 播放刀光效果
+            PlayTrailEffect();  // 播放武器拖尾效果
         }
         _isAttacking = false;
 
-        // 4. 延迟后隐藏武器
+        // 2. 前冲：朝角色面朝方向快速移动
+        Vector3 dashDir = _transform.forward;
+        dashDir.y = 0f;
+        dashDir.Normalize();
+
+        float timer = 0f;
+        while (timer < dashDuration)
+        {
+            _controller.Move(dashDir * dashSpeed * Time.deltaTime);
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        // 3. 攻击旋转（仅需要旋转的角色）
+        Quaternion originalRotation = _transform.rotation; // 保存旋转前的朝向
+        if (needAttackRotation)
+        {
+            float rotateSpeed = dashRotationAngle / dashDuration;
+            timer = 0f;
+            while (timer < dashDuration)
+            {
+                float rotateAmount = rotateSpeed * Time.deltaTime;
+                _transform.Rotate(Vector3.up, rotateAmount);
+                timer += Time.deltaTime;
+                yield return null;
+            }
+        }
+
+
+
+        // 5. 延迟后隐藏武器
         yield return new WaitForSeconds(weaponHideDelay);
 
         if (weaponObject != null)
             weaponObject.SetActive(false);
+
+        // 6. 转回原来方向（仅需要旋转的角色，使用 Slerp 平滑过渡）
+        if (needAttackRotation)
+        {
+            Quaternion startRotation = _transform.rotation;
+            timer = 0f;
+            while (timer < returnRotationDuration)
+            {
+                float t = timer / returnRotationDuration;
+                // 使用 SmoothStep 让旋转有缓入缓出效果
+                float easedT = t * t * (3f - 2f * t);
+                _transform.rotation = Quaternion.Slerp(startRotation, originalRotation, easedT);
+                timer += Time.deltaTime;
+                yield return null;
+            }
+            _transform.rotation = originalRotation; // 确保最终精确到位
+        }
     }
 
     // 播放刀光
@@ -294,9 +325,55 @@ public class PlayerMovementController : MonoBehaviour
         slashParticle.time = 0;
         slashParticle.Play();
 
-        // Debug 放在 Play 之后，确认最终状态
-        Debug.Log($"[PlaySlashEffect] 播放完成 → isPlaying={slashParticle.isPlaying}, isStopped={slashParticle.isStopped}, particleCount={slashParticle.particleCount}");
+    }
+
+    public void PlayTrailEffect()
+    {
+        if (trailParticle == null)
+        {
+            Debug.LogWarning("[PlayTrailEffect] trailParticle 未赋值！请在 Inspector 中拖入粒子系统。");
+            return;
+        }
+
+        // 确保粒子系统所在 GameObject 是激活状态
+        if (!trailParticle.gameObject.activeSelf)
+        {
+            trailParticle.gameObject.SetActive(true);
+            Debug.Log("[PlayTrailEffect] 粒子系统 GameObject 原本未激活，已强制激活。");
+        }
+
+        // 防御：关闭 PlayOnAwake，避免自动播放干扰手动控制
+        if (trailParticle.main.playOnAwake)
+        {
+            var main = trailParticle.main;
+            main.playOnAwake = false;
+            Debug.Log("[PlayTrailEffect] playOnAwake 原本为 true，已强制设为 false。");
+        }
+
+        // 使用 Clear() + time=0 + Play() 替代 Stop() + Play()
+        // 原因：非循环粒子系统在自然停止后，Stop() 可能导致 Play() 无法重新触发 Burst
+        trailParticle.Clear();
+        trailParticle.time = 0;
+        trailParticle.Play();
+
     }
 
     #endregion
+
+    // 这个方法会在动画最后一帧被调用
+    public void OnAnimationEnd()
+    {
+        // 把速度设为0，停在最后一帧
+        animator.speed = 0f;
+
+        // 2秒后恢复
+        StartCoroutine(ResumeAfterDelay());
+    }
+
+    IEnumerator ResumeAfterDelay()
+    {
+        yield return new WaitForSeconds(0.3f);
+        animator.speed = 1f;
+    }
+
 }
