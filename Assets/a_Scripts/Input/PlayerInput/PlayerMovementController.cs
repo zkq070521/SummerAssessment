@@ -26,15 +26,16 @@ public class PlayerMovementController : MonoBehaviour
     public Animator animator;
 
     [Header("攻击")]
-    public GameObject weaponObject;           // 角色手中的武器物体
-    public float dashSpeed = 8f;             // 攻击前冲速度
-    public float dashDuration = 0.25f;        // 前冲持续时间
-    public float dashRotationAngle = 90f;   // 前冲期间绕 Y 轴旋转角度（逆时针为正）
-    public bool needAttackRotation = true;   // 是否需要攻击旋转（区分角色类型）
-    public float returnRotationDuration = 0.6f; // 转回原方向的耗时（建议比 dashDuration 长，更自然）
-    public float weaponHideDelay = 1.8f;        // 武器显示后隐藏延迟
-    public ParticleSystem slashParticle;  // 拖入你的WeaponTrail粒子系统
-    public ParticleSystem trailParticle; // 拖入你的刀光粒子系统
+    public GameObject weaponObject;              // 角色手中的武器物体
+    public float dashSpeed = 8f;                 // 攻击前冲速度
+    public float dashDuration = 0.25f;           // 前冲持续时间
+    public float dashRotationAngle = 90f;        // 前冲期间绕 Y 轴旋转角度（逆时针为正）
+    public bool needAttackRotation = true;       // 是否需要攻击旋转（区分角色类型）
+    public float returnRotationDuration = 0.6f;  // 转回原方向的耗时（建议比 dashDuration 长，更自然）
+    public float weaponHideDelay = 1.8f;         // 武器显示后隐藏延迟
+    public ParticleSystem slashEffect;           // 刀光粒子系统（Burst 型，初始失活，播放时激活）
+    public ParticleSystem trailEffect;           // 武器拖尾粒子系统（持续型，初始失活，播放时激活）
+    public float trailDuration = 0.5f;           // 拖尾持续时间（秒）
 
     // 组件
     private CharacterController _controller;
@@ -44,7 +45,6 @@ public class PlayerMovementController : MonoBehaviour
     // 状态
     private Vector2 _moveInput;
     private bool _isSprinting;
-    // private Vector3 _smoothVelocity;
     private float _rotationVelocity;
     private float _verticalVelocity;
 
@@ -56,6 +56,9 @@ public class PlayerMovementController : MonoBehaviour
     private static readonly int AttackHash = Animator.StringToHash("Attack");
     private bool _isAttacking;
     private Coroutine _attackCoroutine;
+
+    // 特效协程管理（统一管理刀光/拖尾的激活→播放→失活生命周期）
+    private Coroutine _effectCoroutine;
 
     void Awake()
     {
@@ -216,8 +219,12 @@ public class PlayerMovementController : MonoBehaviour
         if (_inputBlocked || _isAttacking) return;
         if (animator == null) return;
 
+        // 防止协程冲突：如果已有攻击协程在运行，先停止
         if (_attackCoroutine != null)
+        {
             StopCoroutine(_attackCoroutine);
+            _attackCoroutine = null;
+        }
         _attackCoroutine = StartCoroutine(AttackSequence());
     }
 
@@ -295,68 +302,95 @@ public class PlayerMovementController : MonoBehaviour
         }
     }
 
-    // 播放刀光
+    /// <summary>
+    /// 播放刀光粒子（Burst 型，初始失活 → 激活 → 播放 → 自然结束）
+    /// </summary>
     public void PlaySlashEffect()
     {
-        if (slashParticle == null)
+        if (slashEffect == null)
         {
-            Debug.LogWarning("[PlaySlashEffect] slashParticle 未赋值！请在 Inspector 中拖入粒子系统。");
+            Debug.LogWarning("[PlaySlashEffect] slashEffect 未赋值！请在 Inspector 中拖入粒子系统。");
             return;
         }
 
-        // 确保粒子系统所在 GameObject 是激活状态
-        if (!slashParticle.gameObject.activeSelf)
-        {
-            slashParticle.gameObject.SetActive(true);
-            Debug.Log("[PlaySlashEffect] 粒子系统 GameObject 原本未激活，已强制激活。");
-        }
+        // 1. 激活粒子 GameObject（初始为失活状态）
+        if (!slashEffect.gameObject.activeSelf)
+            slashEffect.gameObject.SetActive(true);
 
-        // 防御：关闭 PlayOnAwake，避免自动播放干扰手动控制
-        if (slashParticle.main.playOnAwake)
+        // 2. 关闭 PlayOnAwake，防止自动播放干扰手动控制
+        if (slashEffect.main.playOnAwake)
         {
-            var main = slashParticle.main;
+            var main = slashEffect.main;
             main.playOnAwake = false;
-            Debug.Log("[PlaySlashEffect] playOnAwake 原本为 true，已强制设为 false。");
         }
 
-        // 使用 Clear() + time=0 + Play() 替代 Stop() + Play()
-        // 原因：非循环粒子系统在自然停止后，Stop() 可能导致 Play() 无法重新触发 Burst
-        slashParticle.Clear();
-        slashParticle.time = 0;
-        slashParticle.Play();
-
+        // 3. Clear + time=0 + Play 重新触发 Burst（非循环系统的可靠重启方式）
+        slashEffect.Clear();
+        slashEffect.time = 0;
+        slashEffect.Play();
     }
 
+    /// <summary>
+    /// 播放武器拖尾粒子（持续型，初始失活 → 激活 → 播放 → trailDuration 秒后停止并失活）
+    /// </summary>
     public void PlayTrailEffect()
     {
-        if (trailParticle == null)
+        // 1. 防止协程冲突：如果已有特效协程在运行，先停止
+        if (_effectCoroutine != null)
         {
-            Debug.LogWarning("[PlayTrailEffect] trailParticle 未赋值！请在 Inspector 中拖入粒子系统。");
+            StopCoroutine(_effectCoroutine);
+            _effectCoroutine = null;
+        }
+
+        // 2. 防御性检查
+        if (trailEffect == null)
+        {
+            Debug.LogWarning("[PlayTrailEffect] trailEffect 未赋值！请在 Inspector 中拖入粒子系统。");
             return;
         }
 
-        // 确保粒子系统所在 GameObject 是激活状态
-        if (!trailParticle.gameObject.activeSelf)
-        {
-            trailParticle.gameObject.SetActive(true);
-            Debug.Log("[PlayTrailEffect] 粒子系统 GameObject 原本未激活，已强制激活。");
-        }
+        // 3. 激活粒子 GameObject（初始为失活状态）
+        if (!trailEffect.gameObject.activeSelf)
+            trailEffect.gameObject.SetActive(true);
 
-        // 防御：关闭 PlayOnAwake，避免自动播放干扰手动控制
-        if (trailParticle.main.playOnAwake)
-        {
-            var main = trailParticle.main;
-            main.playOnAwake = false;
-            Debug.Log("[PlayTrailEffect] playOnAwake 原本为 true，已强制设为 false。");
-        }
+        // 4. 确保拖尾粒子是循环模式
+        var main = trailEffect.main;
+        if (!main.loop)
+            main.loop = true;
 
-        // 使用 Clear() + time=0 + Play() 替代 Stop() + Play()
-        // 原因：非循环粒子系统在自然停止后，Stop() 可能导致 Play() 无法重新触发 Burst
-        trailParticle.Clear();
-        trailParticle.time = 0;
-        trailParticle.Play();
+        // 5. 清理残留粒子，重置时间，开始播放
+        trailEffect.Clear();
+        trailEffect.time = 0;
+        trailEffect.Play();
 
+        // 6. 启动统一特效清理协程（同时管理刀光和拖尾的失活）
+        _effectCoroutine = StartCoroutine(DeactivateEffectsRoutine());
     }
+
+    /// <summary>
+    /// 统一特效清理协程：同时停止刀光和拖尾粒子并失活它们的 GameObject
+    /// </summary>
+    private IEnumerator DeactivateEffectsRoutine()
+    {
+        yield return new WaitForSeconds(trailDuration);
+
+        // 停止并失活拖尾粒子
+        if (trailEffect != null)
+        {
+            trailEffect.Stop();
+            trailEffect.gameObject.SetActive(false);
+        }
+
+        // 停止并失活刀光粒子
+        if (slashEffect != null)
+        {
+            slashEffect.Stop();
+            slashEffect.gameObject.SetActive(false);
+        }
+
+        _effectCoroutine = null;
+    }
+
 
     #endregion
 

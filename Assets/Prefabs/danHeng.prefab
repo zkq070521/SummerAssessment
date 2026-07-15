@@ -1537,8 +1537,8 @@ MonoBehaviour:
   dashRotationAngle: 0
   needAttackRotation: 0
   weaponHideDelay: 1.8
-  slashParticle: {fileID: 0}
-  trailParticle: {fileID: 0}
+  slashEffect: {fileID: 0}
+  trailEffect: {fileID: 0}
 --- !u!114 &7658242411210062719
 MonoBehaviour:
   m_ObjectHideFlags: 0
