@@ -1525,8 +1525,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   walkSpeed: 5
   sprintSpeed: 9
-  accelerationSmoothTime: 0.1
-  decelerationSmoothTime: 0.2
   rotationSmoothTime: 0.12
   gravity: -9.81
   cameraTransform: {fileID: 0}

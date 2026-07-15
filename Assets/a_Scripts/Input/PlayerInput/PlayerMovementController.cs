@@ -12,8 +12,6 @@ public class PlayerMovementController : MonoBehaviour
     [Header("移动")]
     public float walkSpeed = 5f;
     public float sprintSpeed = 9f;
-    public float accelerationSmoothTime = 0.1f;
-    public float decelerationSmoothTime = 0.2f;
 
     [Header("旋转")]
     public float rotationSmoothTime = 0.12f;
@@ -406,7 +404,7 @@ public class PlayerMovementController : MonoBehaviour
 
     IEnumerator ResumeAfterDelay()
     {
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.2f);
         animator.speed = 1f;
     }
 

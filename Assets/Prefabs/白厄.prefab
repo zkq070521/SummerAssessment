@@ -544,18 +544,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   walkSpeed: 5
   sprintSpeed: 9
-  accelerationSmoothTime: 0.1
-  decelerationSmoothTime: 0.2
   rotationSmoothTime: 0.12
   gravity: -9.81
   cameraTransform: {fileID: 0}
   animator: {fileID: 0}
   weaponObject: {fileID: 9134331004988414643}
-  dashSpeed: 8
+  dashSpeed: 20
   dashDuration: 0.25
   dashRotationAngle: -120
   needAttackRotation: 1
-  returnRotationDuration: 0.8
+  returnRotationDuration: 0.6
   weaponHideDelay: 0.8
   slashEffect: {fileID: 5615676217920147644}
   trailEffect: {fileID: 974341694858696880}
