@@ -21,4 +21,12 @@ public static class GameEvents
     public static event System.Action<HeroData, int> OnCharacterSwitched;
     public static void TriggerCharacterSwitched(HeroData hero, int index)
         => OnCharacterSwitched?.Invoke(hero, index);
+
+    /// <summary>
+    /// 小地图全屏切换时触发 — 参数：true 为打开全屏地图，false 为关闭
+    /// 其他系统（输入封锁、暂停逻辑等）可通过此事件响应地图开关
+    /// </summary>
+    public static event System.Action<bool> OnMiniMapToggled;
+    public static void TriggerMiniMapToggled(bool isOpen)
+        => OnMiniMapToggled?.Invoke(isOpen);
 }

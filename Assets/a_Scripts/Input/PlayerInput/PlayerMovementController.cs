@@ -33,6 +33,7 @@ public class PlayerMovementController : MonoBehaviour
     public float weaponHideDelay = 1.8f;         // 武器显示后隐藏延迟
     public ParticleSystem slashEffect;           // 刀光粒子系统（Burst 型，初始失活，播放时激活）
     public ParticleSystem trailEffect;           // 武器拖尾粒子系统（持续型，初始失活，播放时激活）
+    public ParticleSystem hideEffect;            // 武器隐藏粒子系统（Burst 型，初始失活，播放时激活）
     public float trailDuration = 0.5f;           // 拖尾持续时间（秒）
 
     // 组件
@@ -280,7 +281,13 @@ public class PlayerMovementController : MonoBehaviour
         yield return new WaitForSeconds(weaponHideDelay);
 
         if (weaponObject != null)
+        {
             weaponObject.SetActive(false);
+            hideEffect?.Play(); // 播放武器隐藏粒子效果
+        }
+
+
+
 
         // 6. 转回原来方向（仅需要旋转的角色，使用 Slerp 平滑过渡）
         if (needAttackRotation)
