@@ -21,7 +21,8 @@ MonoBehaviour:
   currentHP: 1000
   attack: 120
   defense: 40
-  speed: 145
+  speed: 100
+  maxEnergy: 100
   element: 4
   path: 0
   basicAttack: {fileID: 11400000, guid: 3dac6b614b064027a7d39b38fe407ec6, type: 3}
@@ -36,6 +37,7 @@ MonoBehaviour:
   skillIconSkill: {fileID: 0}
   skillIconUltimate: {fileID: 0}
   elementIcon: {fileID: 0}
+  heroIconPrefab: {fileID: 0}
   battleStartVoice: {fileID: 0}
   skillVoice: {fileID: 0}
   ultimateVoice: {fileID: 0}
@@ -44,4 +46,3 @@ MonoBehaviour:
   skillEffect: {fileID: 0}
   ultimateEffect: {fileID: 0}
   hitEffect: {fileID: 0}
-  maxEnergy: 100

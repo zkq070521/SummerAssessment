@@ -560,7 +560,7 @@ MonoBehaviour:
   weaponHideDelay: 0.7
   slashEffect: {fileID: 5615676217920147644}
   trailEffect: {fileID: 974341694858696880}
-  hideEffect: {fileID: 8889990001112223333}
+  hideEffect: {fileID: 2182004070344161158}
   trailDuration: 0.6
 --- !u!4 &8955102789343762350 stripped
 Transform:
@@ -660,6 +660,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d6416473c778c5e429ddf6fec626d1f1, type: 3}
+--- !u!198 &2182004070344161158 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 2503726917320143234, guid: d6416473c778c5e429ddf6fec626d1f1, type: 3}
+  m_PrefabInstance: {fileID: 4392996976407512580}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5597812768211265456 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8167386176576184756, guid: d6416473c778c5e429ddf6fec626d1f1, type: 3}
@@ -842,7 +847,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 6a80a5889f09b1140acbe49c001cad29, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5866666021909216657, guid: 6a80a5889f09b1140acbe49c001cad29, type: 3}
@@ -1062,9 +1067,4 @@ ParticleSystem:
 Transform:
   m_CorrespondingSourceObject: {fileID: 6941849225981412952, guid: 53a28d321f66b9d44b0f7991a3ca839b, type: 3}
   m_PrefabInstance: {fileID: 8695984864008531055}
-  m_PrefabAsset: {fileID: 0}
---- !u!198 &8889990001112223333 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 2503726917320143234, guid: d6416473c778c5e429ddf6fec626d1f1, type: 3}
-  m_PrefabInstance: {fileID: 4392996976407512580}
   m_PrefabAsset: {fileID: 0}

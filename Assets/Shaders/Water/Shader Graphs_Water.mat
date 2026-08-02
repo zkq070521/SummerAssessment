@@ -66,25 +66,25 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Deplacemeny: 1
-    - _DepthEdge1: 0.1
-    - _DepthEdge2: 2.67
+    - _Deplacemeny: 0.721
+    - _DepthEdge1: 1.74
+    - _DepthEdge2: 3.55
     - _FoamPow: 0
-    - _FormScale: 0.53
+    - _FormScale: 0.11
     - _Metallic: 0
     - _NormalStrength: 1
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _ReFractionSpeed: 0.1
+    - _ReFractionSpeed: 0.112
     - _RefractionScale: 1
     - _RefractionStrength: 0.1
-    - _Smoothness: 0.76
-    - _WaveSpeed: 0.5
+    - _Smoothness: 0.648
+    - _WaveSpeed: 0.31
     m_Colors:
-    - _DeepColor: {r: 0, g: 0.9056604, b: 0.86065745, a: 0.11372549}
-    - _FoamColor: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 0.7921569}
-    - _MainNormalScale: {r: 0.5, g: 0.5, b: 0, a: 0}
+    - _DeepColor: {r: 0.37676504, g: 0.9433962, b: 0.9160887, a: 0.5882353}
+    - _FoamColor: {r: 0.91823894, g: 0.91823894, b: 0.91823894, a: 0.7921569}
+    - _MainNormalScale: {r: 0.84, g: 0.5, b: 0, a: 0}
     - _SecondNormalScale: {r: 6.26, g: 6.12, b: 0, a: 0}
-    - _ShallowColor: {r: 0.10757074, g: 0.9245283, b: 0.58431375, a: 0.101960786}
-    - _WaveDir: {r: 0.5, g: 0.5, b: 0, a: 0}
+    - _ShallowColor: {r: 0, g: 0.37770373, b: 0.38993704, a: 0.90588236}
+    - _WaveDir: {r: 1.19, g: 0.5, b: 0, a: 0}
   m_BuildTextureStacks: []
