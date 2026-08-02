@@ -1,40 +1,45 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using TMPro;
 
+/// <summary>
+/// 对话选项按钮 — 由 DialogueUI 动态实例化，用户点击后通过 targetID 跳转到目标对话片段
+/// </summary>
 public class OptionUI : MonoBehaviour
 {
-    public Button thisButton;
-    public TextMeshProUGUI optionText;
+    [SerializeField, FormerlySerializedAs("thisButton")] private Button _thisButton;
+    [SerializeField, FormerlySerializedAs("optionText")] private TextMeshProUGUI _optionText;
 
-    private DialogueOption currentOption;
+    private DialogueOption _currentOption;
 
-    void Aake()
+    private void Awake()
     {
-        thisButton = GetComponent<Button>();
-        optionText = GetComponentInChildren<TextMeshProUGUI>();
+        if (_thisButton == null)
+            _thisButton = GetComponent<Button>();
+        if (_optionText == null)
+            _optionText = GetComponentInChildren<TextMeshProUGUI>();
     }
 
-    // public void SetupOption(DialogueOption option)
-    // {
-    //     currentOption = option;
-    //     if (optionText != null)
-    //     {
-    //         optionText.text = option.text;
-    //     }
+    /// <summary>
+    /// 填充选项数据并绑定点击回调
+    /// </summary>
+    public void SetupOption(DialogueOption option)
+    {
+        _currentOption = option;
+        if (_optionText != null)
+            _optionText.text = option.text;
 
-    //     if (thisButton != null)
-    //     {
-    //         thisButton.onClick.RemoveAllListeners();
-    //         thisButton.onClick.AddListener(OnOptionSelected);
-    //     }
-    // }
+        if (_thisButton != null)
+        {
+            _thisButton.onClick.RemoveAllListeners();
+            _thisButton.onClick.AddListener(OnOptionSelected);
+        }
+    }
 
-    // void OnOptionSelected()
-    // {
-    //     Debug.Log($"选项被点击: {currentOption.text}");
-    //     DialogueUI.Instance.HandleOptionSelection(currentOption);
-    // }
+    private void OnOptionSelected()
+    {
+        if (_currentOption == null) return;
+        DialogueUI.Instance.HandleOptionSelection(_currentOption);
+    }
 }

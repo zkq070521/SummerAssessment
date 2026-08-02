@@ -85,7 +85,7 @@ public class MiniMapManager : MonoBehaviour
         if (_miniMapRT != null)
         {
             _miniMapRT.Release();
-            Destroy(_miniMapRT);
+            //Destroy(_miniMapRT);
         }
     }
 

@@ -43,6 +43,9 @@ namespace BattleSystem
         private readonly List<BattleEntityData> _playerTeam = new List<BattleEntityData>();//克隆之后装在这里
         private readonly List<BattleEntityData> _enemyTeam = new List<BattleEntityData>();
 
+        /// <summary>heroID → 已生成实体的 Transform（供摄像机等 View 层查询）</summary>
+        private readonly Dictionary<string, Transform> _entityTransformMap = new Dictionary<string, Transform>();
+
         // ── 生命周期 ──
 
         private void Awake()
@@ -88,7 +91,8 @@ namespace BattleSystem
                     Debug.LogWarning($"[BattleManager] {hero.heroName} 的 battlePrefab 未赋值，跳过");
                     continue;
                 }
-                Instantiate(hero.battlePrefab, playerSpawnPoints[i].position, playerSpawnPoints[i].rotation, playerPartyRoot);
+                GameObject instance = Instantiate(hero.battlePrefab, playerSpawnPoints[i].position, playerSpawnPoints[i].rotation, playerPartyRoot);
+                _entityTransformMap[hero.heroID] = instance.transform;
             }
         }
 
@@ -106,7 +110,8 @@ namespace BattleSystem
                     continue;
                 }
                 Transform spawnPoint = i < enemySpawnPoints.Length ? enemySpawnPoints[i] : enemySpawnPoints[0];
-                Instantiate(template.battlePrefab, spawnPoint.position, spawnPoint.rotation, enemyPartyRoot);
+                GameObject instance = Instantiate(template.battlePrefab, spawnPoint.position, spawnPoint.rotation, enemyPartyRoot);
+                _entityTransformMap[template.heroID] = instance.transform;
             }
         }
 
@@ -119,6 +124,18 @@ namespace BattleSystem
                 Destroy(child.gameObject);
             foreach (Transform child in enemyPartyRoot)
                 Destroy(child.gameObject);
+            _entityTransformMap.Clear();
+        }
+
+        /// <summary>
+        /// 根据 heroID 获取已生成角色的 Transform（供摄像机等 View 层查询）
+        /// </summary>
+        /// <param name="heroID">角色唯一标识</param>
+        /// <param name="transform">输出的 Transform；未找到时为 null</param>
+        /// <returns>是否找到对应 Transform</returns>
+        public bool TryGetEntityTransform(string heroID, out Transform transform)
+        {
+            return _entityTransformMap.TryGetValue(heroID, out transform);
         }
 
 
