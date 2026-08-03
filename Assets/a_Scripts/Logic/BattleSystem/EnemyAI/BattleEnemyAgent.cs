@@ -20,7 +20,7 @@ namespace BattleSystem
     public class BattleEnemyAgent : MonoBehaviour
     {
         /// <summary>行为树完成后到执行攻击的观察等待时间（秒）</summary>
-        private const float PRE_ACTION_DELAY = 0.5f;
+        private const float PRE_ACTION_DELAY = 1.5f;
 
         /// <summary>BD SharedVariable 名称：选中的目标 heroID</summary>
         private const string VAR_TARGET_HERO_ID = "TargetHeroID";

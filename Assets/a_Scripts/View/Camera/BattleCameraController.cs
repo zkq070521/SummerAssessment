@@ -68,9 +68,16 @@ namespace BattleSystem
         {
             // 缓存摄像机引用（URP 规范：避免使用 Camera.main）
             _mainCamera = _brain != null ? _brain.OutputCamera : null;
+
+            // 回退：若 CinemachineBrain.OutputCamera 为空，直接从 Brain 所在 GameObject 获取 Camera
+            if (_mainCamera == null && _brain != null)
+                _mainCamera = _brain.GetComponent<Camera>();
+
             if (_mainCamera == null)
             {
-                Debug.LogError("[BattleCameraController] CinemachineBrain 或 OutputCamera 未找到");
+                Debug.LogError("[BattleCameraController] CinemachineBrain 或 OutputCamera 未找到。" +
+                               "请在 Inspector 中为 BattleCameraController 拖入 CinemachineBrain 引用，" +
+                               "并确保 Brain 所在 GameObject 上有 Camera 组件。");
                 return;
             }
             _defaultFov = _mainCamera.fieldOfView;
@@ -171,6 +178,17 @@ namespace BattleSystem
             // 动态设置 Follow 和 LookAt
             _vcamCharacterFocus.m_Follow = targetTransform;
             _vcamCharacterFocus.m_LookAt = targetTransform;
+            if (entity.team == BattleTeam.Enemy)
+            {
+                // 敌人回合时，镜头稍微拉远一点
+                _vcamCharacterFocus.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = new Vector3(1.9f, 1.5f, -4f);
+            }
+            else
+            {
+                // 玩家回合时，镜头稍微拉近一点
+                _vcamCharacterFocus.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = new Vector3(1.91f, 1.13f, -1.99f);
+            }
+
 
             // 激活角色镜头（CinemachineBrain 自动 Blend）
             _vcamCharacterFocus.Priority = PRIORITY_CHARACTER;
@@ -214,45 +232,36 @@ namespace BattleSystem
                 yield break;
             }
 
-            // ── 阶段一：攻击者镜头 ──
+            // ── 阶段一：攻击者镜头（硬切，不平滑过渡）──
             if (_vcamAttack != null)
             {
                 // Follow = 攻击者
                 _vcamAttack.m_Follow = sourceTransform;
 
-                // // LookAt = 攻击者和目标的加权中心（TargetGroup）
-                // if (_attackTargetGroup != null)
-                // {
-                //     var targets = new System.Collections.Generic.List<CinemachineTargetGroup.Target>
-                //     {
-                //         new CinemachineTargetGroup.Target
-                //         {
-                //             target = sourceTransform,
-                //             weight = 1f,
-                //             radius = 1f
-                //         }
-                //     };
-
-                //     if (targetTransform != null)
-                //     {
-                //         targets.Add(new CinemachineTargetGroup.Target
-                //         {
-                //             target = targetTransform,
-                //             weight = 0.7f,
-                //             radius = 1f
-                //         });
-                //     }
-
-                //     _attackTargetGroup.m_Targets = targets.ToArray();
-                //     _vcamAttack.m_LookAt = _attackTargetGroup.transform;
-                // }
-
-
                 _vcamAttack.m_LookAt = sourceTransform;
+
+                if (source.team == BattleTeam.Enemy)
+                {
+                    // 敌人攻击时，镜头稍微拉远一点
+                    _vcamAttack.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = new Vector3(-0.12f, 0.8f, 2.18f);
+                }
+                else
+                {
+                    // 玩家攻击时，镜头稍微拉近一点
+                    _vcamAttack.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = new Vector3(-0.12f, 1.54f, 2.18f);
+                }
+
+                // 保存当前混合设置，临时切换为硬切（无过渡）
+                CinemachineBlendDefinition savedBlend = _brain.m_DefaultBlend;
+                _brain.m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.Cut, 0f);
 
 
                 // 激活攻击镜头，关闭角色镜头
                 _vcamAttack.Priority = PRIORITY_ATTACK;
+
+                // 等待一帧让硬切生效，然后恢复默认混合供后续阶段使用
+                yield return null;
+                _brain.m_DefaultBlend = savedBlend;
             }
 
             if (_vcamCharacterFocus != null)
@@ -267,7 +276,16 @@ namespace BattleSystem
                 // 设置受击镜头：Follow + LookAt 都指向目标
                 _vcamHit.m_Follow = targetTransform;
                 _vcamHit.m_LookAt = targetTransform;
-
+                if (target.team == BattleTeam.Enemy)
+                {
+                    // 敌人受击时，镜头稍微拉远一点
+                    _vcamHit.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = new Vector3(-1.2f, 1f, 4f);
+                }
+                else
+                {
+                    // 玩家受击时，镜头稍微拉近一点
+                    _vcamHit.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = new Vector3(-1.29f, 2.08f, 3.47f);
+                }
                 // Attack 降级，Hit 升级（同优先级，Brain 自动 Blend）
                 _vcamHit.Priority = PRIORITY_HIT;
             }
