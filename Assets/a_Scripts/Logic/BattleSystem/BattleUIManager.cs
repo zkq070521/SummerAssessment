@@ -1,24 +1,44 @@
-using System.Collections;
-using System.Collections.Generic;
 using BattleSystem;
 using UnityEngine;
 
+/// <summary>
+/// 战斗 UI 管理器 — 根据当前回合所属队伍显示/隐藏对应 UI。
+///
+/// 监听 BattleEventCenter.OnTurnChanged：
+///   玩家回合 → 显示攻击按钮面板
+///   敌人回合 → 隐藏攻击按钮面板
+/// </summary>
 public class BattleUIManager : MonoBehaviour
 {
-    void Start()
+    [Header("UI 面板")]
+    [SerializeField] private GameObject _attackUIPanel;   // 包含单攻/群攻按钮的面板（敌人回合隐藏）
+
+    private void Start()
     {
         BattleEventCenter.OnTurnChanged += ChangeUI;
     }
 
-    public void ChangeUI(BattleTeam team)
+    private void OnDestroy()
     {
-        if (team == BattleTeam.Player)
+        BattleEventCenter.OnTurnChanged -= ChangeUI;
+    }
+
+    /// <summary>
+    /// 回合切换时显示/隐藏对应 UI
+    /// </summary>
+    private void ChangeUI(BattleTeam team)
+    {
+        if (_attackUIPanel == null)
         {
-            Debug.Log("玩家回合,接下来判断是哪个角色攻击");
+            Debug.LogWarning("[BattleUIManager] _attackUIPanel 未赋值，请在 Inspector 中拖入攻击按钮面板");
+            return;
         }
-        else
-        {
-            Debug.Log("敌人回合,隐藏按钮UI");
-        }
+
+        bool isPlayerTurn = team == BattleTeam.Player;
+        _attackUIPanel.SetActive(isPlayerTurn);
+
+        Debug.Log(isPlayerTurn
+            ? "[BattleUIManager] 玩家回合 — 显示攻击按钮 UI"
+            : "[BattleUIManager] 敌人回合 — 隐藏攻击按钮 UI");
     }
 }

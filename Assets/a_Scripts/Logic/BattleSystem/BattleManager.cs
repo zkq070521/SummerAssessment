@@ -29,12 +29,19 @@ namespace BattleSystem
         public Transform playerPartyRoot;
         public Transform enemyPartyRoot;
 
+        [Header("敌人 AI")]
+        [SerializeField] private BehaviorDesigner.Runtime.ExternalBehaviorTree _defaultEnemyAI;
+
         // ── 单例 ──
         public static BattleManager Instance { get; private set; }
 
         // ── 公开属性 ──
         public TurnManager TurnManager { get; private set; }
         public BattleEntityData CurrentActor { get; private set; }
+
+        /// <summary>上一个执行攻击的玩家角色（用于敌人 AI 仇恨系统）</summary>
+        public BattleEntityData LastPlayerAttacker { get; private set; }
+
         public IReadOnlyList<BattleEntityData> PlayerTeam => _playerTeam;//提供给外部只读
         public IReadOnlyList<BattleEntityData> EnemyTeam => _enemyTeam;
         public bool IsBattleStarted { get; private set; }
@@ -138,6 +145,23 @@ namespace BattleSystem
             return _entityTransformMap.TryGetValue(heroID, out transform);
         }
 
+        /// <summary>
+        /// 根据 heroID 查找玩家队伍中的 BattleEntityData
+        /// </summary>
+        /// <param name="heroID">角色唯一标识</param>
+        /// <returns>对应的 BattleEntityData；未找到或已死亡时返回 null</returns>
+        public BattleEntityData TryGetPlayerByHeroID(string heroID)
+        {
+            if (string.IsNullOrEmpty(heroID)) return null;
+
+            for (int i = 0; i < _playerTeam.Count; i++)
+            {
+                if (_playerTeam[i].heroID == heroID && _playerTeam[i].isAlive)
+                    return _playerTeam[i];
+            }
+            return null;
+        }
+
 
         // ── 公共 API ──
 
@@ -154,6 +178,7 @@ namespace BattleSystem
 
             CreatePlayerTeam();
             CreateEnemyTeam();
+            InitializeEnemyAgents();
 
             if (_playerTeam.Count == 0 && _enemyTeam.Count == 0)
             {
@@ -229,10 +254,14 @@ namespace BattleSystem
             BattleEventCenter.TriggerUnitAttack(source, target);
             BattleEventCenter.TriggerDamageDealt(source, target, damage, isCritical);
 
+            // 5. 追踪最后一个攻击的玩家（敌人 AI 仇恨目标）
+            if (source.team == BattleTeam.Player)
+                LastPlayerAttacker = source;
+
             Debug.Log($"[BattleManager] {source.heroName} → {target.heroName}: " +
                       $"{(isCritical ? "暴击! " : "")}{damage} 点伤害 (剩余 HP: {target.currentHP})");
 
-            // 5. 死亡处理
+            // 6. 死亡处理
             if (!target.isAlive)
             {
                 BattleEventCenter.TriggerUnitDeath(target);
@@ -241,7 +270,7 @@ namespace BattleSystem
                 Debug.Log($"[BattleManager] {target.heroName} 阵亡");
             }
 
-            // 6. 检查战斗结束
+            // 7. 检查战斗结束
             CheckBattleEnd();
         }
 
@@ -376,6 +405,30 @@ namespace BattleSystem
                 _playerTeam.Remove(entity);
             else
                 _enemyTeam.Remove(entity);
+        }
+
+        /// <summary>
+        /// 为每个敌人生成的 GameObject 添加 BattleEnemyAgent 并绑定对应的 BattleEntityData。
+        /// 必须在 CreateEnemyTeam() 之后、首回合开始前调用。
+        /// </summary>
+        private void InitializeEnemyAgents()
+        {
+            for (int i = 0; i < _enemyTeam.Count; i++)
+            {
+                BattleEntityData entity = _enemyTeam[i];
+                if (!_entityTransformMap.TryGetValue(entity.heroID, out Transform t))
+                {
+                    Debug.LogWarning($"[BattleManager] 未找到敌人 {entity.heroName} (heroID={entity.heroID}) 的 Transform，跳过 AI 初始化");
+                    continue;
+                }
+
+                BattleEnemyAgent agent = t.gameObject.GetComponent<BattleEnemyAgent>();
+                if (agent == null)
+                    agent = t.gameObject.AddComponent<BattleEnemyAgent>();
+
+                agent.Initialize(entity, _defaultEnemyAI);
+                Debug.Log($"[BattleManager] 敌人 AI 已初始化: {entity.heroName} (heroID={entity.heroID})");
+            }
         }
     }
 }

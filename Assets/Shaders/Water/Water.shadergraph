@@ -2442,7 +2442,7 @@
     "m_Title": "Depth",
     "m_Position": {
         "x": -5695.33349609375,
-        "y": 404.000244140625
+        "y": 404.0
     }
 }
 
@@ -7731,7 +7731,7 @@
     "m_Title": "Refraction",
     "m_Position": {
         "x": -8599.3330078125,
-        "y": -1000.666748046875
+        "y": -1000.6666870117188
     }
 }
 
@@ -8956,7 +8956,7 @@
     "m_Hidden": false,
     "m_ShaderOutputName": "Alpha",
     "m_StageCapability": 2,
-    "m_Value": 0.4,
+    "m_Value": 0.4000000059604645,
     "m_DefaultValue": 1.0,
     "m_Labels": []
 }

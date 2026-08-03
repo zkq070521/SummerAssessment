@@ -68,6 +68,9 @@ public class AttackButton : MonoBehaviour
     /// </summary>
     private void HandleTargetSwitchInput()
     {
+        // 仅玩家回合允许切换目标
+        if (!IsPlayerTurn()) return;
+
         if (Input.GetKeyDown(KeyCode.A))
         {
             SwitchTarget(-1);
@@ -119,6 +122,9 @@ public class AttackButton : MonoBehaviour
     /// </summary>
     private void OnSingleAttackClicked()
     {
+        // 仅玩家回合允许操作
+        if (!IsPlayerTurn()) return;
+
         if (_isAoeAiming)
         {
             // 群攻瞄准中按单攻 → 取消群攻，回到第一个敌人
@@ -146,6 +152,9 @@ public class AttackButton : MonoBehaviour
     /// </summary>
     private void OnAoeAttackClicked()
     {
+        // 仅玩家回合允许操作
+        if (!IsPlayerTurn()) return;
+
         if (!_isAoeAiming)
         {
             // 第一次：进入群攻瞄准模式
@@ -260,6 +269,13 @@ public class AttackButton : MonoBehaviour
     private static BattleEntityData GetCurrentActor()
     {
         return BattleManager.Instance != null ? BattleManager.Instance.CurrentActor : null;
+    }
+
+    /// <summary>检查当前是否为玩家回合</summary>
+    private static bool IsPlayerTurn()
+    {
+        BattleManager bm = BattleManager.Instance;
+        return bm != null && bm.IsBattleStarted && bm.CurrentActor?.team == BattleTeam.Player;
     }
 
     private void LogTarget()
