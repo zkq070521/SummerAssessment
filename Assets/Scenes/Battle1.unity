@@ -1720,7 +1720,7 @@ MonoBehaviour:
   _damageNumberPrefab: {fileID: 8789599000397782126, guid: 4d0330ffe82c58f48bf7e98280998ed0, type: 3}
   _poolSize: 15
   _maxPoolSize: 30
-  _heightOffset: 0
+  _heightOffset: 1.2
 --- !u!1 &558151100
 GameObject:
   m_ObjectHideFlags: 0

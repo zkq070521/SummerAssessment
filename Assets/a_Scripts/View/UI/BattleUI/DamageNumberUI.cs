@@ -25,6 +25,10 @@ namespace BattleSystem
         [SerializeField] private Ease _floatEase = Ease.OutQuad;
         [SerializeField] private Ease _scaleEase = Ease.OutBack;
 
+        [Header("字号")]
+        [SerializeField] private float _normalFontSize = 20f;          // 普通伤害字号
+        [SerializeField] private float _critFontSize = 28f;            // 暴击伤害字号
+
         // ── 内部状态 ──
 
         private Canvas _canvas;
@@ -69,6 +73,8 @@ namespace BattleSystem
             gameObject.SetActive(true);
 
             // 1. 设置文字（Alpha 强制为 1，防止 DOFade 残留）
+            //    预制体中 DamageText 处于未激活状态，必须先激活才能渲染
+            _damageText.gameObject.SetActive(true);
             _damageText.text = damage.ToString();
             _damageText.color = new Color(color.r, color.g, color.b, 1f);
             _damageText.alpha = 1f;
@@ -85,7 +91,7 @@ namespace BattleSystem
             }
 
             // 3. 暴击时字体更大更粗
-            _damageText.fontSize = isCritical ? 56f : 42f;
+            _damageText.fontSize = isCritical ? _critFontSize : _normalFontSize;
             _damageText.fontStyle = isCritical ? FontStyles.Bold : FontStyles.Normal;
 
             // 4. 定位到世界坐标 + 随机横向偏移

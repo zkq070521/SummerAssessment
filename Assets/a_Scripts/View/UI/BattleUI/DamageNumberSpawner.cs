@@ -122,6 +122,7 @@ namespace BattleSystem
                 if (_cachedCamera != null)
                 {
                     canvas.worldCamera = _cachedCamera;
+                    // WorldSpace Canvas 正面为 -Z：令 forward 与摄像机同向，正面即朝向镜头（文字正常不镜像）
                     instance.transform.forward = _cachedCamera.transform.forward;
                 }
                 else
