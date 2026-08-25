@@ -26,8 +26,29 @@ namespace BattleSystem
         [SerializeField] private Ease _scaleEase = Ease.OutBack;
 
         [Header("字号")]
-        [SerializeField] private float _normalFontSize = 20f;          // 普通伤害字号
-        [SerializeField] private float _critFontSize = 28f;            // 暴击伤害字号
+        [SerializeField] private float _normalFontSize = 4f;          // 普通伤害字号
+        [SerializeField] private float _critFontSize = 8f;            // 暴击伤害字号
+
+        // ── 标签常量 ──
+
+        /// <summary>暴击标签文字</summary>
+        public const string LabelCrit = "暴击";
+        /// <summary>真实伤害标签文字</summary>
+        public const string LabelTrueDamage = "真伤";
+
+        private static readonly Color LabelCritColor = new Color(1f, 0.85f, 0.2f, 1f);       // 金黄
+        private static readonly Color LabelTrueDamageColor = new Color(0.9f, 0.95f, 1f, 1f); // 冷白
+
+        /// <summary>根据标签返回颜色（未知标签用白色）</summary>
+        private static Color GetLabelColor(string label)
+        {
+            switch (label)
+            {
+                case LabelCrit: return LabelCritColor;
+                case LabelTrueDamage: return LabelTrueDamageColor;
+                default: return Color.white;
+            }
+        }
 
         // ── 内部状态 ──
 
@@ -61,38 +82,40 @@ namespace BattleSystem
         /// 播放伤害数字动画
         /// </summary>
         /// <param name="damage">伤害数值</param>
-        /// <param name="color">文字颜色（按元素类型）</param>
-        /// <param name="isCritical">是否为暴击伤害</param>
+        /// <param name="color">数字颜色（元素色 / 暴击橙 / 真伤白）</param>
+        /// <param name="label">标签文字（"暴击"/"真伤"，空则无标签）</param>
         /// <param name="worldPosition">目标头顶世界坐标</param>
         /// <param name="onComplete">动画结束回调，用于回收到对象池</param>
-        public void Show(int damage, Color color, bool isCritical, Vector3 worldPosition, System.Action<DamageNumberUI> onComplete)
+        public void Show(int damage, Color color, string label, Vector3 worldPosition, System.Action<DamageNumberUI> onComplete)
         {
             _onComplete = onComplete;
 
             // 0. 从对象池取出时激活（池中实例为 SetActive(false) 状态）
             gameObject.SetActive(true);
 
-            // 1. 设置文字（Alpha 强制为 1，防止 DOFade 残留）
+            // 1. 设置数字（Alpha 强制为 1，防止 DOFade 残留）
             //    预制体中 DamageText 处于未激活状态，必须先激活才能渲染
             _damageText.gameObject.SetActive(true);
             _damageText.text = damage.ToString();
             _damageText.color = new Color(color.r, color.g, color.b, 1f);
             _damageText.alpha = 1f;
 
-            // 2. 暴击标签
+            // 2. 标签（"暴击"/"真伤" 等；无标签则隐藏）
+            bool emphasized = label == LabelCrit;
             if (_critLabel != null)
             {
-                _critLabel.gameObject.SetActive(isCritical);
-                if (isCritical)
+                bool hasLabel = !string.IsNullOrEmpty(label);
+                _critLabel.gameObject.SetActive(hasLabel);
+                if (hasLabel)
                 {
-                    _critLabel.text = "暴击！";
-                    _critLabel.color = new Color(1f, 0.85f, 0.2f, 1f);   // 金黄色
+                    _critLabel.text = label;
+                    _critLabel.color = GetLabelColor(label);
                 }
             }
 
             // 3. 暴击时字体更大更粗
-            _damageText.fontSize = isCritical ? _critFontSize : _normalFontSize;
-            _damageText.fontStyle = isCritical ? FontStyles.Bold : FontStyles.Normal;
+            _damageText.fontSize = emphasized ? _critFontSize : _normalFontSize;
+            _damageText.fontStyle = emphasized ? FontStyles.Bold : FontStyles.Normal;
 
             // 4. 定位到世界坐标 + 随机横向偏移
             float randomOffsetX = Random.Range(-0.4f, 0.4f);
