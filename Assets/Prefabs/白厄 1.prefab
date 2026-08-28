@@ -408,6 +408,9 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: bb625263b72d4424bab42c1d2947d884, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 2802398889862061381}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: bb625263b72d4424bab42c1d2947d884, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 3459738273373932488}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: bb625263b72d4424bab42c1d2947d884, type: 3}
       insertIndex: -1
@@ -426,6 +429,26 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: bb625263b72d4424bab42c1d2947d884, type: 3}
   m_PrefabInstance: {fileID: 2511492495469975432}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2802398889862061381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3322518322771208921}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b153a104f8226d4499982457ce76247, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _sourceTeam: 0
+  _heroID: BaiE
+  _effects:
+  - _prefab: {fileID: 7047775527359616344, guid: 67252b7bb2e3b084ea173e2f5a4f6f90, type: 3}
+    _anchor: 1
+    _customAnchor: {fileID: 0}
+    _offset: {x: 0, y: 0, z: 0}
+    _delay: 1
 --- !u!95 &3459738273373932488
 Animator:
   serializedVersion: 5
