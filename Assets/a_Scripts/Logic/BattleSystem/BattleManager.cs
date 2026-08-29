@@ -427,6 +427,13 @@ namespace BattleSystem
                     agent = t.gameObject.AddComponent<BattleEnemyAgent>();
 
                 agent.Initialize(entity, _defaultEnemyAI);
+
+                // 挂载并初始化动画播放器（事件驱动，按 animationConfig 播放 攻击/受击/死亡 动画）
+                EnemyBattleAnimator battleAnimator = t.gameObject.GetComponent<EnemyBattleAnimator>();
+                if (battleAnimator == null)
+                    battleAnimator = t.gameObject.AddComponent<EnemyBattleAnimator>();
+                battleAnimator.Initialize(entity, entity.animationConfig);
+
                 Debug.Log($"[BattleManager] 敌人 AI 已初始化: {entity.heroName} (heroID={entity.heroID})");
             }
         }

@@ -893,6 +893,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6265206175713501824}
   - component: {fileID: 5162232971360506}
+  - component: {fileID: 6137010462672911205}
   - component: {fileID: 5809489148544220156}
   - component: {fileID: -5631393472304044119}
   m_Layer: 0
@@ -940,6 +941,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &6137010462672911205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6753617674297473082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6ac76b423c57744ba7cb0c5408c17fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &5809489148544220156
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -978,7 +991,7 @@ MonoBehaviour:
         byteData: 
         byteDataArray: 
       Version: 
-  gizmoViewMode: 0
+  gizmoViewMode: 2
   showBehaviorDesignerGizmo: 1
 --- !u!114 &-5631393472304044119
 MonoBehaviour:

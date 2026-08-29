@@ -14,6 +14,7 @@ public class BattleEntityData
     public string heroID;                   // 唯一 ID（存档 / 查找）
     public BattleTeam team;                 // 所属队伍（Player / Enemy）
     public GameObject battlePrefab;         // 战斗用预制体（仅用于敌人 Spawn；玩家从 HeroData 读取）
+    public EnemyAnimationConfig animationConfig;  // 敌人动画资产配置（待机/攻击/受击/死亡，供 EnemyBattleAnimator 播放）
 
     [Header("=== 战斗属性 ===")]
     public float maxHP = 1000f;
@@ -46,6 +47,7 @@ public class BattleEntityData
             heroID = this.heroID,
             team = this.team,
             battlePrefab = this.battlePrefab,
+            animationConfig = this.animationConfig,
             maxHP = this.maxHP,
             currentHP = this.maxHP,
             attack = this.attack,

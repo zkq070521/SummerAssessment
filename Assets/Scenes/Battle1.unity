@@ -1649,6 +1649,7 @@ MonoBehaviour:
     heroID: 1
     team: 1
     battlePrefab: {fileID: 7153141402127884706, guid: a4ec793513574cd49719c4055b630e2b, type: 3}
+    animationConfig: {fileID: 11400000, guid: 1071f88a3671c444ebbc6255d4cf771c, type: 2}
     maxHP: 1000
     currentHP: 1000
     attack: 0
@@ -1665,6 +1666,7 @@ MonoBehaviour:
     heroID: 2
     team: 1
     battlePrefab: {fileID: 7153141402127884706, guid: a4ec793513574cd49719c4055b630e2b, type: 3}
+    animationConfig: {fileID: 11400000, guid: 1071f88a3671c444ebbc6255d4cf771c, type: 2}
     maxHP: 300
     currentHP: 0
     attack: 0
@@ -1681,6 +1683,7 @@ MonoBehaviour:
     heroID: 3
     team: 1
     battlePrefab: {fileID: 6753617674297473082, guid: 24a0663f813d4beb91fc0c6b1e8fef36, type: 3}
+    animationConfig: {fileID: 11400000, guid: 1071f88a3671c444ebbc6255d4cf771c, type: 2}
     maxHP: 300
     currentHP: 0
     attack: 0
@@ -1721,6 +1724,11 @@ MonoBehaviour:
   _poolSize: 15
   _maxPoolSize: 30
   _heightOffset: 1.2
+  _minHits: 3
+  _maxHits: 5
+  _hitStaggerDelay: 0.08
+  _horizontalSpread: 0.8
+  _trueDamageChance: 0.35
 --- !u!1 &558151100
 GameObject:
   m_ObjectHideFlags: 0
@@ -2937,8 +2945,8 @@ MonoBehaviour:
   m_UpdateMethod: 2
   m_BlendUpdateMethod: 1
   m_DefaultBlend:
-    m_Style: 1
-    m_Time: 0.8
+    m_Style: 0
+    m_Time: 0
     m_CustomCurve:
       serializedVersion: 2
       m_Curve: []
@@ -4419,7 +4427,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 0
-  m_FollowOffset: {x: -0.12, y: 1.54, z: 2.18}
+  m_FollowOffset: {x: -0.12, y: 0.8, z: 2.18}
   m_XDamping: 1
   m_YDamping: 1
   m_ZDamping: 1
@@ -4871,7 +4879,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 0
-  m_FollowOffset: {x: -1.2, y: 1, z: 4}
+  m_FollowOffset: {x: -1.29, y: 2.08, z: 3.47}
   m_XDamping: 4.9
   m_YDamping: 6.6
   m_ZDamping: 1

@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26197077132dd744098a9cff470c574a, type: 3}
+  m_Name: slime
+  m_EditorClassIdentifier: 
+  idleAnimation: {fileID: 7400000, guid: eee9d7beb7b440a58147d924f277c7ce, type: 3}
+  attackAnimation: {fileID: 7400000, guid: 38db71b772e940b791a0d173406cbb04, type: 3}
+  hitAnimation: {fileID: 7400000, guid: ee7bb9ee4f2544619d907133f41c9fc1, type: 3}
+  dieAnimation: {fileID: 7400000, guid: b5feebd3cb9a4b82aa44801bbe7548bb, type: 3}

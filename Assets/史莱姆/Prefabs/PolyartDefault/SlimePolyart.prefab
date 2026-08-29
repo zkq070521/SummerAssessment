@@ -446,7 +446,7 @@ MonoBehaviour:
         byteData: 
         byteDataArray: 
       Version: 
-  gizmoViewMode: 0
+  gizmoViewMode: 2
   showBehaviorDesignerGizmo: 1
 --- !u!114 &-9192233398226542217
 MonoBehaviour:
