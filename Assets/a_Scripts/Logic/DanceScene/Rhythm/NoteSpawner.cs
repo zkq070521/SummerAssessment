@@ -14,7 +14,7 @@ public class NoteSpawner : MonoBehaviour
     [SerializeField] private float _fallDuration = 2f;   // 音符从顶部落到判准线的时长（秒）
     [SerializeField] private float _spawnY = 600f;       // 顶部生成 Y
     [SerializeField] private float _lineY = -400f;       // 判准线 Y
-    [SerializeField] private float _laneOffsetX = 200f;  // 左右轨道相对中心的 X 偏移
+    [SerializeField] private float _laneOffsetX = 300f;  // 左右轨道相对中心的 X 偏移
 
     [Header("对象池")]
     [SerializeField] private int _prewarmCount = 20;     // 预热数量
@@ -53,8 +53,8 @@ public class NoteSpawner : MonoBehaviour
             if (data.time - _fallDuration > currentTime) break;
 
             NoteView note = _pool.Get();
-            note.Initialize(data.type, data.time);
-            note.Rect.anchoredPosition = new Vector2(LaneX(data.type), _spawnY);
+            note.Initialize(data.Type, data.time);
+            note.Rect.anchoredPosition = new Vector2(LaneX(data.Type), _spawnY);
             _activeNotes.Add(note);
             _nextNoteIndex++;
         }
