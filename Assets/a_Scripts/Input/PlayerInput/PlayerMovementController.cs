@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 using System.Collections;
 
 /// <summary>
@@ -69,9 +70,8 @@ public class PlayerMovementController : MonoBehaviour
         if (animator == null)
             animator = GetComponent<Animator>();
 
-        // 攻击输入：鼠标右键
+        // 攻击输入（鼠标左键）：改为在 Update 中轮询触发，便于屏蔽 UI 点击
         _attackAction = _input.Player.PlayerAttack;
-        _attackAction.performed += OnAttack;
     }
 
     void Start()
@@ -112,6 +112,14 @@ public class PlayerMovementController : MonoBehaviour
                 UnlockMouse();
             else
                 LockMouse();
+        }
+
+        // 攻击：仅在指针未悬停 UI 时触发（点击按钮等 UI 不应误触发攻击）
+        if (!_inputBlocked && !_isAttacking
+            && _attackAction.WasPressedThisFrame()
+            && !IsPointerOverUI())
+        {
+            TryAttack();
         }
 
         if (_inputBlocked || _isAttacking) return;
@@ -213,9 +221,16 @@ public class PlayerMovementController : MonoBehaviour
 
     #region 攻击
 
-    private void OnAttack(InputAction.CallbackContext context)
+    /// <summary>
+    /// 指针是否悬停在 UI 上（按钮/面板等）。命中 UI 时不触发攻击，避免点击按钮误触发攻击。
+    /// </summary>
+    private bool IsPointerOverUI()
     {
-        if (_inputBlocked || _isAttacking) return;
+        return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+    }
+
+    private void TryAttack()
+    {
         if (animator == null) return;
 
         // 防止协程冲突：如果已有攻击协程在运行，先停止

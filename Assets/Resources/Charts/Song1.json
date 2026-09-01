@@ -1,0 +1,18 @@
+{
+  "bpm": 120,
+  "offset": 0.0,
+  "notes": [
+    { "time": 1.00, "type": "Left"  },
+    { "time": 1.50, "type": "Right" },
+    { "time": 2.00, "type": "Left"  },
+    { "time": 2.50, "type": "Right" },
+    { "time": 3.00, "type": "Left"  },
+    { "time": 3.00, "type": "Right" },
+    { "time": 3.50, "type": "Left"  },
+    { "time": 4.00, "type": "Right" },
+    { "time": 4.50, "type": "Left"  },
+    { "time": 5.00, "type": "Right" },
+    { "time": 5.00, "type": "Left"  },
+    { "time": 5.50, "type": "Right" }
+  ]
+}
