@@ -143,7 +143,7 @@ public class AttackButton : MonoBehaviour
             return;
         }
 
-        BattleManager.Instance.ExecuteActionWithTurn(source, target);
+        BattleManager.Instance.ExecuteActionWithTurn(source, target, source.basicAttackMultiplier);
         Debug.Log($"[AttackButton] 单攻: {source.heroName} → {target.heroName}");
     }
 
@@ -180,7 +180,7 @@ public class AttackButton : MonoBehaviour
         int hitCount = 0;
         foreach (BattleEntityData enemy in aliveEnemies)  // 遍历副本
         {
-            BattleManager.Instance.ExecuteAction(source, enemy);
+            BattleManager.Instance.ExecuteAction(source, enemy, source.ultimateMultiplier);
             hitCount++;
         }
         // 即使 ExecuteAction 修改了原始的 enemies 列表，也不会影响 aliveEnemies 的遍历

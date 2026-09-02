@@ -282,6 +282,7 @@ GameObject:
   m_Component:
   - component: {fileID: 65644005}
   - component: {fileID: 65644006}
+  - component: {fileID: 65644007}
   m_Layer: 0
   m_Name: Shot_Hit
   m_TagString: Untagged
@@ -344,6 +345,28 @@ MonoBehaviour:
         m_Calls: []
   m_LegacyBlendHint: 0
   m_ComponentOwner: {fileID: 1592855854}
+--- !u!114 &65644007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 65644004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c11265b855408d42af33d62691f5194, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ChannelMask: 1
+  m_Gain: 1
+  m_Use2DDistance: 0
+  m_UseLocalSpace: 1
+  m_ReactionSettings:
+    m_SecondaryNoise: {fileID: 0}
+    m_AmplitudeGain: 1
+    m_FrequencyGain: 1
+    m_Duration: 1
+    m_NoiseOffsets: {x: 0, y: 0, z: 0}
 --- !u!1 &72001479
 GameObject:
   m_ObjectHideFlags: 0
@@ -1650,13 +1673,16 @@ MonoBehaviour:
     team: 1
     battlePrefab: {fileID: 7153141402127884706, guid: a4ec793513574cd49719c4055b630e2b, type: 3}
     animationConfig: {fileID: 11400000, guid: 1071f88a3671c444ebbc6255d4cf771c, type: 2}
-    maxHP: 1000
-    currentHP: 1000
-    attack: 0
-    defense: 0
+    maxHP: 25000
+    currentHP: 25000
+    attack: 2200
+    defense: 200
     speed: 110
-    critRate: 0
-    critDamage: 0
+    critRate: 0.1
+    critDamage: 1.5
+    basicAttackMultiplier: 1
+    skillMultiplier: 2
+    ultimateMultiplier: 3
     maxEnergy: 0
     currentEnergy: 0
     element: 0
@@ -1667,13 +1693,16 @@ MonoBehaviour:
     team: 1
     battlePrefab: {fileID: 7153141402127884706, guid: a4ec793513574cd49719c4055b630e2b, type: 3}
     animationConfig: {fileID: 11400000, guid: 1071f88a3671c444ebbc6255d4cf771c, type: 2}
-    maxHP: 300
-    currentHP: 0
-    attack: 0
-    defense: 0
+    maxHP: 15000
+    currentHP: 15000
+    attack: 2000
+    defense: 180
     speed: 105
-    critRate: 0
-    critDamage: 0
+    critRate: 0.1
+    critDamage: 1.5
+    basicAttackMultiplier: 1
+    skillMultiplier: 2
+    ultimateMultiplier: 3
     maxEnergy: 0
     currentEnergy: 0
     element: 0
@@ -1684,13 +1713,16 @@ MonoBehaviour:
     team: 1
     battlePrefab: {fileID: 6753617674297473082, guid: 24a0663f813d4beb91fc0c6b1e8fef36, type: 3}
     animationConfig: {fileID: 11400000, guid: 1071f88a3671c444ebbc6255d4cf771c, type: 2}
-    maxHP: 300
-    currentHP: 0
-    attack: 0
-    defense: 0
+    maxHP: 15000
+    currentHP: 15000
+    attack: 2000
+    defense: 180
     speed: 100
-    critRate: 0
-    critDamage: 0
+    critRate: 0.1
+    critDamage: 1.5
+    basicAttackMultiplier: 1
+    skillMultiplier: 2
+    ultimateMultiplier: 3
     maxEnergy: 0
     currentEnergy: 0
     element: 0
@@ -1724,9 +1756,11 @@ MonoBehaviour:
   _poolSize: 15
   _maxPoolSize: 30
   _heightOffset: 1.2
+  _appearDelay: 1.5
   _minHits: 3
   _maxHits: 5
   _hitStaggerDelay: 0.08
+  _hitStaggerRandom: 0.4
   _horizontalSpread: 0.8
   _trueDamageChance: 0.35
 --- !u!1 &558151100
@@ -2011,6 +2045,7 @@ GameObject:
   - component: {fileID: 701568473}
   - component: {fileID: 701568472}
   - component: {fileID: 701568471}
+  - component: {fileID: 701568474}
   m_Layer: 0
   m_Name: BattleCameraController
   m_TagString: Untagged
@@ -2039,7 +2074,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    m_ImpulseDuration: 0.2
+    m_ImpulseDuration: 0.25
     m_ImpulseType: 0
     m_DissipationRate: 0.25
     m_RawSignal: {fileID: 0}
@@ -2114,6 +2149,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &701568474
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 701568470}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &735861284
 GameObject:
   m_ObjectHideFlags: 0
@@ -2847,11 +2903,11 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.1
-  far clip plane: 5000
-  field of view: 40
+  near clip plane: 0.3
+  far clip plane: 1000
+  field of view: 60.000004
   orthographic: 0
-  orthographic size: 10
+  orthographic size: 5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -2875,8 +2931,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 984589927}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.03906166, y: -0.0028512913, z: 0.00011146168, w: 0.99923277}
-  m_LocalPosition: {x: -2.2603257, y: -931.4089, z: 7.000087}
+  m_LocalRotation: {x: 0.14091258, y: -0.014221639, z: 0.0020180275, w: 0.9899179}
+  m_LocalPosition: {x: 0.28, y: 2.62, z: -7.48}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3255,7 +3311,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 0
-  m_FollowOffset: {x: 1.91, y: 0.15, z: -1.99}
+  m_FollowOffset: {x: 1.91, y: 1.13, z: -1.99}
   m_XDamping: 1
   m_YDamping: 1
   m_ZDamping: 1

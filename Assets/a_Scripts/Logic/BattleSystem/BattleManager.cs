@@ -222,7 +222,7 @@ namespace BattleSystem
         /// <summary>
         /// 执行攻击动作：伤害计算 → 暴击判定 → 应用伤害 → 广播事件 → 死亡处理
         /// </summary>
-        public void ExecuteAction(BattleEntityData source, BattleEntityData target)
+        public void ExecuteAction(BattleEntityData source, BattleEntityData target, float damageMultiplier = 1f)
         {
             if (source == null || target == null)
             {
@@ -236,16 +236,24 @@ namespace BattleSystem
                 return;
             }
 
-            // 1. 伤害计算（保底 1 点）
-            int rawDamage = Mathf.RoundToInt(source.attack - target.defense);
-            int damage = Mathf.Max(1, rawDamage);
+            // 1. 基础伤害 = 攻击力 × 技能倍率
+            float baseDamage = source.attack * damageMultiplier;
 
-            // 2. 暴击判定
+            // 2. 防御减免（软上限：防御越高减免越平缓，避免高防完全免疫）
+            float defenseFactor = 1f - target.defense / (target.defense + DEFENSE_SCALE);
+
+            // 3. 伤害浮动 ±10%（让每次伤害有变化，不死板）
+            float rawDamage = baseDamage * defenseFactor * Random.Range(0.9f, 1.1f);
+
+            // 4. 暴击判定
             bool isCritical = Random.value < source.critRate;
             if (isCritical)
             {
-                damage = Mathf.RoundToInt(damage * source.critDamage);
+                rawDamage *= source.critDamage;
             }
+
+            // 5. 保底 1 点，取整
+            int damage = Mathf.Max(1, Mathf.RoundToInt(rawDamage));
 
             // 3. 应用伤害
             target.TakeDamage(damage);
@@ -277,9 +285,9 @@ namespace BattleSystem
         /// <summary>
         /// 执行攻击动作 + 等待动画时长后推进回合
         /// </summary>
-        public void ExecuteActionWithTurn(BattleEntityData source, BattleEntityData target)
+        public void ExecuteActionWithTurn(BattleEntityData source, BattleEntityData target, float damageMultiplier = 1f)
         {
-            ExecuteAction(source, target);
+            ExecuteAction(source, target, damageMultiplier);
             StartCoroutine(WaitAndNextTurn());
         }
 
@@ -327,6 +335,9 @@ namespace BattleSystem
 
         private const string OVERWORLD_SCENE = "SampleScene";
 
+        /// <summary>防御减免软上限常数：防御越高，每点防御的减免收益越低</summary>
+        private const float DEFENSE_SCALE = 1000f;
+
         /// <summary>等待片刻后卸载 Battle1，回到开放世界</summary>
         private IEnumerator ReturnToOverworld()
         {
@@ -364,13 +375,17 @@ namespace BattleSystem
                     attack = hero.attack,
                     defense = hero.defense,
                     speed = hero.speed,
-                    critRate = 0.05f,
+                    critRate = 0.1f,
                     critDamage = 1.5f,
                     maxEnergy = hero.maxEnergy,
                     currentEnergy = hero.maxEnergy,
                     element = hero.element,
                     path = hero.path,
-                    isAlive = true
+                    isAlive = true,
+                    // 从技能数据读取伤害倍率
+                    basicAttackMultiplier = hero.basicAttack != null ? hero.basicAttack.damageMultiplier : 1f,
+                    skillMultiplier = hero.skill != null ? hero.skill.damageMultiplier : 2f,
+                    ultimateMultiplier = hero.ultimate != null ? hero.ultimate.damageMultiplier : 3f
                 };
 
                 _playerTeam.Add(entity);

@@ -32,9 +32,11 @@ namespace BattleSystem
         // ── 常量：时间参数 ──
         private const float ENTRANCE_HOLD_DURATION = 0.5f;
         private const float ATTACK_WINDUP_DURATION = 1.5f;  // 攻击者起手动作时间
-        private const float HIT_HOLD_DURATION = 2f;        // 受击镜头停留时间
+        private const float HIT_HOLD_DURATION = 4f;        // 受击镜头停留时间
         private const float FOV_PUNCH_STRENGTH = 5f;
         private const float FOV_PUNCH_DURATION = 0.15f;
+        private const float HIT_SHAKE_INTENSITY = 2f;     // 受击震屏强度（速度幅度）
+        private const float HIT_SHAKE_DURATION = 0.25f;   // 受击震屏时长（秒）
 
         // ── Inspector：Cinemachine 核心 ──
         [Header("Cinemachine 核心")]
@@ -81,6 +83,10 @@ namespace BattleSystem
                 return;
             }
             _defaultFov = _mainCamera.fieldOfView;
+
+            // 确保相机上有 ImpulseListener（否则 CinemachineImpulseSource 的震屏不会生效）
+            if (_mainCamera.GetComponent<CinemachineImpulseListener>() == null)
+                _mainCamera.gameObject.AddComponent<CinemachineImpulseListener>();
 
             // 初始状态：仅广角镜头激活，其他休眠
             ResetAllPriorities();
@@ -293,8 +299,9 @@ namespace BattleSystem
             if (_vcamAttack != null)
                 _vcamAttack.Priority = PRIORITY_OFF;
 
-            // 命中时刻：仅 FOV 冲击（震屏由动画关键帧事件触发）
+            // 命中时刻：FOV 冲击 + 震屏
             PlayFovPunch();
+            TriggerShake(HIT_SHAKE_INTENSITY, HIT_SHAKE_DURATION);
 
             // 等待受击镜头停留
             yield return new WaitForSeconds(HIT_HOLD_DURATION);
@@ -341,7 +348,10 @@ namespace BattleSystem
             if (_impulseSource == null) return;
 
             _impulseSource.m_ImpulseDefinition.m_ImpulseDuration = duration;
-            _impulseSource.GenerateImpulseWithForce(intensity);
+            // 用随机方向的速度生成 impulse。
+            // GenerateImpulseWithForce 固定使用向下方向 (0,-1,0)，配合 Bump 形状会导致震动几乎不可见。
+            Vector3 velocity = Random.insideUnitSphere * intensity;
+            _impulseSource.GenerateImpulseWithVelocity(velocity);
         }
 
         /// <summary>

@@ -307,7 +307,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 960, y: 540}
-  m_SizeDelta: {x: 4, y: 1}
+  m_SizeDelta: {x: 16, y: 4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8789599000397782126
 MonoBehaviour:
@@ -324,12 +324,13 @@ MonoBehaviour:
   _damageText: {fileID: 8158113120390612294}
   _critLabel: {fileID: 7493029448519746776}
   _floatDistance: 80
-  _duration: 1
+  _duration: 0.5
+  _holdDuration: 0.25
   _fadeStartDelay: 0.35
   _floatEase: 6
   _scaleEase: 27
-  _normalFontSize: 40
-  _critFontSize: 56
+  _appearFontSize: 200
+  _emphasizedFontScale: 1.4
 --- !u!223 &987514969514346855
 Canvas:
   m_ObjectHideFlags: 0

@@ -15,10 +15,10 @@ public class HeroData : ScriptableObject
     public GameObject battlePrefab;     // 战斗场景中的角色预制体
 
     [Header("=== 属性 ===")]
-    public float maxHP = 1000f;
+    public float maxHP = 25000f;
     public float currentHP;             // 当前血量（运行时修改，不保存到资产）
-    public float attack = 100f;
-    public float defense = 50f;
+    public float attack = 3000f;
+    public float defense = 300f;
     public float speed = 110f;          // 决定行动顺序
 
     [Header("=== 能量系统 ===")]

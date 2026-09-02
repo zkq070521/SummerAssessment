@@ -17,13 +17,18 @@ public class BattleEntityData
     public EnemyAnimationConfig animationConfig;  // 敌人动画资产配置（待机/攻击/受击/死亡，供 EnemyBattleAnimator 播放）
 
     [Header("=== 战斗属性 ===")]
-    public float maxHP = 1000f;
+    public float maxHP = 25000f;
     public float currentHP;
-    public float attack = 100f;
-    public float defense = 50f;
+    public float attack = 3000f;
+    public float defense = 300f;
     public float speed = 110f;              // 决定行动顺序（AV = 10000 / speed）
-    public float critRate = 0.05f;          // 暴击率
+    public float critRate = 0.1f;           // 暴击率
     public float critDamage = 1.5f;         // 暴击倍率
+
+    [Header("=== 技能倍率 ===")]
+    public float basicAttackMultiplier = 1f;   // 普攻伤害倍率（攻击力 × 倍率）
+    public float skillMultiplier = 2f;         // 战技伤害倍率
+    public float ultimateMultiplier = 3f;      // 终结技伤害倍率
 
     [Header("=== 能量 ===")]
     public float maxEnergy = 100f;
@@ -55,6 +60,9 @@ public class BattleEntityData
             speed = this.speed,
             critRate = this.critRate,
             critDamage = this.critDamage,
+            basicAttackMultiplier = this.basicAttackMultiplier,
+            skillMultiplier = this.skillMultiplier,
+            ultimateMultiplier = this.ultimateMultiplier,
             maxEnergy = this.maxEnergy,
             currentEnergy = this.maxEnergy,
             element = this.element,

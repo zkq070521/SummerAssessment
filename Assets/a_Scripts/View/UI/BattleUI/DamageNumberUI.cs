@@ -20,14 +20,15 @@ namespace BattleSystem
 
         [Header("动画参数")]
         [SerializeField] private float _floatDistance = 80f;          // 上浮高度（屏幕像素）
-        [SerializeField] private float _duration = 1f;                // 动画总时长
+        [SerializeField] private float _duration = 0.5f;                // 缩小动画时长（秒）
+        [SerializeField] private float _holdDuration = 0.25f;          // 出现后停留时长（秒），停留结束才开始缩小
         [SerializeField] private float _fadeStartDelay = 0.35f;       // 延迟后开始渐隐
         [SerializeField] private Ease _floatEase = Ease.OutQuad;
         [SerializeField] private Ease _scaleEase = Ease.OutBack;
 
         [Header("字号")]
-        [SerializeField] private float _normalFontSize = 40f;         // 普通伤害字号（像素）
-        [SerializeField] private float _critFontSize = 56f;           // 暴击伤害字号（像素）
+        [SerializeField] private float _appearFontSize = 200f;        // 普通数字出现字号（像素），随后缩小到 1/3
+        [SerializeField] private float _emphasizedFontScale = 1.4f;   // 暴击/真伤字号放大倍数（相对普通）
 
         // ── 标签常量 ──
 
@@ -56,11 +57,13 @@ namespace BattleSystem
         private RectTransform _rectTransform;   // 根节点 Canvas 的 RectTransform
         private RectTransform _contentRect;     // 数字文本的 RectTransform（定位与动画目标）
         private Tween _moveTween;
-        private Tween _fadeTween;
+        private Tween _fontSizeTween;
         private Tween _scaleTween;
+        private Tween _fadeTween;
         private System.Action<DamageNumberUI> _onComplete;
 
-        private const float SCALE_POP_DURATION = 0.2f;                 // 弹入缩放的时长
+        private const float SCALE_POP_DURATION = 0.4f;                 // 弹入缩放的时长
+        private const float MIN_ALPHA = 0.4f;                          // 数字缩小到最小时的透明度（20%）
 
         // ── 初始化 ──
 
@@ -114,7 +117,7 @@ namespace BattleSystem
             _damageText.alpha = 1f;
 
             // 2. 标签（"暴击"/"真伤" 等；无标签则隐藏）
-            bool emphasized = label == LabelCrit;
+            bool emphasized = label == LabelCrit || label == LabelTrueDamage;
             if (_critLabel != null)
             {
                 bool hasLabel = !string.IsNullOrEmpty(label);
@@ -126,13 +129,13 @@ namespace BattleSystem
                 }
             }
 
-            // 3. 暴击时字体更大更粗
-            _damageText.fontSize = emphasized ? _critFontSize : _normalFontSize;
+            // 3. 出现字号：暴击/真伤比普通大，且加粗
+            _damageText.fontSize = emphasized ? _appearFontSize * _emphasizedFontScale : _appearFontSize;
             _damageText.fontStyle = emphasized ? FontStyles.Bold : FontStyles.Normal;
 
             // 4. 屏幕坐标 → Canvas 本地坐标（Overlay Canvas 铺满屏幕，pivot 在屏幕中心）
             //    加随机横向像素偏移，模拟多段连击的散布
-            float randomOffsetX = Random.Range(-20f, 20f);
+            float randomOffsetX = Random.Range(-8f, 8f);
             if (_rectTransform != null && _contentRect != null)
             {
                 Vector2 localPoint;
@@ -158,29 +161,34 @@ namespace BattleSystem
             // 终止之前可能残留的动画
             KillAllTweens();
 
-            Vector3 startPos = _contentRect.localPosition;
-            Vector3 endPos = startPos + Vector3.up * _floatDistance;  // _floatDistance 为屏幕像素
-
-            // 弹入缩放：0 → 1（屏幕空间 scale 为 1）
+            // 顿帧：快速弹入（OutBack 回弹，产生"顿"的冲击感）
             _scaleTween = _contentRect.DOScale(Vector3.one, SCALE_POP_DURATION)
                 .From(Vector3.zero)
                 .SetEase(_scaleEase);
 
-            // 上浮（屏幕像素）
-            _moveTween = _contentRect.DOLocalMove(endPos, _duration)
+            // 停留 _holdDuration 后，字号平滑缩小：当前字号 → 1/3
+            float targetSize = _damageText.fontSize / 3f;
+            _fontSizeTween = DOTween.To(
+                    () => _damageText.fontSize,
+                    value => { _damageText.fontSize = value; },
+                    targetSize,
+                    _duration)
+                .SetDelay(_holdDuration)
                 .SetEase(_floatEase);
 
-            // 渐隐（延迟启动，保证数字先清晰显示再开始淡出）
-            _fadeTween = _damageText.DOFade(0f, _duration - _fadeStartDelay)
-                .SetDelay(_fadeStartDelay)
-                .SetEase(Ease.InQuad);
-
+            // 停留后，透明度同步降低到 20%
+            Sequence fadeSeq = DOTween.Sequence();
+            fadeSeq.Join(_damageText.DOFade(MIN_ALPHA, _duration).SetDelay(_holdDuration).SetEase(_floatEase));
             if (_critLabel != null && _critLabel.gameObject.activeSelf)
-            {
-                _critLabel.DOFade(0f, _duration - _fadeStartDelay)
-                    .SetDelay(_fadeStartDelay)
-                    .SetEase(Ease.InQuad);
-            }
+                fadeSeq.Join(_critLabel.DOFade(MIN_ALPHA, _duration).SetDelay(_holdDuration).SetEase(_floatEase));
+            _fadeTween = fadeSeq;
+
+            // 停留后，上浮
+            Vector3 startPos = _contentRect.localPosition;
+            Vector3 endPos = startPos + Vector3.up * _floatDistance;
+            _moveTween = _contentRect.DOLocalMove(endPos, _duration)
+                .SetDelay(_holdDuration)
+                .SetEase(_floatEase);
 
             // 动画全部完成后回收
             _moveTween.OnComplete(() =>
@@ -195,8 +203,9 @@ namespace BattleSystem
         private void KillAllTweens()
         {
             _moveTween?.Kill();
-            _fadeTween?.Kill();
+            _fontSizeTween?.Kill();
             _scaleTween?.Kill();
+            _fadeTween?.Kill();
         }
 
         private void OnDestroy()

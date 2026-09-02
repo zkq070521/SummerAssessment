@@ -33,8 +33,9 @@ namespace BattleSystem
         [Header("连击效果")]
         [SerializeField] private int _minHits = 3;                       // 每次攻击最少跳出几段数字
         [SerializeField] private int _maxHits = 5;                       // 最多跳出几段数字
-        [SerializeField] private float _hitStaggerDelay = 0.08f;         // 相邻两段数字的间隔（秒）
-        [SerializeField] private float _horizontalSpread = 0.8f;         // 数字横向散布范围
+        [SerializeField] private float _hitStaggerDelay = 0.08f;         // 相邻两段数字的基准间隔（秒）
+        [SerializeField] private float _hitStaggerRandom = 0.4f;         // 间隔随机浮动范围（秒），使数字错落出现形成层次感
+        [SerializeField] private float _horizontalSpread = 0.3f;         // 数字横向散布范围（调小使生成位置更集中）
         [SerializeField] [Range(0f, 1f)] private float _trueDamageChance = 0.35f; // 出现「真伤」段的概率
 
         // ── 对象池 ──
@@ -172,13 +173,16 @@ namespace BattleSystem
 
                 Vector3 pos = basePos
                     + Vector3.right * Random.Range(-_horizontalSpread, _horizontalSpread)
-                    + Vector3.up * Random.Range(0f, 0.5f);
+                    + Vector3.up * Random.Range(0f, 0.2f);
 
                 SpawnNumber(segments[i], color, label, pos);
 
-                // 相邻段之间留出一点间隔，形成逐个跳出的节奏
+                // 随机间隔：数字错落出现，形成层次感（受击镜头前两秒内随机分布）
                 if (i < segments.Length - 1)
-                    yield return new WaitForSeconds(_hitStaggerDelay);
+                {
+                    float delay = _hitStaggerDelay + Random.Range(0f, _hitStaggerRandom);
+                    yield return new WaitForSeconds(delay);
+                }
             }
         }
 
