@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using UnityEngine;
 
 namespace BattleSystem
@@ -27,6 +28,7 @@ namespace BattleSystem
 
         [Header("生成偏移")]
         [SerializeField] private float _heightOffset = 1.2f;  // 目标头顶偏移（世界单位）
+        [SerializeField] private float _appearDelay = 1.5f;   // 命中后延迟出现，等待摄像机切到受击镜头（对齐 BattleCameraController 攻击起手时长）
 
         [Header("连击效果")]
         [SerializeField] private int _minHits = 3;                       // 每次攻击最少跳出几段数字
@@ -84,8 +86,15 @@ namespace BattleSystem
 
         private void Start()
         {
-            // 缓存摄像机引用（避免 Camera.main 的每帧查找开销）
-            _cachedCamera = Camera.main;
+            // 缓存战斗摄像机：取场景中 CinemachineBrain 的输出摄像机。
+            // 不能依赖 Camera.main —— 战斗相机由 CinemachineBrain 驱动，
+            // Camera.main 可能为空或指向错误相机，导致伤害数字的
+            // Canvas.worldCamera 与朝向设置错误、数字不朝镜头。
+            CinemachineBrain brain = FindObjectOfType<CinemachineBrain>();
+            Camera cam = brain != null ? brain.OutputCamera : null;
+            if (cam == null && brain != null)
+                cam = brain.GetComponent<Camera>(); // OutputCamera 为空时，从 Brain 所在对象取 Camera
+            _cachedCamera = cam != null ? cam : Camera.main;
         }
 
         private void OnEnable()
@@ -123,6 +132,9 @@ namespace BattleSystem
         /// </summary>
         private IEnumerator SpawnDamageCascade(BattleEntityData source, BattleEntityData target, int damage, bool isCritical)
         {
+            // 等摄像机从攻击镜头切到受击镜头再跳数字，避免攻击起手阶段数字提前出现
+            yield return new WaitForSeconds(_appearDelay);
+
             // 目标世界坐标只查一次
             if (!BattleManager.Instance.TryGetEntityTransform(target.heroID, out Transform targetTransform))
             {
@@ -170,29 +182,28 @@ namespace BattleSystem
             }
         }
 
-        /// <summary>从池中取出一个实例，摆好朝向并播放</summary>
+        /// <summary>从池中取出一个实例，把世界坐标投影成屏幕坐标后播放</summary>
         private void SpawnNumber(int value, Color color, string label, Vector3 worldPos)
         {
-            DamageNumberUI instance = GetFromPool();
-
-            // 面向摄像机 + 设置 Canvas 渲染摄像机
-            Canvas canvas = instance.GetComponent<Canvas>();
-            if (canvas != null)
+            if (_cachedCamera == null)
             {
-                canvas.sortingOrder = 100; // 确保渲染在所有 3D 物体前面
-                if (_cachedCamera != null)
-                {
-                    canvas.worldCamera = _cachedCamera;
-                    // WorldSpace Canvas 正面为 -Z：令 forward 与摄像机同向，正面即朝向镜头（文字正常不镜像）
-                    instance.transform.forward = _cachedCamera.transform.forward;
-                }
-                else
-                {
-                    Debug.LogWarning("[DamageNumberSpawner] _cachedCamera 为 null！Canvas 无法获得摄像机引用");
-                }
+                Debug.LogWarning("[DamageNumberSpawner] _cachedCamera 为 null，无法投影屏幕坐标");
+                return;
             }
 
-            instance.Show(value, color, label, worldPos, ReturnToPool);
+            // 世界坐标 → 屏幕坐标（屏幕空间数字，像 2D 一样固定在屏幕上）
+            Vector3 screenPos = _cachedCamera.WorldToScreenPoint(worldPos);
+            if (screenPos.z <= 0f)
+                return; // 目标在摄像机后方，跳过
+
+            DamageNumberUI instance = GetFromPool();
+
+            // 确保数字渲染在其他 UI 之上
+            Canvas canvas = instance.GetComponent<Canvas>();
+            if (canvas != null)
+                canvas.sortingOrder = 100;
+
+            instance.Show(value, color, label, screenPos, ReturnToPool);
         }
 
         /// <summary>

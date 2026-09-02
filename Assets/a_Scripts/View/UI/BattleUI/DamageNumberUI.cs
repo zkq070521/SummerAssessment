@@ -19,15 +19,15 @@ namespace BattleSystem
         [SerializeField] private TMP_Text _critLabel;
 
         [Header("动画参数")]
-        [SerializeField] private float _floatDistance = 1.8f;          // 上浮高度（世界单位）
-        [SerializeField] private float _duration = 0.9f;               // 动画总时长
-        [SerializeField] private float _fadeStartDelay = 0.35f;        // 延迟后开始渐隐
+        [SerializeField] private float _floatDistance = 80f;          // 上浮高度（屏幕像素）
+        [SerializeField] private float _duration = 1f;                // 动画总时长
+        [SerializeField] private float _fadeStartDelay = 0.35f;       // 延迟后开始渐隐
         [SerializeField] private Ease _floatEase = Ease.OutQuad;
         [SerializeField] private Ease _scaleEase = Ease.OutBack;
 
         [Header("字号")]
-        [SerializeField] private float _normalFontSize = 4f;          // 普通伤害字号
-        [SerializeField] private float _critFontSize = 8f;            // 暴击伤害字号
+        [SerializeField] private float _normalFontSize = 40f;         // 普通伤害字号（像素）
+        [SerializeField] private float _critFontSize = 56f;           // 暴击伤害字号（像素）
 
         // ── 标签常量 ──
 
@@ -53,7 +53,8 @@ namespace BattleSystem
         // ── 内部状态 ──
 
         private Canvas _canvas;
-        private RectTransform _rectTransform;
+        private RectTransform _rectTransform;   // 根节点 Canvas 的 RectTransform
+        private RectTransform _contentRect;     // 数字文本的 RectTransform（定位与动画目标）
         private Tween _moveTween;
         private Tween _fadeTween;
         private Tween _scaleTween;
@@ -71,11 +72,23 @@ namespace BattleSystem
             if (_damageText == null)
                 _damageText = GetComponentInChildren<TMP_Text>();
 
+            // 屏幕空间渲染：数字固定在屏幕像素坐标，像 2D 一样始终正面、不被 3D 物体遮挡
+            _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            transform.localScale = Vector3.one;
+
+            // 定位与动画目标 = 数字文本
+            if (_damageText != null)
+                _contentRect = _damageText.rectTransform;
+
+            // 暴击/真伤标签挂到数字文本下，跟随数字一起定位
+            if (_critLabel != null && _damageText != null)
+            {
+                _critLabel.rectTransform.SetParent(_damageText.rectTransform, false);
+                _critLabel.rectTransform.anchoredPosition = new Vector2(0f, 30f);
+            }
+
             // 确保初始不可见
             _canvas.enabled = false;
-
-            // 诊断日志：确认预制体原始缩放
-            Debug.Log($"[DamageNumberUI] Awake — localScale: {transform.localScale}, canvas.renderMode: {_canvas.renderMode}");
         }
 
         /// <summary>
@@ -86,7 +99,7 @@ namespace BattleSystem
         /// <param name="label">标签文字（"暴击"/"真伤"，空则无标签）</param>
         /// <param name="worldPosition">目标头顶世界坐标</param>
         /// <param name="onComplete">动画结束回调，用于回收到对象池</param>
-        public void Show(int damage, Color color, string label, Vector3 worldPosition, System.Action<DamageNumberUI> onComplete)
+        public void Show(int damage, Color color, string label, Vector3 screenPosition, System.Action<DamageNumberUI> onComplete)
         {
             _onComplete = onComplete;
 
@@ -117,9 +130,18 @@ namespace BattleSystem
             _damageText.fontSize = emphasized ? _critFontSize : _normalFontSize;
             _damageText.fontStyle = emphasized ? FontStyles.Bold : FontStyles.Normal;
 
-            // 4. 定位到世界坐标 + 随机横向偏移
-            float randomOffsetX = Random.Range(-0.4f, 0.4f);
-            transform.position = worldPosition + new Vector3(randomOffsetX, 0f, 0f);
+            // 4. 屏幕坐标 → Canvas 本地坐标（Overlay Canvas 铺满屏幕，pivot 在屏幕中心）
+            //    加随机横向像素偏移，模拟多段连击的散布
+            float randomOffsetX = Random.Range(-20f, 20f);
+            if (_rectTransform != null && _contentRect != null)
+            {
+                Vector2 localPoint;
+                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                        _rectTransform, screenPosition, null, out localPoint))
+                {
+                    _contentRect.localPosition = new Vector3(localPoint.x + randomOffsetX, localPoint.y, 0f);
+                }
+            }
 
             // 5. 启用显示
             _canvas.enabled = true;
@@ -136,26 +158,16 @@ namespace BattleSystem
             // 终止之前可能残留的动画
             KillAllTweens();
 
-            // 获取目标缩放：优先用预制体的原始 localScale，兜底用 0.01（世界空间 Canvas 典型值）
-            Vector3 targetScale = transform.localScale;
-            if (targetScale == Vector3.zero || targetScale.magnitude < 0.0001f)
-            {
-                targetScale = new Vector3(0.01f, 0.01f, 0.01f);
-                Debug.LogWarning($"[DamageNumberUI] localScale 为 0，使用兜底值 {targetScale}");
-            }
+            Vector3 startPos = _contentRect.localPosition;
+            Vector3 endPos = startPos + Vector3.up * _floatDistance;  // _floatDistance 为屏幕像素
 
-            Debug.Log($"[DamageNumberUI] PlayAnimation — targetScale: {targetScale}");
-
-            Vector3 startPos = transform.position;
-            Vector3 endPos = startPos + Vector3.up * _floatDistance;
-
-            // 弹入缩放：0 → targetScale
-            _scaleTween = transform.DOScale(targetScale, SCALE_POP_DURATION)
+            // 弹入缩放：0 → 1（屏幕空间 scale 为 1）
+            _scaleTween = _contentRect.DOScale(Vector3.one, SCALE_POP_DURATION)
                 .From(Vector3.zero)
                 .SetEase(_scaleEase);
 
-            // 上浮
-            _moveTween = transform.DOMove(endPos, _duration)
+            // 上浮（屏幕像素）
+            _moveTween = _contentRect.DOLocalMove(endPos, _duration)
                 .SetEase(_floatEase);
 
             // 渐隐（延迟启动，保证数字先清晰显示再开始淡出）
