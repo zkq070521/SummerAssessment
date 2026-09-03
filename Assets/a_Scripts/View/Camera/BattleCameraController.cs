@@ -35,8 +35,9 @@ namespace BattleSystem
         private const float HIT_HOLD_DURATION = 4f;        // 受击镜头停留时间
         private const float FOV_PUNCH_STRENGTH = 5f;
         private const float FOV_PUNCH_DURATION = 0.15f;
-        private const float HIT_SHAKE_INTENSITY = 2f;     // 受击震屏强度（速度幅度）
+        private const float HIT_SHAKE_INTENSITY = 0.8f;   // 受击震屏强度（Noise 幅度）
         private const float HIT_SHAKE_DURATION = 0.25f;   // 受击震屏时长（秒）
+        private const float HIT_SHAKE_FREQUENCY = 15f;    // 受击震屏噪声频率
 
         // ── Inspector：Cinemachine 核心 ──
         [Header("Cinemachine 核心")]
@@ -63,6 +64,7 @@ namespace BattleSystem
         private Camera _mainCamera;
         private float _defaultFov;
         private Coroutine _attackSequenceCoroutine;
+        private Coroutine _shakeCoroutine;
 
         #region 生命周期
 
@@ -83,10 +85,6 @@ namespace BattleSystem
                 return;
             }
             _defaultFov = _mainCamera.fieldOfView;
-
-            // 确保相机上有 ImpulseListener（否则 CinemachineImpulseSource 的震屏不会生效）
-            if (_mainCamera.GetComponent<CinemachineImpulseListener>() == null)
-                _mainCamera.gameObject.AddComponent<CinemachineImpulseListener>();
 
             // 初始状态：仅广角镜头激活，其他休眠
             ResetAllPriorities();
@@ -341,17 +339,46 @@ namespace BattleSystem
         }
 
         /// <summary>
-        /// 通过 CinemachineImpulseSource 触发震屏
+        /// 用协程驱动受击镜头 VCam 的 Noise 组件幅度实现震屏。
+        /// Noise 在 Cinemachine 渲染管线内部应用，不会被 Brain 覆盖；
+        /// 每帧递减 m_AmplitudeGain 直到衰减回 0，产生"命中冲击"的抖动。
         /// </summary>
         private void TriggerShake(float intensity, float duration)
         {
-            if (_impulseSource == null) return;
+            if (_vcamHit == null) return;
 
-            _impulseSource.m_ImpulseDefinition.m_ImpulseDuration = duration;
-            // 用随机方向的速度生成 impulse。
-            // GenerateImpulseWithForce 固定使用向下方向 (0,-1,0)，配合 Bump 形状会导致震动几乎不可见。
-            Vector3 velocity = Random.insideUnitSphere * intensity;
-            _impulseSource.GenerateImpulseWithVelocity(velocity);
+            CinemachineBasicMultiChannelPerlin noise = _vcamHit.GetComponent<CinemachineBasicMultiChannelPerlin>();
+            if (noise == null)
+                noise = _vcamHit.gameObject.AddComponent<CinemachineBasicMultiChannelPerlin>();
+
+            // 终止之前的震屏协程，避免多次震屏幅度叠加
+            if (_shakeCoroutine != null)
+            {
+                StopCoroutine(_shakeCoroutine);
+                _shakeCoroutine = null;
+            }
+
+            _shakeCoroutine = StartCoroutine(ShakeRoutine(noise, intensity, duration));
+        }
+
+        /// <summary>
+        /// 震屏协程：设置噪声频率，m_AmplitudeGain 从 intensity 线性衰减回 0。
+        /// </summary>
+        private IEnumerator ShakeRoutine(CinemachineBasicMultiChannelPerlin noise, float intensity, float duration)
+        {
+            noise.m_FrequencyGain = HIT_SHAKE_FREQUENCY;
+
+            float elapsed = 0f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+                noise.m_AmplitudeGain = intensity * (1f - t);
+                yield return null;
+            }
+
+            noise.m_AmplitudeGain = 0f;
+            _shakeCoroutine = null;
         }
 
         /// <summary>

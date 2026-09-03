@@ -381,6 +381,7 @@ namespace BattleSystem
                     currentEnergy = hero.maxEnergy,
                     element = hero.element,
                     path = hero.path,
+                    icon = hero.icon,
                     isAlive = true,
                     // 从技能数据读取伤害倍率
                     basicAttackMultiplier = hero.basicAttack != null ? hero.basicAttack.damageMultiplier : 1f,

@@ -38,6 +38,9 @@ public class BattleEntityData
     public ElementType element;             // 元素类型（预留元素克制系统）
     public PathType path;                   // 命途类型
 
+    [Header("=== UI 资源 ===")]
+    public Sprite icon;                     // 行动顺序条头像（敌人由 Inspector 拖入；玩家从 HeroData 拷贝）
+
     [Header("=== 状态 ===")]
     public bool isAlive = true;
 
@@ -67,6 +70,7 @@ public class BattleEntityData
             currentEnergy = this.maxEnergy,
             element = this.element,
             path = this.path,
+            icon = this.icon,
             isAlive = this.isAlive
         };
     }
