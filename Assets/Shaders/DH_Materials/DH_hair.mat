@@ -83,7 +83,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RampTex:
-        m_Texture: {fileID: 2800000, guid: 32395963374962940b0351b04f7e19ed, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
@@ -91,7 +91,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecularMask:
-        m_Texture: {fileID: 2800000, guid: f079b6751bce4ab458c810543754c8df, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -131,13 +131,13 @@ Material:
     - _Parallax: 0.005
     - _QueueOffset: 0
     - _ReceiveShadows: 1
-    - _RimPower: 2.86
-    - _ShadowThreshold: 0.028
+    - _RimPower: 0.26
+    - _ShadowThreshold: 0.716
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _SpecularSize: 0.924
-    - _SpecularThreshold: 0.928
+    - _SpecularSize: 0.929
+    - _SpecularThreshold: 0.864
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _Surface: 0
