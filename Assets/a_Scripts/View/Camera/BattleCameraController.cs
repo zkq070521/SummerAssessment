@@ -32,7 +32,7 @@ namespace BattleSystem
         // ── 常量：时间参数 ──
         private const float ENTRANCE_HOLD_DURATION = 0.5f;
         private const float ATTACK_WINDUP_DURATION = 1.5f;  // 攻击者起手动作时间
-        private const float HIT_HOLD_DURATION = 4f;        // 受击镜头停留时间
+        private const float HIT_HOLD_DURATION = 5f;        // 受击镜头停留时间
         private const float FOV_PUNCH_STRENGTH = 5f;
         private const float FOV_PUNCH_DURATION = 0.15f;
         private const float HIT_SHAKE_INTENSITY = 0.8f;   // 受击震屏强度（Noise 幅度）

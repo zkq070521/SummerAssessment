@@ -49,6 +49,7 @@ public class TeamUI : MonoBehaviour
                 avatarImage = iconRoot.Find("Avatar")?.GetComponent<Image>(),
                 hpBar = FindFillImage(iconRoot.Find("HPBar")),
                 energyBar = FindFillImage(iconRoot.Find("EnergyBar")),
+                energyBarBackground = iconRoot.Find("EnergyBar/Background")?.GetComponent<Image>(),
             };
         }
     }
@@ -112,6 +113,10 @@ public class TeamUI : MonoBehaviour
 
         if (slot.energyBar != null)
             slot.energyBar.fillAmount = hero.maxEnergy > 0f ? hero.currentEnergy / hero.maxEnergy : 0f;
+
+        // 终结技立绘作为能量条背景展示
+        if (slot.energyBarBackground != null && hero.ultimateIcon != null)
+            slot.energyBarBackground.sprite = hero.ultimateIcon;
     }
 
     private void OnCharacterSwitched(HeroData hero, int index)
@@ -151,5 +156,6 @@ public class TeamUI : MonoBehaviour
         public Image avatarImage;
         public Image hpBar;
         public Image energyBar;
+        public Image energyBarBackground;
     }
 }
