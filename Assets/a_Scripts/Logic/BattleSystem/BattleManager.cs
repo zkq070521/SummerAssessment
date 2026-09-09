@@ -222,7 +222,7 @@ namespace BattleSystem
         /// <summary>
         /// 执行攻击动作：伤害计算 → 暴击判定 → 应用伤害 → 广播事件 → 死亡处理
         /// </summary>
-        public void ExecuteAction(BattleEntityData source, BattleEntityData target, float damageMultiplier = 1f)
+        public void ExecuteAction(BattleEntityData source, BattleEntityData target, float damageMultiplier = 1f, AttackKind kind = AttackKind.Single)
         {
             if (source == null || target == null)
             {
@@ -258,8 +258,9 @@ namespace BattleSystem
             // 3. 应用伤害
             target.TakeDamage(damage);
 
-            // 4. 广播事件
-            BattleEventCenter.TriggerUnitAttack(source, target);
+            // 4. 广播事件（群攻逐目标结算时不再重复广播单攻事件，改由调用方统一广播一次 OnAoeAttack）
+            if (kind == AttackKind.Single)
+                BattleEventCenter.TriggerUnitAttack(source, target);
             BattleEventCenter.TriggerDamageDealt(source, target, damage, isCritical);
 
             // 5. 追踪最后一个攻击的玩家（敌人 AI 仇恨目标）

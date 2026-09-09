@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using Cinemachine;
 using DG.Tweening;
 using UnityEngine;
@@ -97,6 +98,7 @@ namespace BattleSystem
             BattleEventCenter.OnBattleStart += OnBattleStart;
             BattleEventCenter.OnTurnStart += OnTurnStart;
             BattleEventCenter.OnUnitAttack += OnUnitAttack;
+            BattleEventCenter.OnAoeAttack += OnAoeAttack;
             BattleEventCenter.OnUnitHit += OnUnitHit;
             BattleEventCenter.OnCameraShake += OnCameraShake;
             BattleEventCenter.OnBattleEnd += OnBattleEnd;
@@ -107,6 +109,7 @@ namespace BattleSystem
             BattleEventCenter.OnBattleStart -= OnBattleStart;
             BattleEventCenter.OnTurnStart -= OnTurnStart;
             BattleEventCenter.OnUnitAttack -= OnUnitAttack;
+            BattleEventCenter.OnAoeAttack -= OnAoeAttack;
             BattleEventCenter.OnUnitHit -= OnUnitHit;
             BattleEventCenter.OnCameraShake -= OnCameraShake;
             BattleEventCenter.OnBattleEnd -= OnBattleEnd;
@@ -202,42 +205,48 @@ namespace BattleSystem
 
         #endregion
 
-        #region 攻击运镜（三段式：攻击者 → 受击目标 → 还原）
+        #region 攻击运镜（群攻三段式：攻击者 → 受击 → 还原；单攻二段式：受击 → 还原）
 
         /// <summary>
-        /// 攻击运镜序列：
-        /// 1. 切到 Shot_Attack（侧面拍攻击者），停留 ATTACK_WINDUP_DURATION
-        /// 2. Brain Blend 平滑过渡到 Shot_Hit（正面拍受击目标），同步触发震屏 + FOV 冲击
-        /// 3. 停留 HIT_HOLD_DURATION 后还原到角色回合镜头
+        /// 攻击运镜序列（按攻击类型区分）：
+        /// - 单攻：无攻击者镜头，从角色回合镜头直接平滑 Blend 到 Shot_Hit（受击目标）
+        /// - 群攻：保留原三段式 — Shot_Attack（攻击者）→ Shot_Hit（受击）→ 还原
+        /// 命中时刻同步触发 FOV 冲击 + 震屏。
         /// </summary>
         private void OnUnitAttack(BattleEntityData source, BattleEntityData target)
         {
             if (source == null) return;
 
-            // 终止之前的攻击序列（防止多次攻击重叠）
+            // 单攻：无攻击者镜头，直接平滑 Blend 到受击镜头
+            RestartAttackSequence(AttackSequence(source, target, showAttackerShot: false));
+        }
+
+        /// <summary>终止上一次攻击序列后启动新序列，防止多次攻击运镜重叠</summary>
+        private void RestartAttackSequence(IEnumerator routine)
+        {
             if (_attackSequenceCoroutine != null)
             {
                 StopCoroutine(_attackSequenceCoroutine);
                 _attackSequenceCoroutine = null;
             }
 
-            _attackSequenceCoroutine = StartCoroutine(AttackSequence(source, target));
+            _attackSequenceCoroutine = StartCoroutine(routine);
         }
 
-        private IEnumerator AttackSequence(BattleEntityData source, BattleEntityData target)
+        private IEnumerator AttackSequence(BattleEntityData source, BattleEntityData target, bool showAttackerShot)
         {
             Transform sourceTransform = GetCharacterTransform(source);
             Transform targetTransform = GetCharacterTransform(target);
 
-            if (sourceTransform == null)
+            if (showAttackerShot && sourceTransform == null)
             {
                 Debug.LogWarning($"[BattleCameraController] 攻击方 {source.heroName} 无 Transform，跳过攻击运镜");
                 _attackSequenceCoroutine = null;
                 yield break;
             }
 
-            // ── 阶段一：攻击者镜头（硬切，不平滑过渡）──
-            if (_vcamAttack != null)
+            // ── 阶段一：攻击者镜头（仅群攻；硬切，不平滑过渡）──
+            if (showAttackerShot && _vcamAttack != null)
             {
                 // Follow = 攻击者
                 _vcamAttack.m_Follow = sourceTransform;
@@ -247,12 +256,12 @@ namespace BattleSystem
                 if (source.team == BattleTeam.Enemy)
                 {
                     // 敌人攻击时，镜头稍微拉远一点
-                    _vcamAttack.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = new Vector3(-0.12f, 0.8f, 2.18f);
+                    _vcamAttack.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = new Vector3(-0.12f, 0f, 4.18f);
                 }
                 else
                 {
                     // 玩家攻击时，镜头稍微拉近一点
-                    _vcamAttack.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = new Vector3(-0.12f, 1.54f, 2.18f);
+                    _vcamAttack.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = new Vector3(-0.12f, 1.5f, 1.6f);
                 }
 
                 // 保存当前混合设置，临时切换为硬切（无过渡）
@@ -271,10 +280,11 @@ namespace BattleSystem
             if (_vcamCharacterFocus != null)
                 _vcamCharacterFocus.Priority = PRIORITY_OFF;
 
-            // 等待攻击起手动作
-            yield return new WaitForSeconds(ATTACK_WINDUP_DURATION);
+            // 群攻：等待攻击起手动作；单攻：直接进入受击镜头（无起手停留）
+            if (showAttackerShot)
+                yield return new WaitForSeconds(ATTACK_WINDUP_DURATION);
 
-            // ── 阶段二：受击目标镜头（Brain 自动 Blend 从 Attack → Hit）──
+            // ── 阶段二：受击目标镜头（单攻从角色镜头平滑 Blend，群攻从攻击者镜头 Blend 到 Hit）──
             if (_vcamHit != null && targetTransform != null)
             {
                 // 设置受击镜头：Follow + LookAt 都指向目标
@@ -283,14 +293,14 @@ namespace BattleSystem
                 if (target.team == BattleTeam.Enemy)
                 {
                     // 敌人受击时，镜头稍微拉远一点
-                    _vcamHit.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = new Vector3(-1.2f, 1f, 4f);
+                    _vcamHit.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = new Vector3(1.2f, 3f, 2f);
                 }
                 else
                 {
                     // 玩家受击时，镜头稍微拉近一点
                     _vcamHit.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = new Vector3(-1.29f, 2.08f, 3.47f);
                 }
-                // Attack 降级，Hit 升级（同优先级，Brain 自动 Blend）
+                // Hit 升级（单攻从角色镜头平滑 Blend 而来；群攻从攻击者镜头 Blend 而来）
                 _vcamHit.Priority = PRIORITY_HIT;
             }
 
@@ -328,6 +338,18 @@ namespace BattleSystem
         private void OnUnitHit(BattleEntityData entity)
         {
             PlayFovPunch();
+        }
+
+        /// <summary>
+        /// 群攻：像原来一样走完整攻击运镜（攻击者镜头 → 受击镜头 → 还原）。
+        /// 受击镜头聚焦到第一个存活目标。
+        /// </summary>
+        private void OnAoeAttack(BattleEntityData source, IReadOnlyList<BattleEntityData> targets)
+        {
+            if (source == null) return;
+
+            BattleEntityData firstTarget = (targets != null && targets.Count > 0) ? targets[0] : null;
+            RestartAttackSequence(AttackSequence(source, firstTarget, showAttackerShot: true));
         }
 
         /// <summary>

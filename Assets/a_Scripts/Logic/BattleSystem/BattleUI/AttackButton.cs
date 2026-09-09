@@ -180,10 +180,13 @@ public class AttackButton : MonoBehaviour
         int hitCount = 0;
         foreach (BattleEntityData enemy in aliveEnemies)  // 遍历副本
         {
-            BattleManager.Instance.ExecuteAction(source, enemy, source.ultimateMultiplier);
+            BattleManager.Instance.ExecuteAction(source, enemy, source.ultimateMultiplier, AttackKind.AreaOfEffect);
             hitCount++;
         }
         // 即使 ExecuteAction 修改了原始的 enemies 列表，也不会影响 aliveEnemies 的遍历
+
+        // 群攻只广播一次 AoE 事件，供特效 / 镜头等表现层播放群攻反馈（避免逐目标重复触发单攻事件）
+        BattleEventCenter.TriggerAoeAttack(source, aliveEnemies);
 
         Debug.Log($"[AttackButton] 群攻: {source.heroName} → {hitCount} 个敌人");
         _isAoeAiming = false;

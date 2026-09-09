@@ -1439,6 +1439,9 @@ PrefabInstance:
       addedObject: {fileID: 5339520163481853368}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4994b2315881aa248871730eea3f0a81, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 8699353540239047761}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4994b2315881aa248871730eea3f0a81, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 3053990658933548052}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4994b2315881aa248871730eea3f0a81, type: 3}
       insertIndex: -1
@@ -1467,13 +1470,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _sourceTeam: 0
-  _heroID: 
-  _effects:
-  - _prefab: {fileID: 0}
-    _anchor: 0
-    _customAnchor: {fileID: 0}
-    _offset: {x: 0, y: 0, z: 0}
-    _delay: 0
+  _heroID: DanHeng
+  _singleEffects: []
+  _aoeEffects: []
+--- !u!114 &8699353540239047761
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7028278198534260088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdadcac3a8a145d41be3281dc00654b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _sourceTeam: 0
+  _dashDuration: 0.25
+  _stopDistance: 1.5
+  _holdDuration: 2
+  _returnDuration: 0.35
+  _minDistanceToDash: 0.01
 --- !u!54 &3053990658933548052
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BattleSystem
@@ -87,6 +88,15 @@ namespace BattleSystem
         {
             if (OnUnitAttack != null)
                 OnUnitAttack(source, target);
+        }
+
+        /// <summary>单位执行群体攻击时触发（一次群攻只广播一次，source 为攻击者，targets 为全部存活目标）</summary>
+        public static event Action<BattleEntityData, IReadOnlyList<BattleEntityData>> OnAoeAttack;
+
+        public static void TriggerAoeAttack(BattleEntityData source, IReadOnlyList<BattleEntityData> targets)
+        {
+            if (OnAoeAttack != null)
+                OnAoeAttack(source, targets);
         }
 
         /// <summary>单位受击时触发</summary>

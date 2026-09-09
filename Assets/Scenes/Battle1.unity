@@ -3818,7 +3818,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 0
-  m_FollowOffset: {x: 1.91, y: 1.13, z: -1.99}
+  m_FollowOffset: {x: 1.9, y: 1.5, z: -4}
   m_XDamping: 1
   m_YDamping: 1
   m_ZDamping: 1
@@ -5217,7 +5217,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 0
-  m_FollowOffset: {x: -0.12, y: 1.54, z: 2.18}
+  m_FollowOffset: {x: -0.12, y: 0, z: 4.18}
   m_XDamping: 1
   m_YDamping: 1
   m_ZDamping: 1
@@ -5750,7 +5750,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 0
-  m_FollowOffset: {x: -1.2, y: 1, z: 4}
+  m_FollowOffset: {x: -1.29, y: 2.08, z: 3.47}
   m_XDamping: 4.9
   m_YDamping: 6.6
   m_ZDamping: 1
@@ -7120,14 +7120,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2008485298}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.2458704, y: -0.6658275, z: 0.24834168, w: 0.6592025}
+  m_LocalRotation: {x: 0.14186092, y: -0.8562787, z: 0.31937468, w: 0.38034475}
   m_LocalPosition: {x: 9.05412, y: 8.523352, z: -6.3657255}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1506001054}
   m_Father: {fileID: 507224860}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 40.909, y: -132.1, z: 0}
 --- !u!114 &2008485300
 MonoBehaviour:
   m_ObjectHideFlags: 0

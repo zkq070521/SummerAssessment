@@ -1,14 +1,19 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BattleSystem
 {
     /// <summary>
-    /// 攻击特效序列播放器 — 订阅 BattleEventCenter.OnUnitAttack，按数组顺序以各自间隔依次实例化并播放特效预制体
+    /// 攻击特效序列播放器 — 订阅 BattleEventCenter 的单攻/群攻事件，
+    /// 分别按「单攻特效组」「群攻特效组」的数组顺序，以各自间隔依次实例化并播放特效预制体。
     ///
     /// 特效预制体无需预先放进场景：本组件在运行时 Instantiate 到指定锚点（攻击者 / 目标 / 自定义挂点），
     /// 播放结束后自动销毁。不同角色在 Inspector 中拖入不同数量、不同锚点、不同间隔的特效数组即可，
     /// 无需改动代码。
+    ///
+    /// 单攻触发 OnUnitAttack（播放单攻特效组），群攻触发 OnAoeAttack（一次群攻只广播一次，播放群攻特效组）。
+    /// 群攻特效组中 Target 锚点解析到第一个存活目标，Source / Custom 锚点行为不变。
     ///
     /// 与 BattleCameraController（镜头运镜）、DamageNumberSpawner（伤害跳字）同属表现层，
     /// 通过事件订阅与逻辑层（BattleManager）解耦。
@@ -46,8 +51,11 @@ namespace BattleSystem
 
         // ── Inspector：特效序列 ──
 
-        [Header("特效序列")]
-        [SerializeField] private ParticleSequenceEntry[] _effects; // 按数组顺序依次实例化，长度 = 特效数量
+        [Header("单攻特效序列")]
+        [SerializeField] private ParticleSequenceEntry[] _singleEffects; // 单攻时按顺序播放（订阅 OnUnitAttack）
+
+        [Header("群攻特效序列")]
+        [SerializeField] private ParticleSequenceEntry[] _aoeEffects;    // 群攻时按顺序播放（订阅 OnAoeAttack）
 
         // ── 内部状态 ──
 
@@ -58,18 +66,14 @@ namespace BattleSystem
         private void OnEnable()
         {
             BattleEventCenter.OnUnitAttack += OnUnitAttack;
+            BattleEventCenter.OnAoeAttack += OnAoeAttack;
         }
 
         private void OnDisable()
         {
             BattleEventCenter.OnUnitAttack -= OnUnitAttack;
-
-            // 组件失活时终止未完成的序列，避免协程访问已禁用的对象
-            if (_playCoroutine != null)
-            {
-                StopCoroutine(_playCoroutine);
-                _playCoroutine = null;
-            }
+            BattleEventCenter.OnAoeAttack -= OnAoeAttack;
+            StopSequence();
         }
 
         #endregion
@@ -79,23 +83,43 @@ namespace BattleSystem
         private void OnUnitAttack(BattleEntityData source, BattleEntityData target)
         {
             if (!MatchesFilter(source)) return;
+            RestartSequence(PlaySequence(source, target, _singleEffects));
+        }
 
-            // 终止上一次序列，防止多次攻击重叠播放
+        private void OnAoeAttack(BattleEntityData source, IReadOnlyList<BattleEntityData> targets)
+        {
+            if (!MatchesFilter(source)) return;
+
+            // 群攻特效锚点：Target 解析到第一个存活目标；Source / Custom 锚点行为不变
+            BattleEntityData anchorTarget = (targets != null && targets.Count > 0) ? targets[0] : null;
+            RestartSequence(PlaySequence(source, anchorTarget, _aoeEffects));
+        }
+
+        /// <summary>终止上一次序列后启动新序列，防止多次攻击重叠播放</summary>
+        private void RestartSequence(IEnumerator routine)
+        {
+            StopSequence();
+            _playCoroutine = StartCoroutine(routine);
+        }
+
+        /// <summary>终止未完成的序列，避免协程访问已禁用的对象</summary>
+        private void StopSequence()
+        {
             if (_playCoroutine != null)
             {
                 StopCoroutine(_playCoroutine);
                 _playCoroutine = null;
             }
-
-            _playCoroutine = StartCoroutine(PlaySequence(source, target));
         }
 
         /// <summary>
         /// 依次生成每个特效：先等待该元素自己的 Delay，再解析锚点 → Instantiate → 播放 → 定时销毁。
         /// </summary>
-        private IEnumerator PlaySequence(BattleEntityData source, BattleEntityData target)
+        private IEnumerator PlaySequence(BattleEntityData source, BattleEntityData target, ParticleSequenceEntry[] entries)
         {
-            foreach (ParticleSequenceEntry entry in _effects)
+            if (entries == null) yield break;
+
+            foreach (ParticleSequenceEntry entry in entries)
             {
                 if (entry.Delay > 0f)
                     yield return new WaitForSeconds(entry.Delay);
