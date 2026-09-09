@@ -2,17 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 碎屏特效 — 截取当前画面铺成碎玻璃网格，再定住停留（露出背后的黑幕）。
+///
+/// 由 SceneTransitionManager 编排调用：ShowAsync() 铺碎片 → Break() 定住停留 → Hide() 复原。
+/// 自身不再订阅 OnHitEnemy，避免与场景切换的时序打架。
+/// </summary>
 public class BreakScreen : MonoBehaviour
 {
     public GameObject screenShardsParent;  // 碎玻璃的父物体（初始隐藏）
-    public GameObject explosionPosition;   // 爆炸中心点
     public Camera targetCamera;            // 要截屏的摄像机
-    public float explosionForce = 3000f;
-    public float explosionRadius = 10f;
-    public float upwardModifier = 0f;
 
     private Texture2D capturedTexture;
-    private bool isPlaying;
 
     // 保存每个碎片的初始状态
     private List<Vector3> initialPositions = new List<Vector3>();
@@ -29,20 +30,26 @@ public class BreakScreen : MonoBehaviour
         }
     }
 
-    void OnEnable()
+    /// <summary>截取当前画面并铺成碎玻璃（协程，内部等待一帧完成截屏）</summary>
+    public IEnumerator ShowAsync()
     {
-        GameEvents.OnHitEnemy += OnHitEnemyHandler;
+        if (screenShardsParent == null) yield break;
+
+        ResetShardsToInitialState();
+        yield return CaptureScreen();
+        ApplyTextureToShards();
+        screenShardsParent.SetActive(true);
     }
 
-    void OnDisable()
-    {
-        GameEvents.OnHitEnemy -= OnHitEnemyHandler;
-    }
+    /// <summary>碎开并停留：把碎片定住（不移动、不下落），保持摆放好的碎屏画面</summary>
+    public void Break() => FreezeShards();
 
-    private void OnHitEnemyHandler(GameObject enemy, Vector3 hitPoint)
+    /// <summary>隐藏并复原碎片（下次播放前调用）</summary>
+    public void Hide()
     {
-        if (isPlaying) return;
-        StartCoroutine(CaptureAndBreakScreen(hitPoint));
+        if (screenShardsParent != null)
+            screenShardsParent.SetActive(false);
+        ResetShardsToInitialState();
     }
 
     // 保存碎片的初始位置和旋转
@@ -85,47 +92,6 @@ public class BreakScreen : MonoBehaviour
             }
             index++;
         }
-
-    }
-
-    private IEnumerator CaptureAndBreakScreen(Vector3 hitPoint)
-    {
-        isPlaying = true;
-
-        // 先重置碎片到初始位置
-        ResetShardsToInitialState();
-
-        // 1. 截屏（捕获当前帧）
-        yield return StartCoroutine(CaptureScreen());
-
-        // 2. 应用截图到所有碎玻璃的纹理
-        ApplyTextureToShards();
-
-        // 3. 显示碎玻璃（覆盖屏幕）
-        if (screenShardsParent != null)
-        {
-            screenShardsParent.SetActive(true);
-        }
-
-        // 4. 等待 4 秒
-        yield return new WaitForSeconds(4f);
-
-        // 5. 爆炸！让碎片飞散
-        ExplodeShards(hitPoint);
-
-        // 6. 等待碎片飞远后隐藏
-        yield return new WaitForSeconds(1f);
-
-        if (screenShardsParent != null)
-        {
-            screenShardsParent.SetActive(false);
-        }
-
-        // 7. 静默复原，为下一次命中做准备
-        yield return new WaitForSeconds(0.5f);
-        ResetShardsToInitialState();
-
-        isPlaying = false;
     }
 
     // 截屏方法（URP 兼容）
@@ -154,56 +120,48 @@ public class BreakScreen : MonoBehaviour
         Destroy(rt);
     }
 
-    // 将截图应用到所有碎玻璃的纹理上
+    // 将截图应用到所有碎玻璃的纹理上（覆盖全部材质槽/子网格，避免个别碎片因正面在材质槽 1 而漏贴）
     private void ApplyTextureToShards()
     {
         if (screenShardsParent == null || capturedTexture == null) return;
 
-        MeshRenderer[] renderers = screenShardsParent.GetComponentsInChildren<MeshRenderer>();
+        MeshRenderer[] renderers = screenShardsParent.GetComponentsInChildren<MeshRenderer>(true);
 
         foreach (MeshRenderer renderer in renderers)
         {
-            // 销毁上次创建的材质实例，避免泄漏
-            if (renderer.material != renderer.sharedMaterial)
-                Destroy(renderer.material);
+            Material[] sharedMats = renderer.sharedMaterials;
+            Material[] mats = new Material[sharedMats.Length];
 
-            Material mat = new Material(renderer.sharedMaterial);
-            mat.mainTexture = capturedTexture;               // Built-in RP
-            mat.SetTexture("_BaseMap", capturedTexture);     // URP Lit 实际采样名
-            renderer.material = mat;
+            for (int i = 0; i < sharedMats.Length; i++)
+            {
+                if (sharedMats[i] == null)
+                {
+                    mats[i] = null;
+                    continue;
+                }
+
+                Material mat = new Material(sharedMats[i]);
+                mat.mainTexture = capturedTexture;           // Built-in RP
+                mat.SetTexture("_BaseMap", capturedTexture); // URP Lit 实际采样名
+                mats[i] = mat;
+            }
+
+            renderer.materials = mats;
         }
     }
 
-    // 爆炸碎玻璃
-    private void ExplodeShards(Vector3 hitPoint)
+    // 把碎片定住（关掉物理），让它们停在摆放好的位置，不移动、不下落
+    private void FreezeShards()
     {
         if (screenShardsParent == null) return;
 
-        if (explosionPosition != null)
-            explosionPosition.transform.position = hitPoint;
-
-        Vector3 explosionPos = explosionPosition != null ? explosionPosition.transform.position : hitPoint;
-
         foreach (Transform child in screenShardsParent.transform)
         {
-            if (child.TryGetComponent<Rigidbody>(out Rigidbody childRigidbody))
-            {
-                //  重置速度（防止残留速度影响）
-                childRigidbody.velocity = Vector3.zero;
-                childRigidbody.angularVelocity = Vector3.zero;
+            if (!child.TryGetComponent<Rigidbody>(out Rigidbody rb)) continue;
 
-                // 施加爆炸力
-                childRigidbody.AddExplosionForce(
-                    explosionForce,
-                    explosionPos,
-                    explosionRadius,
-                    upwardModifier,
-                    ForceMode.Impulse
-                );
-                // 加上随机旋转
-                //childRigidbody.angularVelocity = Random.insideUnitSphere * 20f;
-                //child.parent = null;
-            }
+            rb.isKinematic = true;
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
         }
     }
 }

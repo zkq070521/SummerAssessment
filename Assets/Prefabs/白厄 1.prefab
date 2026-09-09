@@ -467,7 +467,7 @@ MonoBehaviour:
   _returnDuration: 0.35
   _minDistanceToDash: 0.01
   _attackClip: {fileID: 7400000, guid: 75db3d6cb15b3ab4d9e0be330b778808, type: 2}
-  _attackStateName: DHattack
+  _attackStateName: BEAttack
   _attackCrossFade: 0.1
 --- !u!95 &3459738273373932488
 Animator:

@@ -1491,6 +1491,9 @@ MonoBehaviour:
   _holdDuration: 2
   _returnDuration: 0.35
   _minDistanceToDash: 0.01
+  _attackClip: {fileID: 7400000, guid: c048d7e134b71da4f8d089f034f00dea, type: 2}
+  _attackStateName: DHattack
+  _attackCrossFade: 0.1
 --- !u!54 &3053990658933548052
 Rigidbody:
   m_ObjectHideFlags: 0

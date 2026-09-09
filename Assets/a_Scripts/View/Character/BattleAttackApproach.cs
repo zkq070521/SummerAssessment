@@ -19,16 +19,16 @@ namespace BattleSystem
     {
         [Header("冲撞")]
         [SerializeField] private BattleTeam _sourceTeam = BattleTeam.Player; // 仅响应此阵营的攻击方
-        [SerializeField] [Min(0f)] private float _dashDuration = 0.25f;     // 冲到敌人面前的耗时（秒）
-        [SerializeField] [Min(0f)] private float _stopDistance = 1.5f;      // 停止点与敌人之间的距离（在敌人面前）
-        [SerializeField] [Min(0f)] private float _holdDuration = 1.5f;      // 到达敌人面前后停留的时长（秒）
-        [SerializeField] [Min(0f)] private float _returnDuration = 0.35f;   // 返回出生点的耗时（秒）
-        [SerializeField] [Min(0f)] private float _minDistanceToDash = 0.01f; // 距离过近时不冲撞，直接面向敌人
+        [SerializeField][Min(0f)] private float _dashDuration = 0.25f;     // 冲到敌人面前的耗时（秒）
+        [SerializeField][Min(0f)] private float _stopDistance = 1.5f;      // 停止点与敌人之间的距离（在敌人面前）
+        [SerializeField][Min(0f)] private float _holdDuration = 2f;      // 到达敌人面前后停留的时长（秒）
+        [SerializeField][Min(0f)] private float _returnDuration = 0.35f;   // 返回出生点的耗时（秒）
+        [SerializeField][Min(0f)] private float _minDistanceToDash = 0.01f; // 距离过近时不冲撞，直接面向敌人
 
         [Header("攻击动画")]
         [SerializeField] private AnimationClip _attackClip;                // 拖拽攻击动画资产（可选；留空则播放控制器自带攻击）
         [SerializeField] private string _attackStateName = "DHattack";     // 攻击动画状态名（Baie / DanHeng 控制器中为 "DHattack"）
-        [SerializeField] [Min(0f)] private float _attackCrossFade = 0.1f;  // 攻击动画过渡时长（秒）
+        [SerializeField][Min(0f)] private float _attackCrossFade = 0.1f;  // 攻击动画过渡时长（秒）
 
         // ── 内部状态 ──
 
