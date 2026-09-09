@@ -193,7 +193,7 @@ namespace BattleSystem
             else
             {
                 // 玩家回合时，镜头稍微拉近一点
-                _vcamCharacterFocus.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = new Vector3(1.91f, 1.13f, -1.99f);
+                _vcamCharacterFocus.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = new Vector3(1.91f, 1.13f, -2.3f);
             }
 
 

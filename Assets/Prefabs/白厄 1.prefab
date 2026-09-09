@@ -468,7 +468,7 @@ MonoBehaviour:
   _sourceTeam: 0
   _dashDuration: 0.25
   _stopDistance: 1.5
-  _holdDuration: 1.5
+  _holdDuration: 1.3
   _returnDuration: 0.35
   _minDistanceToDash: 0.01
   _attackClip: {fileID: 7400000, guid: 75db3d6cb15b3ab4d9e0be330b778808, type: 2}
