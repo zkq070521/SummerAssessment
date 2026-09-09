@@ -447,7 +447,12 @@ MonoBehaviour:
   _sourceTeam: 0
   _heroID: BaiE
   _singleEffects: []
-  _aoeEffects: []
+  _aoeEffects:
+  - _prefab: {fileID: 7047775527359616344, guid: 67252b7bb2e3b084ea173e2f5a4f6f90, type: 3}
+    _anchor: 1
+    _customAnchor: {fileID: 0}
+    _offset: {x: 0, y: 0, z: 0}
+    _delay: 0
 --- !u!114 &3534646874539103325
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -293,12 +293,12 @@ namespace BattleSystem
                 if (target.team == BattleTeam.Enemy)
                 {
                     // 敌人受击时，镜头稍微拉远一点
-                    _vcamHit.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = new Vector3(1.2f, 3f, 2f);
+                    _vcamHit.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = new Vector3(3f, 1.8f, 3f);
                 }
                 else
                 {
                     // 玩家受击时，镜头稍微拉近一点
-                    _vcamHit.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = new Vector3(-1.29f, 2.08f, 3.47f);
+                    _vcamHit.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = new Vector3(-1.29f, 1.8f, 3.47f);
                 }
                 // Hit 升级（单攻从角色镜头平滑 Blend 而来；群攻从攻击者镜头 Blend 而来）
                 _vcamHit.Priority = PRIORITY_HIT;

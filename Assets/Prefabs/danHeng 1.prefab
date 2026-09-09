@@ -1471,7 +1471,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sourceTeam: 0
   _heroID: DanHeng
-  _singleEffects: []
+  _singleEffects:
+  - _prefab: {fileID: 2883699115839514482, guid: 016fe6bfcd098174c807e25326dd0824, type: 3}
+    _anchor: 1
+    _customAnchor: {fileID: 0}
+    _offset: {x: 0, y: 0, z: 0}
+    _delay: 0.3
   _aoeEffects: []
 --- !u!114 &8699353540239047761
 MonoBehaviour:
