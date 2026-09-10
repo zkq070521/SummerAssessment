@@ -1,3 +1,4 @@
+using Cinemachine;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -13,6 +14,10 @@ public class DialogueController : MonoBehaviour
 
     [Header("交互提示")]
     [SerializeField] private GameObject _interactHint;
+
+    [Header("对话相机")]
+    [SerializeField] private CinemachineVirtualCamera _dialogueCamera;   // 对话时切换到的虚拟相机（挂在对谈角色子物体下）
+    [SerializeField] private int _dialogueCameraPriority = 100;          // 对话相机激活时的优先级，需高于大世界默认相机（FreeLook 默认 10）
 
     private bool _canTalk;
     private GameObject _player;
@@ -37,6 +42,8 @@ public class DialogueController : MonoBehaviour
             dialoguePanel.SetActive(false);
         else
             Debug.LogError($"[DialogueController] {gameObject.name}：未设置 dialoguePanel");
+
+        SetDialogueCamera(false);   // 初始关闭对话相机，默认使用大世界相机
     }
 
     private void OnTriggerEnter(Collider other)
@@ -98,6 +105,8 @@ public class DialogueController : MonoBehaviour
         if (dialoguePanel != null)
             dialoguePanel.SetActive(true);
 
+        SetDialogueCamera(true);   // 切到对话相机
+
         Debug.Log($"[DialogueController] 对话已启动：{_currentData.name}");
     }
 
@@ -106,6 +115,8 @@ public class DialogueController : MonoBehaviour
     /// </summary>
     public void EndDialogue()
     {
+        SetDialogueCamera(false);   // 切回大世界相机
+
         SetPlayerControl(true);
         ShowCursor(false);
     }
@@ -126,5 +137,15 @@ public class DialogueController : MonoBehaviour
     {
         Cursor.visible = show;
         Cursor.lockState = show ? CursorLockMode.None : CursorLockMode.Locked;
+    }
+
+    /// <summary>
+    /// 切换对话相机：active=true 时抬高对话相机优先级（CinemachineBrain 自动 Blend 过去），
+    /// false 时降回 0，自动切回大世界默认相机（FreeLook）。
+    /// </summary>
+    private void SetDialogueCamera(bool active)
+    {
+        if (_dialogueCamera == null) return;
+        _dialogueCamera.Priority = active ? _dialogueCameraPriority : 0;
     }
 }
