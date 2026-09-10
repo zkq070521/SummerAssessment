@@ -401,8 +401,43 @@ namespace BattleSystem
                     ultimateMultiplier = hero.ultimate != null ? hero.ultimate.damageMultiplier : 3f
                 };
 
+                ApplyEquipmentBonus(entity);
+
                 _playerTeam.Add(entity);
             }
+        }
+
+        /// <summary>
+        /// 把已装备物品的加成叠加到玩家实体上（生命/攻击/防御/暴击/速度）。
+        /// 装备数据来自持久单例 InventoryManager（跨场景保留），在创建玩家队伍时读取。
+        /// </summary>
+        private void ApplyEquipmentBonus(BattleEntityData entity)
+        {
+            if (InventoryManager.Instance == null)
+            {
+                Debug.LogWarning("[BattleManager] InventoryManager.Instance 为 null，装备加成未应用（InventoryManager 未跨场景持久化？）");
+                return;
+            }
+
+            int equipCount = 0;
+            for (int i = 0; i < InventoryManager.EQUIP_SLOT_COUNT; i++)
+            {
+                ItemData item = InventoryManager.Instance.GetEquipItem(i);
+                if (item == null) continue;
+
+                equipCount++;
+                entity.maxHP += item.maxHPBonus;
+                entity.attack += item.attackBonus;
+                entity.defense += item.defenseBonus;
+                entity.critRate += item.critRateBonus;
+                entity.critDamage += item.critDamageBonus;
+                entity.speed += item.speedBonus;
+            }
+
+            // 生命值上限加成同步体现在当前血量上（入场即满血）
+            entity.currentHP = entity.maxHP;
+
+            Debug.Log($"[BattleManager] 装备加成：{equipCount} 件 → maxHP={entity.maxHP}, attack={entity.attack}, defense={entity.defense}, critRate={entity.critRate}, critDamage={entity.critDamage}");
         }
 
         /// <summary>

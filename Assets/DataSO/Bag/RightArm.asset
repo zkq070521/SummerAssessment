@@ -10,9 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9253cebdbf7cc85409b53da9b0377a69, type: 3}
-  m_Name: Dio 1
+  m_Name: RightArm
   m_EditorClassIdentifier: 
-  itemName: "\u9A6C\u514B\u676F"
-  description: 55555
-  icon: {fileID: 21300000, guid: f3dbf64b530c3ea49baade8626f07566, type: 3}
-  equipSlot: 1
+  itemName: rightArm
+  description: "\u653B\u51FB\u529B+3000"
+  icon: {fileID: 550456044, guid: 3124b9bfcdd9cb04ab984bf415fdef90, type: 3}
+  equipSlot: 3
+  maxHPBonus: 0
+  attackBonus: 3000
+  defenseBonus: 0
+  critRateBonus: 0
+  critDamageBonus: 0
+  speedBonus: 0

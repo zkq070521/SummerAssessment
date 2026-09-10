@@ -34,6 +34,14 @@ public class InventoryManager : MonoBehaviour
             return;
         }
         Instance = this;
+
+        // DontDestroyOnLoad 只对根物体生效；若被放在某个父物体下，先脱离父级再持久化
+        if (transform.parent != null)
+        {
+            Debug.LogWarning("[InventoryManager] 检测到自身不是根物体，已自动脱离父级以便跨场景持久化");
+            transform.SetParent(null);
+        }
+
         DontDestroyOnLoad(gameObject);
 
         // 初始物品只填一次（持久化，重进场景不会重复添加）

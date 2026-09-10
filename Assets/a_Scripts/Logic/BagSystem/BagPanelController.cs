@@ -200,9 +200,11 @@ public class BagPanelController : MonoBehaviour
 
     private void RefreshUI()
     {
+        int displayedCount = 0;
         for (int i = 0; i < _bagSlots.Length; i++)
         {
             ItemData item = GetItem(i);
+            if (item != null) displayedCount++;
             _bagSlots[i]?.SetItem(item != null ? item.icon : null);
         }
 
@@ -211,6 +213,8 @@ public class BagPanelController : MonoBehaviour
             ItemData item = GetEquipItem(i);
             _equipmentSlots[i]?.SetItem(item != null ? item.icon : null);
         }
+
+        Debug.Log($"[BagPanelController] RefreshUI：背包格 {_bagSlots.Length} 个，读到物品 {displayedCount} 件，InventoryManager {(InventoryManager.Instance != null ? "存在" : "为 null")}");
     }
 
     private void ShowTooltip(ItemData item, Vector2 screenPosition)

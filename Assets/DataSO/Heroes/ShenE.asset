@@ -17,7 +17,7 @@ MonoBehaviour:
   description: 
   modelPrefab: {fileID: 1374754957616068019, guid: 91f598262c8743b4a89106c20b2a2c4f, type: 3}
   battlePrefab: {fileID: 1374754957616068019, guid: 91f598262c8743b4a89106c20b2a2c4f, type: 3}
-  maxHP: 25000
+  maxHP: 1500
   currentHP: 0
   attack: 3000
   defense: 300
