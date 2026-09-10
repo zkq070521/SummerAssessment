@@ -90,6 +90,9 @@ public class BagPanelController : MonoBehaviour
     {
         if (_bagPanel != null)
             _bagPanel.SetActive(true);
+
+        ShowCursor(true);   // 打开背包显示鼠标
+
         RefreshUI();
     }
 
@@ -98,9 +101,18 @@ public class BagPanelController : MonoBehaviour
         if (_bagPanel != null)
             _bagPanel.SetActive(false);
 
+        ShowCursor(false);  // 关闭背包隐藏鼠标（锁定），与对话系统一致
+
         HideTooltip();
         HideDragIcon();
         _dragSourceIndex = -1;
+    }
+
+    /// <summary>显示/隐藏鼠标并切换锁定模式（与 DialogueController.ShowCursor 保持一致）</summary>
+    private void ShowCursor(bool show)
+    {
+        Cursor.visible = show;
+        Cursor.lockState = show ? CursorLockMode.None : CursorLockMode.Locked;
     }
 
     // ── 拖拽（由 BagSlot 转发调用）──
