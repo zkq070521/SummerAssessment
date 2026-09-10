@@ -1477,7 +1477,12 @@ MonoBehaviour:
     _customAnchor: {fileID: 0}
     _offset: {x: 0, y: 0, z: 0}
     _delay: 0.3
-  _aoeEffects: []
+  _aoeEffects:
+  - _prefab: {fileID: 5717556991878621218, guid: 8187c761348f2f74a9bf4af3eea035f5, type: 3}
+    _anchor: 1
+    _customAnchor: {fileID: 0}
+    _offset: {x: 0, y: 0, z: 0}
+    _delay: 0.5
 --- !u!114 &8699353540239047761
 MonoBehaviour:
   m_ObjectHideFlags: 0

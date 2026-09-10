@@ -34,7 +34,7 @@ namespace BattleSystem
             [SerializeField] private EffectAnchor _anchor;    // 生成锚点
             [SerializeField] private Transform _customAnchor; // _anchor == Custom 时使用的挂点
             [SerializeField] private Vector3 _offset;         // 相对锚点的本地偏移（微调生成位置）
-            [SerializeField] [Min(0f)] private float _delay;  // 生成并播放前等待的秒数（0 = 立即播放）
+            [SerializeField][Min(0f)] private float _delay;  // 生成并播放前等待的秒数（0 = 立即播放）
 
             public GameObject Prefab => _prefab;
             public EffectAnchor Anchor => _anchor;
@@ -135,7 +135,9 @@ namespace BattleSystem
 
                 // 本地偏移随锚点朝向旋转，使特效贴合当前作战朝向
                 Vector3 spawnPos = anchor.position + anchor.rotation * entry.Offset;
-                GameObject instance = Instantiate(entry.Prefab, spawnPos, anchor.rotation);
+
+                // 保留特效预制体原本的旋转（不强制对齐锚点朝向）
+                GameObject instance = Instantiate(entry.Prefab, spawnPos, entry.Prefab.transform.rotation);
 
                 PlayAndAutoDestroy(instance);
             }
