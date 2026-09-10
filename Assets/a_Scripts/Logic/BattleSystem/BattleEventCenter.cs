@@ -61,6 +61,15 @@ namespace BattleSystem
                 OnBattleEnd(winner);
         }
 
+        /// <summary>敌人总血量扣到 0（总血条归零）时触发；由表现层在延迟刷新血条后广播，晚于 OnBattleEnd</summary>
+        public static event Action OnEnemyHpDepleted;
+
+        public static void TriggerEnemyHpDepleted()
+        {
+            if (OnEnemyHpDepleted != null)
+                OnEnemyHpDepleted();
+        }
+
         // ──────────── 单位事件 ────────────
 
         /// <summary>单位死亡时触发（BattleManager 检测 HP 归零后广播）</summary>

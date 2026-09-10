@@ -118,6 +118,38 @@ public class SceneTransitionManager : MonoBehaviour
             Debug.LogError($"[SceneTransitionManager] 战斗场景 \"{_battleSceneName}\" 未加入 Build Settings，请先在 File → Build Settings 中添加");
     }
 
+    /// <summary>
+    /// 战斗结束退出过场（黑幕 → 白线 → 加载目标场景，无碎屏）。
+    /// 供 BattleManager 在返回大世界时调用；目标场景加载后本管理器随旧场景一起销毁，黑幕自然"揭开"新场景。
+    /// </summary>
+    public void PlayExitTransition(string sceneName)
+    {
+        if (string.IsNullOrEmpty(sceneName))
+        {
+            Debug.LogError("[SceneTransitionManager] 场景名为空，无法加载");
+            return;
+        }
+
+        StartCoroutine(ExitTransitionRoutine(sceneName));
+    }
+
+    private IEnumerator ExitTransitionRoutine(string sceneName)
+    {
+        // 阶段 1：黑幕淡入
+        yield return FadeBlackIn(_blackFadeDuration);
+
+        // 阶段 2：白线从左到右延伸
+        yield return ExtendWhiteLine(_whiteLineDuration);
+
+        // 阶段 3：稍等后加载目标场景（黑幕 + 白线随旧场景销毁，自然揭开新场景）
+        yield return new WaitForSeconds(_postLineDelay);
+
+        if (Application.CanStreamedLevelBeLoaded(sceneName))
+            yield return SceneManager.LoadSceneAsync(sceneName);
+        else
+            Debug.LogError($"[SceneTransitionManager] 场景 \"{sceneName}\" 未加入 Build Settings，请先在 File → Build Settings 中添加");
+    }
+
     /// <summary>黑幕从透明淡入到全黑</summary>
     private IEnumerator FadeBlackIn(float duration)
     {

@@ -342,11 +342,19 @@ namespace BattleSystem
         /// <summary>战斗结束后等待返回开放世界的时长（秒）。留足时间让受击/死亡表现与总血条扣血播完，再切场景</summary>
         private const float RETURN_TO_OVERWORLD_DELAY = 5f;
 
-        /// <summary>等待片刻后卸载 Battle1，回到开放世界</summary>
+        /// <summary>等待片刻后播放黑屏白线过场，回到开放世界</summary>
         private IEnumerator ReturnToOverworld()
         {
             yield return new WaitForSeconds(RETURN_TO_OVERWORLD_DELAY);
-            SceneManager.LoadSceneAsync(OVERWORLD_SCENE);
+
+            SceneTransitionManager transition = SceneTransitionManager.Instance;
+            if (transition == null)
+            {
+                // Battle1 场景内无 SceneTransitionManager（它只挂在大世界的 GameManager 上），运行时补一个用于退出过场
+                transition = new GameObject("ExitTransitionManager").AddComponent<SceneTransitionManager>();
+            }
+
+            transition.PlayExitTransition(OVERWORLD_SCENE);
         }
 
         // ── 内部方法 ──

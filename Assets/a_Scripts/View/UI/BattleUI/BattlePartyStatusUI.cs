@@ -153,8 +153,9 @@ namespace BattleSystem
 
         /// <summary>
         /// 写入敌人总血条：fillAmount = 所有存活敌人 currentHP 之和 / 开战时总血量上限。
-        /// 总血量归零时敌人已全部阵亡，逻辑层（BattleManager.CheckBattleEnd）已判定玩家胜利，
-        /// 本方法只负责表现，不直接驱动胜负。
+        /// 总血量归零（最后一名敌人阵亡后的延迟刷新）时广播 OnEnemyHpDepleted，供胜利动画等表现层响应；
+        /// 本方法只负责表现，胜负判定仍由逻辑层（BattleManager.CheckBattleEnd）负责。
+        /// 注意：战斗结束后 IsBattleStarted 已置 false，故此处不校验该标志，确保总血条能最终扣到 0。
         /// </summary>
         private void ApplyEnemyHpBar()
         {
@@ -162,7 +163,7 @@ namespace BattleSystem
                 return;
 
             BattleManager battle = BattleManager.Instance;
-            if (battle == null || !battle.IsBattleStarted)
+            if (battle == null)
                 return;
 
             IReadOnlyList<BattleEntityData> enemies = battle.EnemyTeam;
@@ -177,6 +178,9 @@ namespace BattleSystem
             _enemyHpBarFill.fillAmount = _enemyTotalMaxHp > 0f
                 ? Mathf.Clamp01(totalCurrent / _enemyTotalMaxHp)
                 : 0f;
+
+            if (_enemyTotalMaxHp > 0f && totalCurrent <= 0f)
+                BattleEventCenter.TriggerEnemyHpDepleted();
         }
 
         /// <summary>
