@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9253cebdbf7cc85409b53da9b0377a69, type: 3}
   m_Name: LeftArm
   m_EditorClassIdentifier: 
-  itemName: left
-  description: "\u5DE6\u80F3\u818A\uFF0C\u9632\u5FA1+666"
-  icon: {fileID: 21300000, guid: f3dbf64b530c3ea49baade8626f07566, type: 3}
+  itemName: "\u952E\u76D8"
+  description: "\u8001\u5B66\u957F\u7956\u4F20\u952E\u76D8\uFF0C\u9632\u5FA1\u503C+666"
+  icon: {fileID: -782293328, guid: 7712addb4281df742b292794426df51d, type: 3}
   equipSlot: 2
   maxHPBonus: 0
   attackBonus: 0

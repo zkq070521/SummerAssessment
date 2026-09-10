@@ -31,7 +31,7 @@ public class BagPanelController : MonoBehaviour
     [SerializeField] private RectTransform _tooltipRect;    // 提示框（Canvas 直接子物体）
     [SerializeField] private TMP_Text _tooltipName;         // 物品名称文本
     [SerializeField] private TMP_Text _tooltipDesc;         // 物品简介文本
-    [SerializeField] private Vector2 _tooltipOffset = new Vector2(400f, -80f);   // 提示框相对鼠标的偏移
+    [SerializeField] private Vector2 _tooltipOffset = new Vector2(0f, 0f);   // 提示框相对鼠标的偏移
 
     /// <summary>正在拖拽的背包格子索引，-1 表示未拖拽</summary>
     private int _dragSourceIndex = -1;

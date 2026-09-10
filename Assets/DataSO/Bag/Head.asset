@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Head
   m_EditorClassIdentifier: 
   itemName: "\u9A6C\u514B\u676F"
-  description: "\u5934\u90E8\uFF0C\u52A010000\u751F\u547D\u503C"
-  icon: {fileID: 21300000, guid: 80e37b546dcaae64cb846a439a5eb5ae, type: 3}
+  description: "\u7CBE\u7F8E\u79D1\u534F\u8054\u540D\u6587\u521B\u9A6C\u514B\u676F\uFF0C\u751F\u547D\u503C+10000"
+  icon: {fileID: 1815571099, guid: 3156508507b409c4598e7eaea2cec6c2, type: 3}
   equipSlot: 1
   maxHPBonus: 10000
   attackBonus: 0

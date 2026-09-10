@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9253cebdbf7cc85409b53da9b0377a69, type: 3}
   m_Name: RightArm
   m_EditorClassIdentifier: 
-  itemName: rightArm
-  description: "\u653B\u51FB\u529B+3000"
-  icon: {fileID: 550456044, guid: 3124b9bfcdd9cb04ab984bf415fdef90, type: 3}
+  itemName: "\u9F20\u6807"
+  description: "\u8001\u5B66\u59D0\u7956\u4F20\u9F20\u6807\uFF0C\u653B\u51FB\u529B+3000"
+  icon: {fileID: -1626414025, guid: 63a228a609333154296b2c3a71fc42a1, type: 3}
   equipSlot: 3
   maxHPBonus: 0
   attackBonus: 3000
