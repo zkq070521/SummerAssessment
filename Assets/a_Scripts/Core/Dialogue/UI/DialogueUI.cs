@@ -33,23 +33,24 @@ public class DialogueUI : MonoBehaviour
 
     private void Awake()
     {
-        if (_instance == null)
-        {
-            _instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
+        _instance = this;
 
         if (_nextButton != null)
             _nextButton.onClick.AddListener(ContinueDialogue);
+        else
+            Debug.LogWarning("[DialogueUI] _nextButton 未赋值，Next 按钮无法推进对话，请在 Inspector 拖入 Next 按钮");
+
+        if (_mainText == null)
+            Debug.LogWarning("[DialogueUI] _mainText 未赋值，对话文字不会更新（会一直显示场景里的静态文本），请拖入主文本");
+        if (_dialoguePanel == null)
+            Debug.LogWarning("[DialogueUI] _dialoguePanel 未赋值，对话结束无法关闭面板，请拖入 LayoutControl");
     }
 
     private void OnDestroy()
     {
+        if (_instance == this)
+            _instance = null;
+
         // 防御性清理 DOTween，避免已销毁对象仍被 Tween 引用
         _typewriterTweener?.Kill();
     }
@@ -147,6 +148,8 @@ public class DialogueUI : MonoBehaviour
         if (_currentData == null) return;
 
         _currentIndex++;
+        Debug.Log($"[DialogueUI] Next 被点击 → 第 {_currentIndex + 1} / {_currentData.dialoguePiece.Count} 条");
+
         if (_currentIndex < _currentData.dialoguePiece.Count)
         {
             UpdateMainDialogue(_currentData.dialoguePiece[_currentIndex]);

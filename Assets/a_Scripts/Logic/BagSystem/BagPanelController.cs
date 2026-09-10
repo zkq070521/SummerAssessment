@@ -36,7 +36,7 @@ public class BagPanelController : MonoBehaviour
     [SerializeField] private RectTransform _tooltipRect;    // 提示框（Canvas 直接子物体）
     [SerializeField] private TMP_Text _tooltipName;         // 物品名称文本
     [SerializeField] private TMP_Text _tooltipDesc;         // 物品简介文本
-    [SerializeField] private Vector2 _tooltipOffset = new Vector2(16f, -16f);   // 提示框相对鼠标的偏移
+    [SerializeField] private Vector2 _tooltipOffset = new Vector2(400f, -80f);   // 提示框相对鼠标的偏移
 
     [Header("初始物品（测试用）")]
     [SerializeField] private ItemData[] _initialItems;      // 开局预置到背包的物品
