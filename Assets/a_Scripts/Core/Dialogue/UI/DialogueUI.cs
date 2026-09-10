@@ -35,6 +35,16 @@ public class DialogueUI : MonoBehaviour
     {
         _instance = this;
 
+        // 确保选项面板有垂直布局，避免多个选项重叠
+        if (_optionPanel != null && _optionPanel.GetComponent<VerticalLayoutGroup>() == null)
+        {
+            VerticalLayoutGroup layout = _optionPanel.gameObject.AddComponent<VerticalLayoutGroup>();
+            layout.spacing = 10f;
+            layout.childAlignment = TextAnchor.UpperCenter;
+            layout.childControlWidth = false;     // 不控制宽度，保持预制体宽度
+            layout.childControlHeight = false;    // 不控制高度，保持预制体高度
+        }
+
         if (_nextButton != null)
             _nextButton.onClick.AddListener(ContinueDialogue);
         else
@@ -227,6 +237,7 @@ public class DialogueUI : MonoBehaviour
         for (int i = 0; i < piece.options.Count; i++)
         {
             OptionUI optionUI = Instantiate(_optionPrefab, _optionPanel);
+            optionUI.gameObject.SetActive(true);   // 确保激活（预制体根节点可能被设为失活）
             optionUI.SetupOption(piece.options[i]);
         }
     }

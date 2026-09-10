@@ -27,6 +27,13 @@ public class OptionUI : MonoBehaviour
     public void SetupOption(DialogueOption option)
     {
         _currentOption = option;
+
+        // 兜底：若 Awake 未运行（如预制体根节点被设为失活），这里再解析一次引用
+        if (_thisButton == null)
+            _thisButton = GetComponent<Button>();
+        if (_optionText == null)
+            _optionText = GetComponentInChildren<TextMeshProUGUI>(true);
+
         if (_optionText != null)
             _optionText.text = option.text;
 
