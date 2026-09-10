@@ -5,22 +5,17 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
-/// 背包面板控制器 — 管理背包 UI 的开关、物品/装备数据，以及拖拽、装备、悬停提示。
+/// 背包面板控制器 — 背包 UI 的开关、拖拽、装备、悬停提示（纯表现层，不持有数据）。
 ///
 /// 布局：面板左侧 5 个装备槽（头 + 四肢），右侧 4×4 共 16 个背包格子。
+/// 所有物品/装备数据由持久单例 InventoryManager 保存，本组件通过 InventoryManager.Instance 读写。
 /// 交互：
 ///   1. BagButton 点击 → Open()；右上角退出按钮 → Close()；
 ///   2. 拖拽背包物品到另一格 = 交换位置；拖到装备槽 = 装备（需部位匹配）；
 ///   3. 悬停物品 = 显示名称 + 简介。
-///
-/// 数据用两个定长数组 _inventory[16] / _equipment[5] 保存在内存中（简易实现，未做存档）。
-/// 拖拽图标 _dragIcon 与提示框 _tooltipRect 应为所属 Canvas 的直接子物体，便于坐标换算。
 /// </summary>
 public class BagPanelController : MonoBehaviour
 {
-    private const int BAG_SLOT_COUNT = 16;
-    private const int EQUIP_SLOT_COUNT = 5;
-
     [Header("面板")]
     [SerializeField] private GameObject _bagPanel;          // 背包面板根物体
     [SerializeField] private Button _exitButton;            // 右上角退出按钮
@@ -37,12 +32,6 @@ public class BagPanelController : MonoBehaviour
     [SerializeField] private TMP_Text _tooltipName;         // 物品名称文本
     [SerializeField] private TMP_Text _tooltipDesc;         // 物品简介文本
     [SerializeField] private Vector2 _tooltipOffset = new Vector2(400f, -80f);   // 提示框相对鼠标的偏移
-
-    [Header("初始物品（测试用）")]
-    [SerializeField] private ItemData[] _initialItems;      // 开局预置到背包的物品
-
-    private readonly ItemData[] _inventory = new ItemData[BAG_SLOT_COUNT];
-    private readonly ItemData[] _equipment = new ItemData[EQUIP_SLOT_COUNT];
 
     /// <summary>正在拖拽的背包格子索引，-1 表示未拖拽</summary>
     private int _dragSourceIndex = -1;
@@ -69,10 +58,10 @@ public class BagPanelController : MonoBehaviour
         if (_equipmentSlots == null || _equipmentSlots.Length == 0)
             _equipmentSlots = GetComponentsInChildren<EquipmentSlot>(true);
 
-        if (_bagSlots.Length != BAG_SLOT_COUNT)
-            Debug.LogWarning($"[BagPanelController] _bagSlots 应配置 {BAG_SLOT_COUNT} 个格子，实际 {_bagSlots.Length} 个");
-        if (_equipmentSlots.Length != EQUIP_SLOT_COUNT)
-            Debug.LogWarning($"[BagPanelController] _equipmentSlots 应配置 {EQUIP_SLOT_COUNT} 个槽位，实际 {_equipmentSlots.Length} 个");
+        if (_bagSlots.Length != InventoryManager.BAG_SLOT_COUNT)
+            Debug.LogWarning($"[BagPanelController] _bagSlots 应配置 {InventoryManager.BAG_SLOT_COUNT} 个格子，实际 {_bagSlots.Length} 个");
+        if (_equipmentSlots.Length != InventoryManager.EQUIP_SLOT_COUNT)
+            Debug.LogWarning($"[BagPanelController] _equipmentSlots 应配置 {InventoryManager.EQUIP_SLOT_COUNT} 个槽位，实际 {_equipmentSlots.Length} 个");
 
         for (int i = 0; i < _bagSlots.Length; i++)
             _bagSlots[i]?.Initialize(i, this);
@@ -85,9 +74,6 @@ public class BagPanelController : MonoBehaviour
 
     private void Start()
     {
-        for (int i = 0; i < _initialItems.Length && i < _inventory.Length; i++)
-            _inventory[i] = _initialItems[i];
-
         Close();
         RefreshUI();
     }
@@ -115,23 +101,6 @@ public class BagPanelController : MonoBehaviour
         HideTooltip();
         HideDragIcon();
         _dragSourceIndex = -1;
-    }
-
-    /// <summary>向背包添加物品到第一个空格子；背包已满返回 false</summary>
-    public bool AddItem(ItemData item)
-    {
-        if (item == null) return false;
-
-        for (int i = 0; i < _inventory.Length; i++)
-        {
-            if (_inventory[i] == null)
-            {
-                _inventory[i] = item;
-                RefreshUI();
-                return true;
-            }
-        }
-        return false;
     }
 
     // ── 拖拽（由 BagSlot 转发调用）──
@@ -193,7 +162,7 @@ public class BagPanelController : MonoBehaviour
     public void ShowBagTooltip(int bagIndex, Vector2 screenPosition) => ShowTooltip(GetItem(bagIndex), screenPosition);
 
     public void ShowEquipmentTooltip(int equipIndex, Vector2 screenPosition)
-        => ShowTooltip(equipIndex >= 0 && equipIndex < _equipment.Length ? _equipment[equipIndex] : null, screenPosition);
+        => ShowTooltip(GetEquipItem(equipIndex), screenPosition);
 
     public void HideTooltip()
     {
@@ -201,18 +170,19 @@ public class BagPanelController : MonoBehaviour
             _tooltipRect.gameObject.SetActive(false);
     }
 
-    // ── 内部逻辑 ──
+    // ── 内部逻辑（数据读写统一走 InventoryManager）──
 
     private ItemData GetItem(int bagIndex)
-        => (bagIndex >= 0 && bagIndex < _inventory.Length) ? _inventory[bagIndex] : null;
+        => InventoryManager.Instance != null ? InventoryManager.Instance.GetBagItem(bagIndex) : null;
+
+    private ItemData GetEquipItem(int equipIndex)
+        => InventoryManager.Instance != null ? InventoryManager.Instance.GetEquipItem(equipIndex) : null;
 
     /// <summary>交换两个背包格子的物品</summary>
     private void TryMove(int from, int to)
     {
-        if (from < 0 || from >= _inventory.Length || to < 0 || to >= _inventory.Length)
-            return;
-
-        (_inventory[from], _inventory[to]) = (_inventory[to], _inventory[from]);
+        if (InventoryManager.Instance != null)
+            InventoryManager.Instance.MoveItem(from, to);
     }
 
     /// <summary>把背包物品装备到指定槽位（需部位匹配；与槽位原有装备交换）</summary>
@@ -220,22 +190,27 @@ public class BagPanelController : MonoBehaviour
     {
         ItemData item = GetItem(bagIndex);
         if (item == null) return;
-        if (equipIndex < 0 || equipIndex >= _equipment.Length) return;
+        if (equipIndex < 0 || equipIndex >= _equipmentSlots.Length) return;
         if (item.equipSlot == EquipmentSlotType.None) return;                            // 不可装备物品
         if (_equipmentSlots[equipIndex].SlotType != item.equipSlot) return;              // 部位不匹配
 
-        ItemData previous = _equipment[equipIndex];
-        _equipment[equipIndex] = item;
-        _inventory[bagIndex] = previous;
+        if (InventoryManager.Instance != null)
+            InventoryManager.Instance.EquipItem(bagIndex, equipIndex);
     }
 
     private void RefreshUI()
     {
         for (int i = 0; i < _bagSlots.Length; i++)
-            _bagSlots[i]?.SetItem(_inventory[i] != null ? _inventory[i].icon : null);
+        {
+            ItemData item = GetItem(i);
+            _bagSlots[i]?.SetItem(item != null ? item.icon : null);
+        }
 
         for (int i = 0; i < _equipmentSlots.Length; i++)
-            _equipmentSlots[i]?.SetItem(_equipment[i] != null ? _equipment[i].icon : null);
+        {
+            ItemData item = GetEquipItem(i);
+            _equipmentSlots[i]?.SetItem(item != null ? item.icon : null);
+        }
     }
 
     private void ShowTooltip(ItemData item, Vector2 screenPosition)

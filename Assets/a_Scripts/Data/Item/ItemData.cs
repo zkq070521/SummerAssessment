@@ -3,8 +3,8 @@ using UnityEngine;
 /// <summary>
 /// 物品配置（ScriptableObject）— 定义一件物品的名称、图标、简介，以及可装备的部位。
 ///
-/// 通过 Assets → Create → Game/ItemData 创建资产，再拖入 BagPanelController 的初始物品列表，
-/// 或在运行时用 BagPanelController.AddItem() 加入背包。
+/// 通过 Assets → Create → Game/ItemData 创建资产，再拖入 InventoryManager 的初始物品列表，
+/// 或在运行时用 InventoryManager.AddItem() / 对话奖励加入背包。
 /// </summary>
 [CreateAssetMenu(fileName = "New Item", menuName = "Game/ItemData")]
 public class ItemData : ScriptableObject

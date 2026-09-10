@@ -114,12 +114,19 @@ public class PlayerMovementController : MonoBehaviour
                 LockMouse();
         }
 
-        // 攻击：仅在指针未悬停 UI 时触发（点击按钮等 UI 不应误触发攻击）
-        if (!_inputBlocked && !_isAttacking
-            && _attackAction.WasPressedThisFrame()
-            && !IsPointerOverUI())
+        // 鼠标左键点击处理（仅非 UI 区域）：
+        // - 鼠标解锁状态：点击 → 重新锁定鼠标（隐藏光标），不触发攻击
+        // - 鼠标锁定状态：点击 → 触发攻击
+        if (_attackAction.WasPressedThisFrame() && !IsPointerOverUI())
         {
-            TryAttack();
+            if (Cursor.lockState == CursorLockMode.None)
+            {
+                LockMouse();
+            }
+            else if (!_inputBlocked && !_isAttacking)
+            {
+                TryAttack();
+            }
         }
 
         if (_inputBlocked || _isAttacking) return;

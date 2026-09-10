@@ -132,11 +132,11 @@ Material:
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _RimPower: 4.46
-    - _ShadowThreshold: 0.3
+    - _ShadowThreshold: 0.051
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _SpecularSize: 0.02
+    - _SpecularSize: 0.944
     - _SpecularThreshold: 0.958
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1

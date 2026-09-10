@@ -19,6 +19,10 @@ public class DialogueController : MonoBehaviour
     [SerializeField] private CinemachineVirtualCamera _dialogueCamera;   // 对话时切换到的虚拟相机（挂在对谈角色子物体下）
     [SerializeField] private int _dialogueCameraPriority = 100;          // 对话相机激活时的优先级，需高于大世界默认相机（FreeLook 默认 10）
 
+    [Header("对话奖励")]
+    [SerializeField] private ItemData[] _rewardItems;   // 对话完成后发放的物品
+    [SerializeField] private string _rewardID;          // 奖励唯一 ID（用于跨场景去重；留空则用 NPC 名称）
+
     private bool _canTalk;
     private GameObject _player;
     private PlayerMovementController _playerController;
@@ -117,6 +121,8 @@ public class DialogueController : MonoBehaviour
     {
         SetDialogueCamera(false);   // 切回大世界相机
 
+        GrantDialogueReward();   // 发放对话奖励（事件驱动，InventoryManager 去重）
+
         SetPlayerControl(true);
         ShowCursor(false);
     }
@@ -147,5 +153,28 @@ public class DialogueController : MonoBehaviour
     {
         if (_dialogueCamera == null) return;
         _dialogueCamera.Priority = active ? _dialogueCameraPriority : 0;
+    }
+
+    /// <summary>
+    /// 发放对话奖励 — 通过 GameEvents.OnRewardClaimed 事件交给 InventoryManager，
+    /// 由其按 rewardID 去重（保证跨场景只发一次）。
+    /// </summary>
+    private void GrantDialogueReward()
+    {
+        if (_rewardItems == null || _rewardItems.Length == 0)
+        {
+            Debug.LogWarning($"[DialogueController] {gameObject.name} 未配置 _rewardItems，无奖励发放");
+            return;
+        }
+
+        if (InventoryManager.Instance == null)
+        {
+            Debug.LogError($"[DialogueController] 场景中不存在 InventoryManager，奖励无法入包！请在 SampleScene 创建一个挂 InventoryManager 组件的空物体");
+            return;
+        }
+
+        string rewardID = string.IsNullOrEmpty(_rewardID) ? gameObject.name : _rewardID;
+        Debug.Log($"[DialogueController] 触发奖励发放 rewardID=\"{rewardID}\"，共 {_rewardItems.Length} 件");
+        GameEvents.TriggerRewardClaimed(rewardID, _rewardItems);
     }
 }

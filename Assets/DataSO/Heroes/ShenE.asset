@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e11e88b468d6e24abec06d5a4ddf6b8, type: 3}
+  m_Name: ShenE
+  m_EditorClassIdentifier: 
+  heroName: "\u5361\u5384\u65AF\u5170\u90A3"
+  heroID: ShenE
+  description: 
+  modelPrefab: {fileID: 1374754957616068019, guid: 91f598262c8743b4a89106c20b2a2c4f, type: 3}
+  battlePrefab: {fileID: 1374754957616068019, guid: 91f598262c8743b4a89106c20b2a2c4f, type: 3}
+  maxHP: 25000
+  currentHP: 0
+  attack: 3000
+  defense: 300
+  speed: 110
+  maxEnergy: 100
+  element: 0
+  path: 0
+  basicAttack: {fileID: 0}
+  skill: {fileID: 0}
+  ultimate: {fileID: 0}
+  talent: {fileID: 0}
+  technique: {fileID: 0}
+  icon: {fileID: -1746822578, guid: 12c629e6deadb684fb4fd4971ca36592, type: 3}
+  portrait: {fileID: -1746822578, guid: 12c629e6deadb684fb4fd4971ca36592, type: 3}
+  ultimateIcon: {fileID: 0}
+  skillIconBasic: {fileID: 0}
+  skillIconSkill: {fileID: 0}
+  skillIconUltimate: {fileID: 0}
+  elementIcon: {fileID: 0}
+  heroIconPrefab: {fileID: 0}
+  battleStartVoice: {fileID: 0}
+  skillVoice: {fileID: 0}
+  ultimateVoice: {fileID: 0}
+  hitVoice: {fileID: 0}
+  dieVoice: {fileID: 0}
+  skillEffect: {fileID: 0}
+  ultimateEffect: {fileID: 0}
+  hitEffect: {fileID: 0}

@@ -29,4 +29,12 @@ public static class GameEvents
     public static event System.Action<bool> OnMiniMapToggled;
     public static void TriggerMiniMapToggled(bool isOpen)
         => OnMiniMapToggled?.Invoke(isOpen);
+
+    /// <summary>
+    /// 领取对话奖励时触发 — 参数：奖励 ID（用于去重）、奖励物品列表。
+    /// 由 DialogueController 在对话结束时触发，InventoryManager 监听并发放（每个奖励 ID 只发一次）。
+    /// </summary>
+    public static event System.Action<string, IReadOnlyList<ItemData>> OnRewardClaimed;
+    public static void TriggerRewardClaimed(string rewardID, IReadOnlyList<ItemData> items)
+        => OnRewardClaimed?.Invoke(rewardID, items);
 }

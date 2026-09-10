@@ -37,6 +37,8 @@ Material:
     m_Ints: []
     m_Floats:
     - _RimPower: 3.07
+    - _ShadowThreshold: 0.075
+    - _SpecularSize: 0.94
     - _SpecularThreshold: 0.958
     m_Colors: []
   m_BuildTextureStacks: []

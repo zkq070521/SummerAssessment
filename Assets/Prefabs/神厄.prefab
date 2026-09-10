@@ -60,6 +60,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: "\u795E\u5384"
       objectReference: {fileID: 0}
+    - target: {fileID: 5692691750202015490, guid: 464d1cf53f9b5ce44a11f22f2dd85e97, type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: f6dd05c13acda8a4bb2db6503b64cce1, type: 2}
+    - target: {fileID: 5866666021909216657, guid: 464d1cf53f9b5ce44a11f22f2dd85e97, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 2faadf40cf7afd1469b12323fa1538a0, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 5088928330588001762, guid: 464d1cf53f9b5ce44a11f22f2dd85e97, type: 3}
@@ -356,5 +364,53 @@ PrefabInstance:
     - {fileID: 594197159621890864, guid: 464d1cf53f9b5ce44a11f22f2dd85e97, type: 3}
     - {fileID: -4670447023182259377, guid: 464d1cf53f9b5ce44a11f22f2dd85e97, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 464d1cf53f9b5ce44a11f22f2dd85e97, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -6187876892527662587}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 464d1cf53f9b5ce44a11f22f2dd85e97, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6707609071095224187}
   m_SourcePrefab: {fileID: 100100000, guid: 464d1cf53f9b5ce44a11f22f2dd85e97, type: 3}
+--- !u!1 &1374754957616068019 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 464d1cf53f9b5ce44a11f22f2dd85e97, type: 3}
+  m_PrefabInstance: {fileID: 2293868813296634082}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &-6187876892527662587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1374754957616068019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b153a104f8226d4499982457ce76247, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _sourceTeam: 0
+  _heroID: 
+  _singleEffects: []
+  _aoeEffects: []
+--- !u!114 &6707609071095224187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1374754957616068019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdadcac3a8a145d41be3281dc00654b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _sourceTeam: 0
+  _dashDuration: 0.25
+  _stopDistance: 1.5
+  _holdDuration: 1.5
+  _returnDuration: 0.35
+  _minDistanceToDash: 0.01
+  _attackClip: {fileID: 7400000, guid: 237d1ce2b0683f1429196523068234ea, type: 2}
+  _attackStateName: DHattack
+  _attackCrossFade: 0.1
