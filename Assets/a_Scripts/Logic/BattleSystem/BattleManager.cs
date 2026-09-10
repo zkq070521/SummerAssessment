@@ -339,10 +339,13 @@ namespace BattleSystem
         /// <summary>防御减免软上限常数：防御越高，每点防御的减免收益越低</summary>
         private const float DEFENSE_SCALE = 1000f;
 
+        /// <summary>战斗结束后等待返回开放世界的时长（秒）。留足时间让受击/死亡表现与总血条扣血播完，再切场景</summary>
+        private const float RETURN_TO_OVERWORLD_DELAY = 5f;
+
         /// <summary>等待片刻后卸载 Battle1，回到开放世界</summary>
         private IEnumerator ReturnToOverworld()
         {
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(RETURN_TO_OVERWORLD_DELAY);
             SceneManager.LoadSceneAsync(OVERWORLD_SCENE);
         }
 
