@@ -21,7 +21,7 @@ MonoBehaviour:
   currentHP: 1500
   attack: 2800
   defense: 250
-  speed: 400
+  speed: 100
   maxEnergy: 100
   element: 4
   path: 0

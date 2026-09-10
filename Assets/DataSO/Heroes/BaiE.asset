@@ -38,9 +38,9 @@ MonoBehaviour:
   skillIconUltimate: {fileID: 21300000, guid: 198823fd809f94c439ed9f9af79992fe, type: 3}
   elementIcon: {fileID: 21300000, guid: 198823fd809f94c439ed9f9af79992fe, type: 3}
   heroIconPrefab: {fileID: 0}
-  battleStartVoice: {fileID: 0}
+  battleStartVoice: {fileID: 8300000, guid: 77a8698fe492c3840ad95db1ba048f67, type: 3}
   skillVoice: {fileID: 0}
-  ultimateVoice: {fileID: 0}
+  ultimateVoice: {fileID: 8300000, guid: a26c668b2b32da3409dff5ee21ef3597, type: 3}
   hitVoice: {fileID: 0}
   dieVoice: {fileID: 0}
   skillEffect: {fileID: 0}

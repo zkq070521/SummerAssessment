@@ -398,7 +398,13 @@ namespace BattleSystem
                     // 从技能数据读取伤害倍率
                     basicAttackMultiplier = hero.basicAttack != null ? hero.basicAttack.damageMultiplier : 1f,
                     skillMultiplier = hero.skill != null ? hero.skill.damageMultiplier : 2f,
-                    ultimateMultiplier = hero.ultimate != null ? hero.ultimate.damageMultiplier : 3f
+                    ultimateMultiplier = hero.ultimate != null ? hero.ultimate.damageMultiplier : 3f,
+                    // 声音资源
+                    battleStartVoice = hero.battleStartVoice,
+                    skillVoice = hero.skillVoice,
+                    ultimateVoice = hero.ultimateVoice,
+                    hitVoice = hero.hitVoice,
+                    dieVoice = hero.dieVoice
                 };
 
                 ApplyEquipmentBonus(entity);

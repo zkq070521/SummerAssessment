@@ -38,6 +38,13 @@ public class BattleEntityData
     public ElementType element;             // 元素类型（预留元素克制系统）
     public PathType path;                   // 命途类型
 
+    [Header("=== 声音资源 ===")]
+    public AudioClip battleStartVoice;      // 战斗入场语音
+    public AudioClip skillVoice;            // 释放战技语音
+    public AudioClip ultimateVoice;         // 终结技语音
+    public AudioClip hitVoice;              // 受击语音
+    public AudioClip dieVoice;              // 阵亡语音
+
     [Header("=== UI 资源 ===")]
     public Sprite icon;                     // 行动顺序条头像（敌人由 Inspector 拖入；玩家从 HeroData 拷贝）
 
@@ -71,6 +78,11 @@ public class BattleEntityData
             element = this.element,
             path = this.path,
             icon = this.icon,
+            battleStartVoice = this.battleStartVoice,
+            skillVoice = this.skillVoice,
+            ultimateVoice = this.ultimateVoice,
+            hitVoice = this.hitVoice,
+            dieVoice = this.dieVoice,
             isAlive = this.isAlive
         };
     }
