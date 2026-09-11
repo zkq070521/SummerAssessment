@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,6 +20,11 @@ namespace BattleSystem
     public class BattleVoicePlayer : MonoBehaviour
     {
         [SerializeField] private AudioSource _audioSource;   // 播放语音的 AudioSource（可空，Awake 自动补）
+
+        [Header("受击语音延迟")]
+        [SerializeField] private float _hitVoiceDelay = 2f;  // 受击语音延迟播放时长（对齐受击镜头 / 伤害跳字等延迟表现）
+
+        private Coroutine _hitVoiceCoroutine;   // 受击语音延迟播放协程句柄（重复受击时取消旧的）
 
         private void Awake()
         {
@@ -74,8 +80,15 @@ namespace BattleSystem
 
         private void HandleUnitHit(BattleEntityData target)
         {
-            if (target != null)
-                Play(target.hitVoice);
+            if (target == null || target.hitVoice == null) return;
+
+            // 受击语音延迟播放，与延迟出现的受击视觉表现（震屏 / 伤害跳字）对齐
+            if (_hitVoiceCoroutine != null)
+            {
+                StopCoroutine(_hitVoiceCoroutine);
+                _hitVoiceCoroutine = null;
+            }
+            _hitVoiceCoroutine = StartCoroutine(PlayDelayed(target.hitVoice, _hitVoiceDelay));
         }
 
         private void HandleUnitDeath(BattleEntityData entity)
@@ -88,6 +101,16 @@ namespace BattleSystem
         {
             if (clip == null || _audioSource == null) return;
             _audioSource.PlayOneShot(clip);
+        }
+
+        /// <summary>
+        /// 延迟 delay 秒后播放语音（用于对齐延迟的受击表现）
+        /// </summary>
+        private IEnumerator PlayDelayed(AudioClip clip, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            Play(clip);
+            _hitVoiceCoroutine = null;
         }
     }
 }

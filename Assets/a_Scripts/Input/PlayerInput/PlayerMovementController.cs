@@ -37,6 +37,12 @@ public class PlayerMovementController : MonoBehaviour
     public ParticleSystem hideEffect;            // 武器隐藏粒子系统（Burst 型，初始失活，播放时激活）
     public float trailDuration = 0.5f;           // 拖尾持续时间（秒）
 
+    [Header("音效")]
+    public AudioSource audioSource;              // 可空，Awake 自动补
+    public AudioClip walkClip;                   // 走路音效（循环播放）
+    public AudioClip runClip;                    // 跑步音效（循环播放）
+    public AudioClip attackClip;                 // 攻击音效（一次性）
+
     // 组件
     private CharacterController _controller;
     private Transform _transform;
@@ -45,6 +51,7 @@ public class PlayerMovementController : MonoBehaviour
     // 状态
     private Vector2 _moveInput;
     private bool _isSprinting;
+    private AudioClip _currentFootstepClip;   // 当前循环播放的脚步 clip（null = 未播放）
     private float _rotationVelocity;
     private float _verticalVelocity;
 
@@ -69,6 +76,13 @@ public class PlayerMovementController : MonoBehaviour
             cameraTransform = Camera.main.transform;
         if (animator == null)
             animator = GetComponent<Animator>();
+
+        // 音效：AudioSource 未拖入时自动补
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
 
         // 攻击输入（鼠标左键）：改为在 Update 中轮询触发，便于屏蔽 UI 点击
         _attackAction = _input.Player.PlayerAttack;
@@ -150,6 +164,9 @@ public class PlayerMovementController : MonoBehaviour
 
         // 动画
         UpdateAnimation();
+
+        // 脚步音效
+        UpdateFootsteps();
     }
 
     private Vector3 CalculateMoveDirection()
@@ -210,6 +227,53 @@ public class PlayerMovementController : MonoBehaviour
         animator.SetBool("isRunning", _isSprinting);
     }
 
+    /// <summary>
+    /// 走路 / 跑步时循环播放对应脚步音效；停止移动即停，走路↔跑步切换时切换 clip。
+    /// 用单个 AudioSource 循环播放 + 显式状态记录，避免 PlayOneShot 叠加造成多个音效重叠。
+    /// </summary>
+    private void UpdateFootsteps()
+    {
+        if (audioSource == null) return;
+
+        bool isMoving = _moveInput != Vector2.zero && _controller.isGrounded;
+        if (!isMoving)
+        {
+            StopFootsteps();
+            return;
+        }
+
+        AudioClip targetClip = _isSprinting ? runClip : walkClip;
+        if (targetClip == null) return;
+
+        // 仅在开始移动或走路↔跑步切换时重新 Play，避免每帧重复叠加
+        if (_currentFootstepClip != targetClip)
+        {
+            audioSource.clip = targetClip;
+            audioSource.loop = true;
+            audioSource.Play();
+            _currentFootstepClip = targetClip;
+        }
+    }
+
+    /// <summary>
+    /// 停止循环播放的脚步音效并清空状态
+    /// </summary>
+    private void StopFootsteps()
+    {
+        if (audioSource == null || _currentFootstepClip == null) return;
+        audioSource.Stop();
+        _currentFootstepClip = null;
+    }
+
+    /// <summary>
+    /// 播放一次性音效（clip 为空或 AudioSource 缺失时静默跳过）
+    /// </summary>
+    private void PlaySfx(AudioClip clip)
+    {
+        if (clip == null || audioSource == null) return;
+        audioSource.PlayOneShot(clip);
+    }
+
     #region 鼠标锁定
 
     private void LockMouse()
@@ -252,6 +316,12 @@ public class PlayerMovementController : MonoBehaviour
     private System.Collections.IEnumerator AttackSequence()
     {
         _isAttacking = true;
+
+        // 停止脚步音效（攻击期间不走路）
+        StopFootsteps();
+
+        // 播放攻击音效
+        PlaySfx(attackClip);
 
         // 1. 播放攻击动画
         animator.SetTrigger(AttackHash);

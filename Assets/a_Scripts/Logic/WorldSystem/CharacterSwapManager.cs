@@ -17,6 +17,10 @@ public class CharacterSwapManager : MonoBehaviour
     [Header("切换特效")]
     [SerializeField] private GameObject _switchParticlePrefab;   // 切换角色时在角色位置播放的粒子预制体（可留空）
 
+    [Header("切换音效")]
+    [SerializeField] private AudioClip _switchSound;             // 切换角色时播放的音效（可留空）
+    [SerializeField] private AudioSource _audioSource;           // 可空，Awake 自动补
+
     /// <summary>当前角色序号（-1 表示未初始化）</summary>
     public int CurrentIndex { get; private set; } = -1;
 
@@ -28,6 +32,17 @@ public class CharacterSwapManager : MonoBehaviour
         CurrentIndex >= 0 && CurrentIndex < _teamData.teamMembers.Count
             ? _teamData.teamMembers[CurrentIndex]
             : null;
+
+    private void Awake()
+    {
+        // 音效：AudioSource 未拖入时自动补
+        if (_audioSource == null)
+            _audioSource = GetComponent<AudioSource>();
+        if (_audioSource == null)
+            _audioSource = gameObject.AddComponent<AudioSource>();
+        _audioSource.playOnAwake = false;
+        _audioSource.spatialBlend = 0f;   // 2D 音效，不受距离影响
+    }
 
     private void Start()
     {
@@ -105,6 +120,7 @@ public class CharacterSwapManager : MonoBehaviour
 
         CurrentPlayer = Instantiate(prefab, position, rotation);
         PlaySwitchParticle(position);
+        PlaySwitchSound();
 
         Transform followTarget = CurrentPlayer.transform.childCount > 0 ? CurrentPlayer.transform.GetChild(0) : CurrentPlayer.transform;
         if (mainCamera != null)
@@ -139,5 +155,14 @@ public class CharacterSwapManager : MonoBehaviour
 
         float lifetime = ps.main.duration + ps.main.startLifetime.constantMax;
         Destroy(effect, Mathf.Max(lifetime, 0f));
+    }
+
+    /// <summary>
+    /// 播放切换角色音效（一次性）
+    /// </summary>
+    private void PlaySwitchSound()
+    {
+        if (_switchSound == null || _audioSource == null) return;
+        _audioSource.PlayOneShot(_switchSound);
     }
 }

@@ -6,7 +6,7 @@ using UnityEngine;
 [TaskDescription("检测玩家是否在视野范围内（360度）")]
 public class CanSeePlayer : Conditional
 {
-    public SharedGameObject targetPlayer;  // 输出找到的玩家
+    public SharedTransform targetPlayer;   // 输出找到的玩家 Transform（与 ChasePlayer / InAttackRange / Attack 保持一致）
     public float viewDistance = 10f;       // 视野距离
     public LayerMask targetLayer;          // 目标层级（Player）
     public LayerMask obstacleLayer;        // 障碍物层级
@@ -29,7 +29,7 @@ public class CanSeePlayer : Conditional
                 if (!Physics.Raycast(transform.position, directionToPlayer, out hit, viewDistance, obstacleLayer))
                 {
                     // 看见玩家了（没有被遮挡）
-                    targetPlayer.Value = playerTransform.gameObject;
+                    targetPlayer.Value = playerTransform;
                     return TaskStatus.Success;
                 }
             }

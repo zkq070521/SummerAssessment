@@ -37,8 +37,8 @@ namespace BattleSystem
         private const float FOV_PUNCH_STRENGTH = 5f;
         private const float FOV_PUNCH_DURATION = 0.15f;
         private const float HIT_SHAKE_INTENSITY = 0.8f;   // 受击震屏强度（Noise 幅度）
-        private const float HIT_SHAKE_DURATION = 2.5f;   // 受击震屏时长（秒）
-        private const float HIT_SHAKE_FREQUENCY = 15f;    // 受击震屏噪声频率
+        private const float HIT_SHAKE_DURATION = 2f;   // 受击震屏时长（秒）
+        private const float HIT_SHAKE_FREQUENCY = 10f;    // 受击震屏噪声频率
         private const float DEFAULT_SHAKE_NOISE_FREQUENCY = 1f;   // 默认噪声频率（写入 NoiseSettings 通道）
         private const float DEFAULT_SHAKE_NOISE_AMPLITUDE = 1f;   // 默认噪声幅度（最终由 m_AmplitudeGain 缩放）
 

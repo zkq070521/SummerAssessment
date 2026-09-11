@@ -562,6 +562,10 @@ MonoBehaviour:
   trailEffect: {fileID: 974341694858696880}
   hideEffect: {fileID: 2182004070344161158}
   trailDuration: 0.6
+  audioSource: {fileID: 0}
+  walkClip: {fileID: 8300000, guid: 15f954d35f5b5284bbe68d885e60a894, type: 3}
+  runClip: {fileID: 8300000, guid: ac8b6e6b8fa2a1643b34f88a69517fb2, type: 3}
+  attackClip: {fileID: 8300000, guid: b22fa0b9b9769c04a97c5a430574b82f, type: 3}
 --- !u!4 &8955102789343762350 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6817455414234169382, guid: bb625263b72d4424bab42c1d2947d884, type: 3}

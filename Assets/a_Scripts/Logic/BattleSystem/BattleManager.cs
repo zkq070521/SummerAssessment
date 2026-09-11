@@ -262,6 +262,7 @@ namespace BattleSystem
             if (kind == AttackKind.Single)
                 BattleEventCenter.TriggerUnitAttack(source, target);
             BattleEventCenter.TriggerDamageDealt(source, target, damage, isCritical);
+            BattleEventCenter.TriggerUnitHit(target);   // 受击事件：表现层播放受击特效 / 语音 / FOV 冲击
 
             // 5. 追踪最后一个攻击的玩家（敌人 AI 仇恨目标）
             if (source.team == BattleTeam.Player)
