@@ -37,13 +37,19 @@ namespace BattleSystem
         private const float FOV_PUNCH_STRENGTH = 5f;
         private const float FOV_PUNCH_DURATION = 0.15f;
         private const float HIT_SHAKE_INTENSITY = 0.8f;   // 受击震屏强度（Noise 幅度）
-        private const float HIT_SHAKE_DURATION = 0.25f;   // 受击震屏时长（秒）
+        private const float HIT_SHAKE_DURATION = 2.5f;   // 受击震屏时长（秒）
         private const float HIT_SHAKE_FREQUENCY = 15f;    // 受击震屏噪声频率
+        private const float DEFAULT_SHAKE_NOISE_FREQUENCY = 1f;   // 默认噪声频率（写入 NoiseSettings 通道）
+        private const float DEFAULT_SHAKE_NOISE_AMPLITUDE = 1f;   // 默认噪声幅度（最终由 m_AmplitudeGain 缩放）
 
         // ── Inspector：Cinemachine 核心 ──
         [Header("Cinemachine 核心")]
         [SerializeField] private CinemachineBrain _brain;
         [SerializeField] private CinemachineImpulseSource _impulseSource;
+
+        // ── Inspector：震屏噪声（可选，留空则用运行时默认 6D 抖动）──
+        [Header("震屏噪声")]
+        [SerializeField] private NoiseSettings _shakeNoiseProfile;
 
         // ── Inspector：全局镜头（场景预设，不需要动态 Follow/LookAt）──
         [Header("全局镜头（场景预设）")]
@@ -66,6 +72,7 @@ namespace BattleSystem
         private float _defaultFov;
         private Coroutine _attackSequenceCoroutine;
         private Coroutine _shakeCoroutine;
+        private NoiseSettings _shakeNoiseProfileCache;   // 运行时兜底噪声配置（惰性创建缓存，避免反复 CreateInstance）
 
         #region 生命周期
 
@@ -369,9 +376,15 @@ namespace BattleSystem
         {
             if (_vcamHit == null) return;
 
-            CinemachineBasicMultiChannelPerlin noise = _vcamHit.GetComponent<CinemachineBasicMultiChannelPerlin>();
+            // 噪声组件属于 Cinemachine 管线，必须走 GetCinemachineComponent/AddCinemachineComponent；
+            // 直接 GetComponent/AddComponent 会加到 VCam 根物体，管线不读取，震屏永远无效。
+            CinemachineBasicMultiChannelPerlin noise = _vcamHit.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
             if (noise == null)
-                noise = _vcamHit.gameObject.AddComponent<CinemachineBasicMultiChannelPerlin>();
+                noise = _vcamHit.AddCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+
+            // Perlin 噪声必须挂 NoiseSettings 才会输出（IsValid 依赖 m_NoiseProfile），否则振幅无任何抖动
+            if (noise.m_NoiseProfile == null)
+                noise.m_NoiseProfile = GetShakeNoiseProfile();
 
             // 终止之前的震屏协程，避免多次震屏幅度叠加
             if (_shakeCoroutine != null)
@@ -381,6 +394,42 @@ namespace BattleSystem
             }
 
             _shakeCoroutine = StartCoroutine(ShakeRoutine(noise, intensity, duration));
+        }
+
+        /// <summary>
+        /// 获取震屏噪声配置：优先 Inspector 指定的 _shakeNoiseProfile，否则惰性创建运行时默认 6D 抖动。
+        /// </summary>
+        private NoiseSettings GetShakeNoiseProfile()
+        {
+            if (_shakeNoiseProfile != null) return _shakeNoiseProfile;
+            if (_shakeNoiseProfileCache != null) return _shakeNoiseProfileCache;
+
+            _shakeNoiseProfileCache = ScriptableObject.CreateInstance<NoiseSettings>();
+            _shakeNoiseProfileCache.name = "BattleShakeNoise";
+
+            _shakeNoiseProfileCache.PositionNoise = new[]
+            {
+                CreateNoiseChannel(DEFAULT_SHAKE_NOISE_FREQUENCY, DEFAULT_SHAKE_NOISE_AMPLITUDE)
+            };
+            _shakeNoiseProfileCache.OrientationNoise = new[]
+            {
+                CreateNoiseChannel(DEFAULT_SHAKE_NOISE_FREQUENCY, DEFAULT_SHAKE_NOISE_AMPLITUDE)
+            };
+
+            return _shakeNoiseProfileCache;
+        }
+
+        /// <summary>
+        /// 构建一个三轴同频同幅的噪声通道
+        /// </summary>
+        private static NoiseSettings.TransformNoiseParams CreateNoiseChannel(float frequency, float amplitude)
+        {
+            return new NoiseSettings.TransformNoiseParams
+            {
+                X = new NoiseSettings.NoiseParams { Frequency = frequency, Amplitude = amplitude },
+                Y = new NoiseSettings.NoiseParams { Frequency = frequency, Amplitude = amplitude },
+                Z = new NoiseSettings.NoiseParams { Frequency = frequency, Amplitude = amplitude },
+            };
         }
 
         /// <summary>
