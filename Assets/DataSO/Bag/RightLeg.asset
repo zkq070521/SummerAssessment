@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9253cebdbf7cc85409b53da9b0377a69, type: 3}
   m_Name: RightLeg
   m_EditorClassIdentifier: 
-  itemName: "\u8089\u4E32"
-  description: "\u5440\u7C73\u4E9A\u7C73\uFF0C\u66B4\u51FB\u7387+0.4"
+  itemName: food
+  description: CritDamage+0.4
   icon: {fileID: 292243107, guid: 07ec34bc5d8c3ec459c152f1ad3f9eb2, type: 3}
   equipSlot: 5
   maxHPBonus: 0

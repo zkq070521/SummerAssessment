@@ -37,4 +37,19 @@ public static class GameEvents
     public static event System.Action<string, IReadOnlyList<ItemData>> OnRewardClaimed;
     public static void TriggerRewardClaimed(string rewardID, IReadOnlyList<ItemData> items)
         => OnRewardClaimed?.Invoke(rewardID, items);
+
+    /// <summary>
+    /// 对话开始时触发 — 用于隐藏大世界 HUD（小地图、队伍、按钮等面板）。
+    /// 由 DialogueController 在 OpenDialogue 时触发，WorldHudController 等监听。
+    /// </summary>
+    public static event System.Action OnDialogueStarted;
+    public static void TriggerDialogueStarted()
+        => OnDialogueStarted?.Invoke();
+
+    /// <summary>
+    /// 对话结束时触发 — 恢复大世界 HUD。由 DialogueController 在 EndDialogue 时触发。
+    /// </summary>
+    public static event System.Action OnDialogueEnded;
+    public static void TriggerDialogueEnded()
+        => OnDialogueEnded?.Invoke();
 }

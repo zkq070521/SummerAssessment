@@ -89,6 +89,14 @@ public class DialogueUI : MonoBehaviour
     /// </summary>
     public void UpdateMainDialogue(DialoguePiece piece)
     {
+        // 同步「当前片段索引」，保证选项跳转后「继续」从正确位置推进（否则会重播上一段）
+        if (_currentData != null && piece != null)
+        {
+            int index = _currentData.dialoguePiece.IndexOf(piece);
+            if (index >= 0)
+                _currentIndex = index;
+        }
+
         if (_dialoguePanel != null)
             _dialoguePanel.SetActive(true);
 

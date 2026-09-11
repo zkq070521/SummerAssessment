@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9253cebdbf7cc85409b53da9b0377a69, type: 3}
   m_Name: LeftLeg
   m_EditorClassIdentifier: 
-  itemName: "\u7535\u8111\u6905"
-  description: "\u901F\u5EA6+20"
+  itemName: "\u8001\u677F\u6905"
+  description: "\u6253\u5361\u524D\u4E94\u540D\u53EF\u4F7F\u7528\uFF0C\u901F\u5EA6+20"
   icon: {fileID: -1975658668, guid: 2bfa090ae2ce806488b7109b338e4f9a, type: 3}
   equipSlot: 4
   maxHPBonus: 0

@@ -14,6 +14,9 @@ public class CharacterSwapManager : MonoBehaviour
     [Header("队伍数据")]
     [SerializeField] private TeamData_SO _teamData;
 
+    [Header("切换特效")]
+    [SerializeField] private GameObject _switchParticlePrefab;   // 切换角色时在角色位置播放的粒子预制体（可留空）
+
     /// <summary>当前角色序号（-1 表示未初始化）</summary>
     public int CurrentIndex { get; private set; } = -1;
 
@@ -101,6 +104,7 @@ public class CharacterSwapManager : MonoBehaviour
             Debug.LogWarning($"[CharacterSwapManager] 预制体 {prefab.name} 缺少 CharacterController 组件");
 
         CurrentPlayer = Instantiate(prefab, position, rotation);
+        PlaySwitchParticle(position);
 
         Transform followTarget = CurrentPlayer.transform.childCount > 0 ? CurrentPlayer.transform.GetChild(0) : CurrentPlayer.transform;
         if (mainCamera != null)
@@ -114,5 +118,26 @@ public class CharacterSwapManager : MonoBehaviour
         Debug.Log($"[CharacterSwapManager] 切换到 {hero.heroName}（{index + 1}号位）");
 
         GameEvents.TriggerCharacterSwitched(hero, index);
+    }
+
+    /// <summary>
+    /// 在指定位置播放切换特效，并按粒子系统总时长自动销毁，避免残留空物体
+    /// </summary>
+    private void PlaySwitchParticle(Vector3 position)
+    {
+        if (_switchParticlePrefab == null) return;
+
+        GameObject effect = Instantiate(_switchParticlePrefab, position, Quaternion.identity);
+
+        ParticleSystem ps = effect.GetComponentInChildren<ParticleSystem>(true);
+        if (ps == null)
+        {
+            Debug.LogWarning($"[CharacterSwapManager] 切换特效预制体 {_switchParticlePrefab.name} 未挂 ParticleSystem");
+            Destroy(effect);
+            return;
+        }
+
+        float lifetime = ps.main.duration + ps.main.startLifetime.constantMax;
+        Destroy(effect, Mathf.Max(lifetime, 0f));
     }
 }

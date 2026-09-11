@@ -109,6 +109,8 @@ public class DialogueController : MonoBehaviour
         if (dialoguePanel != null)
             dialoguePanel.SetActive(true);
 
+        GameEvents.TriggerDialogueStarted();   // 通知 HUD 隐藏（小地图/队伍/按钮）
+
         SetDialogueCamera(true);   // 切到对话相机
 
         Debug.Log($"[DialogueController] 对话已启动：{_currentData.name}");
@@ -125,6 +127,8 @@ public class DialogueController : MonoBehaviour
 
         SetPlayerControl(true);
         ShowCursor(false);
+
+        GameEvents.TriggerDialogueEnded();   // 通知 HUD 恢复显示
     }
 
     /// <summary>
